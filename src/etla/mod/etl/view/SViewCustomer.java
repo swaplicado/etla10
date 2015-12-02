@@ -5,7 +5,7 @@
 package etla.mod.etl.view;
 
 import etla.mod.SModConsts;
-import etla.mod.SModSysConsts;
+import etla.mod.etl.db.SEtlConsts;
 import java.util.ArrayList;
 import sa.lib.SLibConsts;
 import sa.lib.db.SDbConsts;
@@ -53,6 +53,7 @@ public class SViewCustomer extends SGridPaneView {
                 + "v.name AS " + SDbConsts.FIELD_NAME + ", "
                 + "v.src_cus_id, "
                 + "v.des_cus_id, "
+                + "v.des_cus_bra_id, "
                 + "v.tax_id, "
                 + "TRIM(CONCAT(v.str, ' ', v.num_ext, ' ', v.num_int)) AS f_add1, "
                 + "TRIM(CONCAT(v.nei, ' ', v.ref)) AS f_add2, "
@@ -62,16 +63,20 @@ public class SViewCustomer extends SGridPaneView {
                 + "v.cdt_lim, "
                 + "v.src_cus_cur_fk_n, "
                 + "v.src_cus_uom_fk_n, "
+                + "v.src_cus_sal_agt_fk_n, "
                 + "v.src_req_cur_fk_n, "
                 + "v.src_req_uom_fk_n, "
                 + "v.fst_etl_ins, "
                 + "v.lst_etl_upd, "
                 + "v.fk_src_cus_cur_n, "
                 + "v.fk_src_cus_uom_n, "
+                + "v.fk_src_cus_sal_agt_n, "
                 + "v.fk_src_req_cur_n, "
                 + "v.fk_src_req_uom_n, "
                 + "v.fk_des_req_pay_met_n, "
                 + "v.fk_lst_etl_log, "
+                + "sal_agt.code, "
+                + "sal_agt.name, "
                 + "cur.code, "
                 + "cur.name, "
                 + "uom.code, "
@@ -91,6 +96,8 @@ public class SViewCustomer extends SGridPaneView {
                 + "v.fk_usr_ins = ui.id_usr "
                 + "INNER JOIN " + SModConsts.TablesMap.get(SModConsts.CU_USR) + " AS uu ON "
                 + "v.fk_usr_upd = uu.id_usr "
+                + "LEFT OUTER JOIN " + SModConsts.TablesMap.get(SModConsts.AU_SAL_AGT) + " AS sal_agt ON "
+                + "v.fk_src_cus_sal_agt_n = sal_agt.id_sal_agt "
                 + "LEFT OUTER JOIN " + SModConsts.TablesMap.get(SModConsts.AS_CUR) + " AS cur ON "
                 + "v.fk_src_req_cur_n = cur.id_cur "
                 + "LEFT OUTER JOIN " + SModConsts.TablesMap.get(SModConsts.AS_UOM) + " AS uom ON "
@@ -107,20 +114,23 @@ public class SViewCustomer extends SGridPaneView {
 
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_M, SDbConsts.FIELD_NAME, SGridConsts.COL_TITLE_NAME));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_BPR, SDbConsts.FIELD_CODE, SGridConsts.COL_TITLE_CODE));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.src_cus_id", "ID " + SModSysConsts.TXT_AVISTA));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_INT_RAW, "v.des_cus_id", "ID " + SModSysConsts.TXT_SIIE));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.src_cus_id", "ID " + SEtlConsts.TXT_DB_AVISTA));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_INT_RAW, "v.des_cus_id", "ID asoc negocios " + SEtlConsts.TXT_DB_SIIE));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_INT_RAW, "v.des_cus_bra_id", "ID suc matriz" + SEtlConsts.TXT_DB_SIIE));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "v.tax_id", "RFC"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "f_add1", "Calle y número"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "f_add2", "Colonia"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "f_add3", "Localidad"));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "pay_met.name", "Método pago " + SModSysConsts.TXT_SIIE));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "pay_met.name", "Método pago " + SEtlConsts.TXT_DB_SIIE));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "v.pay_acc", "Cuenta pago"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_INT_2B, "v.cdt_day", "Días crédito"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_DEC_AMT, "v.cdt_lim", "Límite crédito $"));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.src_req_cur_fk_n", "ID moneda req " + SModSysConsts.TXT_AVISTA));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "cur.name", "Moneda req " + SModSysConsts.TXT_AVISTA));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.src_req_uom_fk_n", "ID unidad req " + SModSysConsts.TXT_AVISTA));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "uom.name", "Unidad req " + SModSysConsts.TXT_AVISTA));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.src_cus_sal_agt_fk_n", "ID agente ventas " + SEtlConsts.TXT_DB_AVISTA));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "sal_agt.name", "Agente ventas " + SEtlConsts.TXT_DB_AVISTA));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.src_req_cur_fk_n", "ID moneda req " + SEtlConsts.TXT_DB_AVISTA));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "cur.name", "Moneda req " + SEtlConsts.TXT_DB_AVISTA));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.src_req_uom_fk_n", "ID unidad req " + SEtlConsts.TXT_DB_AVISTA));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "uom.name", "Unidad req " + SEtlConsts.TXT_DB_AVISTA));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_DATE_DATETIME, "v.fst_etl_ins", "Primera exportación"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_DATE_DATETIME, "v.lst_etl_upd", "Última exportación"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_INT_4B, "v.fk_lst_etl_log", "# exportación"));
@@ -137,6 +147,8 @@ public class SViewCustomer extends SGridPaneView {
     @Override
     public void defineSuscriptions() {
         moSuscriptionsSet.add(mnGridType);
+        moSuscriptionsSet.add(SModConsts.AX_ETL);
+        moSuscriptionsSet.add(SModConsts.AU_SAL_AGT);
         moSuscriptionsSet.add(SModConsts.CU_USR);
     }
 }

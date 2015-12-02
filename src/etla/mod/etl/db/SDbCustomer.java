@@ -24,6 +24,7 @@ public class SDbCustomer extends SDbRegistryUser {
     protected int mnPkCustomerId;
     protected String msSrcCustomerId;
     protected int mnDesCustomerId;
+    protected int mnDesCustomerBranchId;
     protected String msCode;
     protected String msName;
     protected String msNameShort;
@@ -49,6 +50,7 @@ public class SDbCustomer extends SDbRegistryUser {
     protected String msPayTermCode;
     protected int mnSrcCustomerCurrencyFk_n;
     protected String msSrcCustomerUnitOfMeasureFk_n;
+    protected int mnSrcCustomerSalesAgentFk_n;
     protected int mnSrcRequiredCurrencyFk_n;
     protected String msSrcRequiredUnitOfMeasureFk_n;
     protected Date mtFirstEtlInsert;
@@ -60,6 +62,7 @@ public class SDbCustomer extends SDbRegistryUser {
     */
     protected int mnFkSrcCustomerCurrencyId_n;
     protected int mnFkSrcCustomerUnitOfMeasureId_n;
+    protected int mnFkSrcCustomerSalesAgentId_n;
     protected int mnFkSrcRequiredCurrencyId_n;
     protected int mnFkSrcRequiredUnitOfMeasureId_n;
     protected int mnFkDesRequiredPayMethodId_n;
@@ -82,6 +85,7 @@ public class SDbCustomer extends SDbRegistryUser {
     public void setPkCustomerId(int n) { mnPkCustomerId = n; }
     public void setSrcCustomerId(String s) { msSrcCustomerId = s; }
     public void setDesCustomerId(int n) { mnDesCustomerId = n; }
+    public void setDesCustomerBranchId(int n) { mnDesCustomerBranchId = n; }
     public void setCode(String s) { msCode = s; }
     public void setName(String s) { msName = s; }
     public void setNameShort(String s) { msNameShort = s; }
@@ -107,6 +111,7 @@ public class SDbCustomer extends SDbRegistryUser {
     public void setPayTermCode(String s) { msPayTermCode = s; }
     public void setSrcCustomerCurrencyFk_n(int n) { mnSrcCustomerCurrencyFk_n = n; }
     public void setSrcCustomerUnitOfMeasureFk_n(String s) { msSrcCustomerUnitOfMeasureFk_n = s; }
+    public void setSrcCustomerSalesAgentFk_n(int n) { mnSrcCustomerSalesAgentFk_n = n; }
     public void setSrcRequiredCurrencyFk_n(int n) { mnSrcRequiredCurrencyFk_n = n; }
     public void setSrcRequiredUnitOfMeasureFk_n(String s) { msSrcRequiredUnitOfMeasureFk_n = s; }
     public void setFirstEtlInsert(Date t) { mtFirstEtlInsert = t; }
@@ -116,6 +121,7 @@ public class SDbCustomer extends SDbRegistryUser {
     public void setSystem(boolean b) { mbSystem = b; }
     public void setFkSrcCustomerCurrencyId_n(int n) { mnFkSrcCustomerCurrencyId_n = n; }
     public void setFkSrcCustomerUnitOfMeasureId_n(int n) { mnFkSrcCustomerUnitOfMeasureId_n = n; }
+    public void setFkSrcCustomerSalesAgentId_n(int n) { mnFkSrcCustomerSalesAgentId_n = n; }
     public void setFkSrcRequiredCurrencyId_n(int n) { mnFkSrcRequiredCurrencyId_n = n; }
     public void setFkSrcRequiredUnitOfMeasureId_n(int n) { mnFkSrcRequiredUnitOfMeasureId_n = n; }
     public void setFkDesRequiredPayMethodId_n(int n) { mnFkDesRequiredPayMethodId_n = n; }
@@ -128,6 +134,7 @@ public class SDbCustomer extends SDbRegistryUser {
     public int getPkCustomerId() { return mnPkCustomerId; }
     public String getSrcCustomerId() { return msSrcCustomerId; }
     public int getDesCustomerId() { return mnDesCustomerId; }
+    public int getDesCustomerBranchId() { return mnDesCustomerBranchId; }
     public String getCode() { return msCode; }
     public String getName() { return msName; }
     public String getNameShort() { return msNameShort; }
@@ -153,6 +160,7 @@ public class SDbCustomer extends SDbRegistryUser {
     public String getPayTermCode() { return msPayTermCode; }
     public int getSrcCustomerCurrencyFk_n() { return mnSrcCustomerCurrencyFk_n; }
     public String getSrcCustomerUnitOfMeasureFk_n() { return msSrcCustomerUnitOfMeasureFk_n; }
+    public int getSrcCustomerSalesAgentFk_n() { return mnSrcCustomerSalesAgentFk_n; }
     public int getSrcRequiredCurrencyFk_n() { return mnSrcRequiredCurrencyFk_n; }
     public String getSrcRequiredUnitOfMeasureFk_n() { return msSrcRequiredUnitOfMeasureFk_n; }
     public Date getFirstEtlInsert() { return mtFirstEtlInsert; }
@@ -162,6 +170,7 @@ public class SDbCustomer extends SDbRegistryUser {
     public boolean isSystem() { return mbSystem; }
     public int getFkSrcCustomerCurrencyId_n() { return mnFkSrcCustomerCurrencyId_n; }
     public int getFkSrcCustomerUnitOfMeasureId_n() { return mnFkSrcCustomerUnitOfMeasureId_n; }
+    public int getFkSrcCustomerSalesAgentId_n() { return mnFkSrcCustomerSalesAgentId_n; }
     public int getFkSrcRequiredCurrencyId_n() { return mnFkSrcRequiredCurrencyId_n; }
     public int getFkSrcRequiredUnitOfMeasureId_n() { return mnFkSrcRequiredUnitOfMeasureId_n; }
     public int getFkDesRequiredPayMethodId_n() { return mnFkDesRequiredPayMethodId_n; }
@@ -192,6 +201,7 @@ public class SDbCustomer extends SDbRegistryUser {
         mnPkCustomerId = 0;
         msSrcCustomerId = "";
         mnDesCustomerId = 0;
+        mnDesCustomerBranchId = 0;
         msCode = "";
         msName = "";
         msNameShort = "";
@@ -217,6 +227,7 @@ public class SDbCustomer extends SDbRegistryUser {
         msPayTermCode = "";
         mnSrcCustomerCurrencyFk_n = 0;
         msSrcCustomerUnitOfMeasureFk_n = "";
+        mnSrcCustomerSalesAgentFk_n = 0;
         mnSrcRequiredCurrencyFk_n = 0;
         msSrcRequiredUnitOfMeasureFk_n = "";
         mtFirstEtlInsert = null;
@@ -226,6 +237,7 @@ public class SDbCustomer extends SDbRegistryUser {
         mbSystem = false;
         mnFkSrcCustomerCurrencyId_n = 0;
         mnFkSrcCustomerUnitOfMeasureId_n = 0;
+        mnFkSrcCustomerSalesAgentId_n = 0;
         mnFkSrcRequiredCurrencyId_n = 0;
         mnFkSrcRequiredUnitOfMeasureId_n = 0;
         mnFkDesRequiredPayMethodId_n = 0;
@@ -281,6 +293,7 @@ public class SDbCustomer extends SDbRegistryUser {
             mnPkCustomerId = resultSet.getInt("id_cus");
             msSrcCustomerId = resultSet.getString("src_cus_id");
             mnDesCustomerId = resultSet.getInt("des_cus_id");
+            mnDesCustomerBranchId = resultSet.getInt("des_cus_bra_id");
             msCode = resultSet.getString("code");
             msName = resultSet.getString("name");
             msNameShort = resultSet.getString("name_s");
@@ -307,6 +320,7 @@ public class SDbCustomer extends SDbRegistryUser {
             mnSrcCustomerCurrencyFk_n = resultSet.getInt("src_cus_cur_fk_n");
             msSrcCustomerUnitOfMeasureFk_n = resultSet.getString("src_cus_uom_fk_n");
             if (resultSet.wasNull()) msSrcCustomerUnitOfMeasureFk_n = "";
+            mnSrcCustomerSalesAgentFk_n = resultSet.getInt("src_cus_sal_agt_fk_n");
             mnSrcRequiredCurrencyFk_n = resultSet.getInt("src_req_cur_fk_n");
             msSrcRequiredUnitOfMeasureFk_n = resultSet.getString("src_req_uom_fk_n");
             mtFirstEtlInsert = resultSet.getTimestamp("fst_etl_ins");
@@ -316,6 +330,7 @@ public class SDbCustomer extends SDbRegistryUser {
             mbSystem = resultSet.getBoolean("b_sys");
             mnFkSrcCustomerCurrencyId_n = resultSet.getInt("fk_src_cus_cur_n");
             mnFkSrcCustomerUnitOfMeasureId_n = resultSet.getInt("fk_src_cus_uom_n");
+            mnFkSrcCustomerSalesAgentId_n = resultSet.getInt("fk_src_cus_sal_agt_n");
             mnFkSrcRequiredCurrencyId_n = resultSet.getInt("fk_src_req_cur_n");
             mnFkSrcRequiredUnitOfMeasureId_n = resultSet.getInt("fk_src_req_uom_n");
             mnFkDesRequiredPayMethodId_n = resultSet.getInt("fk_des_req_pay_met_n");
@@ -369,6 +384,7 @@ public class SDbCustomer extends SDbRegistryUser {
                     mnPkCustomerId + ", " + 
                     "'" + msSrcCustomerId + "', " + 
                     mnDesCustomerId + ", " + 
+                    mnDesCustomerBranchId + ", " + 
                     "'" + msCode + "', " + 
                     "'" + msName + "', " + 
                     "'" + msNameShort + "', " + 
@@ -394,6 +410,7 @@ public class SDbCustomer extends SDbRegistryUser {
                     "'" + msPayTermCode + "', " + 
                     (mnSrcCustomerCurrencyFk_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnSrcCustomerCurrencyFk_n) + ", " + 
                     (msSrcCustomerUnitOfMeasureFk_n.isEmpty() ? "NULL" : "'" + msSrcCustomerUnitOfMeasureFk_n + "'") + ", " + 
+                    (mnSrcCustomerSalesAgentFk_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnSrcCustomerSalesAgentFk_n) + ", " + 
                     (mnSrcRequiredCurrencyFk_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnSrcRequiredCurrencyFk_n) + ", " + 
                     (msSrcRequiredUnitOfMeasureFk_n.isEmpty() ? "NULL" : "'" + msSrcRequiredUnitOfMeasureFk_n + "'") + ", " + 
                     "NOW()" + ", " + 
@@ -403,6 +420,7 @@ public class SDbCustomer extends SDbRegistryUser {
                     (mbSystem ? 1 : 0) + ", " + 
                     (mnFkSrcCustomerCurrencyId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkSrcCustomerCurrencyId_n) + ", " + 
                     (mnFkSrcCustomerUnitOfMeasureId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkSrcCustomerUnitOfMeasureId_n) + ", " + 
+                    (mnFkSrcCustomerSalesAgentId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkSrcCustomerSalesAgentId_n) + ", " + 
                     (mnFkSrcRequiredCurrencyId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkSrcRequiredCurrencyId_n) + ", " + 
                     (mnFkSrcRequiredUnitOfMeasureId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkSrcRequiredUnitOfMeasureId_n) + ", " + 
                     (mnFkDesRequiredPayMethodId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkDesRequiredPayMethodId_n) + ", " + 
@@ -420,6 +438,7 @@ public class SDbCustomer extends SDbRegistryUser {
                     //"id_cus = " + mnPkCustomerId + ", " +
                     "src_cus_id = '" + msSrcCustomerId + "', " +
                     "des_cus_id = " + mnDesCustomerId + ", " +
+                    "des_cus_bra_id = " + mnDesCustomerBranchId + ", " +
                     "code = '" + msCode + "', " +
                     "name = '" + msName + "', " +
                     "name_s = '" + msNameShort + "', " +
@@ -445,6 +464,7 @@ public class SDbCustomer extends SDbRegistryUser {
                     "pay_ter_code = '" + msPayTermCode + "', " +
                     "src_cus_cur_fk_n = " + (mnSrcCustomerCurrencyFk_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnSrcCustomerCurrencyFk_n) + ", " +
                     "src_cus_uom_fk_n = " + (msSrcCustomerUnitOfMeasureFk_n.isEmpty() ? "NULL" : "'" + msSrcCustomerUnitOfMeasureFk_n + "'") + ", " +
+                    "src_cus_sal_agt_fk_n = " + (mnSrcCustomerSalesAgentFk_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnSrcCustomerSalesAgentFk_n) + ", " +
                     "src_req_cur_fk_n = " + (mnSrcRequiredCurrencyFk_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnSrcRequiredCurrencyFk_n) + ", " +
                     "src_req_uom_fk_n = " + (msSrcRequiredUnitOfMeasureFk_n.isEmpty() ? "NULL" : "'" + msSrcRequiredUnitOfMeasureFk_n + "'") + ", " +
                     "fst_etl_ins = " + "NOW()" + ", " +
@@ -454,6 +474,7 @@ public class SDbCustomer extends SDbRegistryUser {
                     "b_sys = " + (mbSystem ? 1 : 0) + ", " +
                     "fk_src_cus_cur_n = " + (mnFkSrcCustomerCurrencyId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkSrcCustomerCurrencyId_n) + ", " +
                     "fk_src_cus_uom_n = " + (mnFkSrcCustomerUnitOfMeasureId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkSrcCustomerUnitOfMeasureId_n) + ", " +
+                    "fk_src_cus_sal_agt_n = " + (mnFkSrcCustomerUnitOfMeasureId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkSrcCustomerUnitOfMeasureId_n) + ", " +
                     "fk_src_req_cur_n = " + (mnFkSrcRequiredCurrencyId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkSrcRequiredCurrencyId_n) + ", " +
                     "fk_src_req_uom_n = " + (mnFkSrcRequiredUnitOfMeasureId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkSrcRequiredUnitOfMeasureId_n) + ", " +
                     "fk_des_req_pay_met_n = " + (mnFkDesRequiredPayMethodId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkDesRequiredPayMethodId_n) + ", " +
@@ -478,6 +499,7 @@ public class SDbCustomer extends SDbRegistryUser {
         registry.setPkCustomerId(this.getPkCustomerId());
         registry.setSrcCustomerId(this.getSrcCustomerId());
         registry.setDesCustomerId(this.getDesCustomerId());
+        registry.setDesCustomerBranchId(this.getDesCustomerBranchId());
         registry.setCode(this.getCode());
         registry.setName(this.getName());
         registry.setNameShort(this.getNameShort());
@@ -503,6 +525,7 @@ public class SDbCustomer extends SDbRegistryUser {
         registry.setPayTermCode(this.getPayTermCode());
         registry.setSrcCustomerCurrencyFk_n(this.getSrcCustomerCurrencyFk_n());
         registry.setSrcCustomerUnitOfMeasureFk_n(this.getSrcCustomerUnitOfMeasureFk_n());
+        registry.setSrcCustomerSalesAgentFk_n(this.getSrcCustomerSalesAgentFk_n());
         registry.setSrcRequiredCurrencyFk_n(this.getSrcRequiredCurrencyFk_n());
         registry.setSrcRequiredUnitOfMeasureFk_n(this.getSrcRequiredUnitOfMeasureFk_n());
         registry.setFirstEtlInsert(this.getFirstEtlInsert());
@@ -512,6 +535,7 @@ public class SDbCustomer extends SDbRegistryUser {
         registry.setSystem(this.isSystem());
         registry.setFkSrcCustomerCurrencyId_n(this.getFkSrcCustomerCurrencyId_n());
         registry.setFkSrcCustomerUnitOfMeasureId_n(this.getFkSrcCustomerUnitOfMeasureId_n());
+        registry.setFkSrcCustomerSalesAgentId_n(this.getFkSrcCustomerSalesAgentId_n());
         registry.setFkSrcRequiredCurrencyId_n(this.getFkSrcRequiredCurrencyId_n());
         registry.setFkSrcRequiredUnitOfMeasureId_n(this.getFkSrcRequiredUnitOfMeasureId_n());
         registry.setFkDesRequiredPayMethodId_n(this.getFkDesRequiredPayMethodId_n());

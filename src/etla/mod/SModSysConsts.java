@@ -28,7 +28,7 @@ public abstract class SModSysConsts {
     public static final int AS_UOM_SQM = 3;
     public static final int AS_UOM_SQF = 4;
     public static final int AS_UOM_PC = 5;
-    public static final int AS_UOM_M = 6;
+    public static final int AS_UOM_K = 6;
     public static final int AS_UOM_KG = 7;
     public static final int AS_UOM_TON = 8;
     
@@ -40,7 +40,4 @@ public abstract class SModSysConsts {
     public static final int AS_PAY_MET_CDT = 7;
     public static final int AS_PAY_MET_CHK_TRN = 14;
     public static final int AS_PAY_MET_UND = 19;
-
-    public static final String TXT_SIIE = "SIIE";
-    public static final String TXT_AVISTA = "Avista";
 }

@@ -8,14 +8,18 @@ package etla.mod;
 import etla.mod.etl.db.SDbCustomer;
 import etla.mod.etl.db.SDbExchangeRate;
 import etla.mod.etl.db.SDbItem;
+import etla.mod.etl.db.SDbSalesAgent;
 import etla.mod.etl.db.SDbSysCurrency;
 import etla.mod.etl.db.SDbSysUnitOfMeasure;
 import etla.mod.etl.form.SFormCustomer;
 import etla.mod.etl.form.SFormExchangeRate;
 import etla.mod.etl.form.SFormItem;
+import etla.mod.etl.form.SFormSalesAgent;
 import etla.mod.etl.view.SViewCustomer;
 import etla.mod.etl.view.SViewExchangeRate;
+import etla.mod.etl.view.SViewInvoice;
 import etla.mod.etl.view.SViewItem;
+import etla.mod.etl.view.SViewSalesAgent;
 import javax.swing.JMenu;
 import sa.lib.SLibConsts;
 import sa.lib.db.SDbConsts;
@@ -36,6 +40,7 @@ import sa.lib.gui.SGuiReport;
  */
 public class SModModuleEtl extends SGuiModule {
     
+    private SFormSalesAgent moFormSalesAgent;
     private SFormCustomer moFormCustomer;
     private SFormItem moFormItem;
     private SFormExchangeRate moFormExchangeRate;
@@ -66,6 +71,9 @@ public class SModModuleEtl extends SGuiModule {
                     public String getSqlTable() { return SModConsts.TablesMap.get(mnRegistryType); }
                     public String getSqlWhere(int[] pk) { return "WHERE id_pay_met = " + pk[0] + " "; }
                 };
+                break;
+            case SModConsts.AU_SAL_AGT:
+                registry = new SDbSalesAgent();
                 break;
             case SModConsts.AU_CUS:
                 registry = new SDbCustomer();
@@ -113,6 +121,12 @@ public class SModModuleEtl extends SGuiModule {
                         + "id_pay_met AS " + SDbConsts.FIELD_COMP + " "
                         + "FROM " + SModConsts.TablesMap.get(type) + " WHERE b_del = 0 ORDER BY sort ";
                 break;
+            case SModConsts.AU_SAL_AGT:
+                settings = new SGuiCatalogueSettings("Agente ventas", 1, 0, SLibConsts.DATA_TYPE_TEXT);
+                sql = "SELECT id_sal_agt AS " + SDbConsts.FIELD_ID + "1, CONCAT(name, ' (', code, ')') AS " + SDbConsts.FIELD_ITEM + ", "
+                        + "src_sal_agt_id AS " + SDbConsts.FIELD_COMP + " "
+                        + "FROM " + SModConsts.TablesMap.get(type) + " WHERE b_del = 0 ORDER BY name, code, id_sal_agt ";
+                break;
             case SModConsts.AU_CUS:
                 settings = new SGuiCatalogueSettings("Cliente", 1, 0, SLibConsts.DATA_TYPE_TEXT);
                 sql = "SELECT id_cus AS " + SDbConsts.FIELD_ID + "1, CONCAT(name, ' (', code, ')') AS " + SDbConsts.FIELD_ITEM + ", "
@@ -149,6 +163,9 @@ public class SModModuleEtl extends SGuiModule {
             case SModConsts.AS_UOM:
             case SModConsts.AS_PAY_MET:
                 break;
+            case SModConsts.AU_SAL_AGT:
+                view = new SViewSalesAgent(miClient, "Agentes ventas");
+                break;
             case SModConsts.AU_CUS:
                 view = new SViewCustomer(miClient, "Clientes");
                 break;
@@ -158,6 +175,7 @@ public class SModModuleEtl extends SGuiModule {
             case SModConsts.A_CFG:
                 break;
             case SModConsts.A_INV:
+                view = new SViewInvoice(miClient, "Facturas");
                 break;
             case SModConsts.A_INV_ROW:
                 break;
@@ -203,6 +221,10 @@ public class SModModuleEtl extends SGuiModule {
             case SModConsts.AS_CUR:
             case SModConsts.AS_UOM:
             case SModConsts.AS_PAY_MET:
+                break;
+            case SModConsts.AU_SAL_AGT:
+                if (moFormSalesAgent == null) moFormSalesAgent = new SFormSalesAgent(miClient, "Agente ventas");
+                form = moFormSalesAgent;
                 break;
             case SModConsts.AU_CUS:
                 if (moFormCustomer == null) moFormCustomer = new SFormCustomer(miClient, "Cliente");

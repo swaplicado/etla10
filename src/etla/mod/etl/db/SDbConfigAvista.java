@@ -25,6 +25,10 @@ public class SDbConfigAvista extends SDbRegistryUser {
     protected String msAvistaName;
     protected String msAvistaUser;
     protected String msAvistaPassword;
+    protected String msInvoiceSeries;
+    protected int mnInvoiceNumberStarting;
+    protected int mnDesCompanyFk;
+    protected int mnDesCompanyBranchFk;
     protected int mnDesLocalCountryFk;
     protected int mnDesLocalCurrencyFk;
     protected int mnDesDefaultItemGenericFk;
@@ -63,6 +67,10 @@ public class SDbConfigAvista extends SDbRegistryUser {
     public void setAvistaName(String s) { msAvistaName = s; }
     public void setAvistaUser(String s) { msAvistaUser = s; }
     public void setAvistaPassword(String s) { msAvistaPassword = s; }
+    public void setInvoiceSeries(String s) { msInvoiceSeries = s; }
+    public void setInvoiceNumberStarting(int n) { mnInvoiceNumberStarting = n; }
+    public void setDesCompanyFk(int n) { mnDesCompanyFk = n; }
+    public void setDesCompanyBranchFk(int n) { mnDesCompanyBranchFk = n; }
     public void setDesLocalCountryFk(int n) { mnDesLocalCountryFk = n; }
     public void setDesLocalCurrencyFk(int n) { mnDesLocalCurrencyFk = n; }
     public void setDesDefaultItemGenericFk(int n) { mnDesDefaultItemGenericFk = n; }
@@ -89,6 +97,10 @@ public class SDbConfigAvista extends SDbRegistryUser {
     public String getAvistaName() { return msAvistaName; }
     public String getAvistaUser() { return msAvistaUser; }
     public String getAvistaPassword() { return msAvistaPassword; }
+    public String getInvoiceSeries() { return msInvoiceSeries; }
+    public int getInvoiceNumberStarting() { return mnInvoiceNumberStarting; }
+    public int getDesCompanyFk() { return mnDesCompanyFk; }
+    public int getDesCompanyBranchFk() { return mnDesCompanyBranchFk; }
     public int getDesLocalCountryFk() { return mnDesLocalCountryFk; }
     public int getDesLocalCurrencyFk() { return mnDesLocalCurrencyFk; }
     public int getDesDefaultItemGenericFk() { return mnDesDefaultItemGenericFk; }
@@ -133,6 +145,10 @@ public class SDbConfigAvista extends SDbRegistryUser {
         msAvistaName = "";
         msAvistaUser = "";
         msAvistaPassword = "";
+        msInvoiceSeries = "";
+        mnInvoiceNumberStarting = 0;
+        mnDesCompanyFk = 0;
+        mnDesCompanyBranchFk = 0;
         mnDesLocalCountryFk = 0;
         mnDesLocalCurrencyFk = 0;
         mnDesDefaultItemGenericFk = 0;
@@ -202,6 +218,10 @@ public class SDbConfigAvista extends SDbRegistryUser {
             msAvistaName = resultSet.getString("avi_name");
             msAvistaUser = resultSet.getString("avi_user");
             msAvistaPassword = resultSet.getString("avi_pswd");
+            msInvoiceSeries = resultSet.getString("inv_ser");
+            mnInvoiceNumberStarting = resultSet.getInt("inv_num_sta");
+            mnDesCompanyFk = resultSet.getInt("des_com_fk");
+            mnDesCompanyBranchFk = resultSet.getInt("des_com_bra_fk");
             mnDesLocalCountryFk = resultSet.getInt("des_loc_cty_fk");
             mnDesLocalCurrencyFk = resultSet.getInt("des_loc_cur_fk");
             mnDesDefaultItemGenericFk = resultSet.getInt("des_def_itm_gen_fk");
@@ -247,6 +267,10 @@ public class SDbConfigAvista extends SDbRegistryUser {
                     "'" + msAvistaName + "', " + 
                     "'" + msAvistaUser + "', " + 
                     "'" + msAvistaPassword + "', " + 
+                    "'" + msInvoiceSeries + "', " + 
+                    mnInvoiceNumberStarting + ", " + 
+                    mnDesCompanyFk + ", " + 
+                    mnDesCompanyBranchFk + ", " + 
                     mnDesLocalCountryFk + ", " + 
                     mnDesLocalCurrencyFk + ", " + 
                     mnDesDefaultItemGenericFk + ", " + 
@@ -278,6 +302,10 @@ public class SDbConfigAvista extends SDbRegistryUser {
                     "avi_name = '" + msAvistaName + "', " +
                     "avi_user = '" + msAvistaUser + "', " +
                     "avi_pswd = '" + msAvistaPassword + "', " +
+                    "inv_ser = '" + msInvoiceSeries + "', " +
+                    "inv_num_sta = " + mnInvoiceNumberStarting + ", " +
+                    "des_com_fk = " + mnDesCompanyFk + ", " +
+                    "des_com_bra_fk = " + mnDesCompanyBranchFk + ", " +
                     "des_loc_cty_fk = " + mnDesLocalCountryFk + ", " +
                     "des_loc_cur_fk = " + mnDesLocalCurrencyFk + ", " +
                     "des_def_itm_gen_fk = " + mnDesDefaultItemGenericFk + ", " +
@@ -316,6 +344,10 @@ public class SDbConfigAvista extends SDbRegistryUser {
         registry.setAvistaName(this.getAvistaName());
         registry.setAvistaUser(this.getAvistaUser());
         registry.setAvistaPassword(this.getAvistaPassword());
+        registry.setInvoiceSeries(this.getInvoiceSeries());
+        registry.setInvoiceNumberStarting(this.getInvoiceNumberStarting());
+        registry.setDesCompanyFk(this.getDesCompanyFk());
+        registry.setDesCompanyBranchFk(this.getDesCompanyBranchFk());
         registry.setDesLocalCountryFk(this.getDesLocalCountryFk());
         registry.setDesLocalCurrencyFk(this.getDesLocalCurrencyFk());
         registry.setDesDefaultItemGenericFk(this.getDesDefaultItemGenericFk());

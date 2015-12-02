@@ -6,6 +6,7 @@
 package etla.mod.etl.db;
 
 import java.util.HashMap;
+import sa.lib.SLibUtils;
 
 /**
  *
@@ -13,8 +14,10 @@ import java.util.HashMap;
  */
 public abstract class SEtlConsts {
     
-    public static final int MODE_CAT = 1;
-    public static final int MODE_CAT_INV = 2;
+    public static final boolean SHOW_DEBUG_MSGS = true;
+    
+    public static final int ETL_MODE_CAT = 1;
+    public static final int ETL_MODE_CAT_INV = 2;
     
     public static final int DB_MYSQL = 1;
     public static final int DB_SQL_SERVER = 2;
@@ -23,23 +26,38 @@ public abstract class SEtlConsts {
     public static final int AVISTA_INV_STA_ARC = 3; // archived
     public static final int AVISTA_INV_TP_INV = 1; // invoice
     
+    public static final int AVISTA_CUR_USD = 1;
+    public static final int AVISTA_CUR_MXN = 2;
+    
+    public static final String AVISTA_UOM_MSM = "MSM";
+    public static final String AVISTA_UOM_MSF = "MSF";
+    //public static final String AVISTA_UOM_SQM = "SQM"; // not supported yet
+    //public static final String AVISTA_UOM_SQF = "SQF"; // not supported yet
+    public static final String AVISTA_UOM_PC = "PC";
+    //public static final String AVISTA_UOM_M = "M"; // not supported yet
+    //public static final String AVISTA_UOM_KG = "KG"; // not supported yet
+    public static final String AVISTA_UOM_TON = "TON";
+    
     public static final String AVISTA_PAY_TERM_CNT = "CNT"; // contado
     public static final String AVISTA_BOOL_N = "N"; // no
     public static final String AVISTA_BOOL_Y = "Y"; // yes
     public static final String AVISTA_LOC_CTY = "MX"; // México
     public static final String AVISTA_LOC_STA = "MEX"; // Estado de México
     
+    public static final int SIIE_DEFAULT = 1;
+    public static final String SIIE_PAY_ACC_UNDEF = "NO IDENTIFICADO";
+    public static final int SIIE_UNIT_MSM = 108;
+    public static final int SIIE_UNIT_MSF = 109;
+    public static final int[] SIIE_TAX = new int[] { 1, 6 }; // IVA 16%
+    public static final double SIIE_TAX_RATE = 0.16;
+    
     public static final HashMap<String, String> AvistaCountriesMap = new HashMap<>();
     public static final HashMap<String, String> AvistaStatesMap = new HashMap<>();
     
     static {
         AvistaCountriesMap.put(AVISTA_LOC_CTY, "México");
-        
         AvistaStatesMap.put(AVISTA_LOC_STA, "Estado de México");
     }
-    
-    public static final int SIIE_DEFAULT = 1;
-    public static final String SIIE_PAY_ACC_UNDEF = "NO IDENTIFICADO";
     
     public static final int RFC_LEN_PER = 13;
     public static final int RFC_LEN_ORG = 12;
@@ -63,14 +81,61 @@ public abstract class SEtlConsts {
     public static final int STEP_AUX_ITM_AUX_2 = 2; // items auxiliar step #2
     public static final int STEP_AUX_ITM_AUX_3 = 3; // items auxiliar step #3
     public static final int STEP_ITM_END = 399; // finished ETL items
+
+    public static final int STEP_INV_STA = 400; // starting ETL invoices
+    public static final int STEP_AUX_INV_AUX_10 = 10; // invoices auxiliar step #10
+    public static final int STEP_AUX_INV_AUX_11 = 11; // invoices auxiliar step #11
+    public static final int STEP_AUX_INV_AUX_12 = 12; // invoices auxiliar step #12
+    public static final int STEP_AUX_INV_AUX_13 = 13; // invoices auxiliar step #13
+    public static final int STEP_AUX_INV_AUX_14 = 14; // invoices auxiliar step #14
+    public static final int STEP_AUX_INV_AUX_20 = 20; // invoices auxiliar step #20
+    public static final int STEP_INV_END = 499; // finished ETL invoices
+
+    public static final String TXT_INV = "Factura";
+    public static final String TXT_BRD = "Lámina";
+    public static final String TXT_FLT = "Flauta";
+    public static final String TXT_CUR = "Moneda";
+    public static final String TXT_UOM = "Unidad de medida";
+    public static final String TXT_SAL_AGT = "Agente de ventas";
+    public static final String TXT_CUS = "Cliente";
+    public static final String TXT_ITM = "Ítem";
+    public static final String TXT_EXR = "Tipo de cambio";
+    public static final String TXT_MISC_ID = "ID";
+    public static final String TXT_MISC_DAT = "Fecha";
+    public static final String TXT_MISC_SRC = "Origen";
+    public static final String TXT_MISC_DES = "Destino";
+    public static final String TXT_MISC_REQ = "Requerid@";
+    public static final String TXT_MISC_QTY = "Cantidad";
+    public static final String TXT_MISC_SIZ = "Tamaño";
+    public static final String TXT_MISC_WEI = "Peso";
+    public static final String TXT_MISC_PO = "Orden de compra";
+    public static final String TXT_MISC_PO_ACR = "OC";
+    public static final String TXT_DB_SIIE = "SIIE";
+    public static final String TXT_DB_AVISTA = "Avista";
     
     public static final String MSG_ERR = "Ha ocurrido una excepción ";
-    public static final String MSG_ERR_UNK_CTY = MSG_ERR + "al identificar al país: ";
-    public static final String MSG_ERR_UNK_STA = MSG_ERR + "al identificar al estado: ";
-    public static final String MSG_ERR_SIIE_CUS_QRY = MSG_ERR + "al consultar el registro cliente: ";
-    public static final String MSG_ERR_SIIE_CUS_INS = MSG_ERR + "al insertar el registro cliente: ";
-    public static final String MSG_ERR_SIIE_CUS_UPD = MSG_ERR + "al actualizar el registro cliente: ";
-    public static final String MSG_ERR_SIIE_ITM_QRY = MSG_ERR + "al consultar el registro ítem: ";
-    public static final String MSG_ERR_SIIE_ITM_INS = MSG_ERR + "al insertar el registro ítem: ";
-    public static final String MSG_ERR_SIIE_ITM_UPD = MSG_ERR + "al actualizar el registro ítem: ";
+    public static final String MSG_ERR_UNS_UOM = SLibUtils.textTrim(MSG_ERR) + ": unidad de medida no soportada.";
+    public static final String MSG_ERR_WRG_QTY = SLibUtils.textTrim(MSG_ERR) + ": cantidad igual a cero.";
+    public static final String MSG_ERR_UNK_CTY = MSG_ERR + "al determinar el país: ";
+    public static final String MSG_ERR_UNK_STA = MSG_ERR + "al determinar el estado: ";
+    public static final String MSG_ERR_UNK_CUR = MSG_ERR + "al determinar la moneda: ";
+    public static final String MSG_ERR_UNK_CUR_MLT_ETL = MSG_ERR_UNK_CUR + "múltiples monedas de exportación.";
+    public static final String MSG_ERR_UNK_CUR_MLT_SRC = MSG_ERR_UNK_CUR + "múltiples monedas de origen.";
+    public static final String MSG_ERR_UNK_UOM = MSG_ERR + "al determinar la unidad de medida: ";
+    public static final String MSG_ERR_UNK_SAL_AGT = MSG_ERR + "al determinar el agente de ventas: ";
+    public static final String MSG_ERR_UNK_CUS = MSG_ERR + "al determinar el cliente: ";
+    public static final String MSG_ERR_UNK_ITM = MSG_ERR + "al determinar el ítem: ";
+    public static final String MSG_ERR_UNK_EXR = MSG_ERR + "al determinar el tipo de cambio: ";
+    public static final String MSG_ERR_SIIE_COM_QRY = MSG_ERR + "al consultar el registro SIIE empresa: ";
+    public static final String MSG_ERR_SIIE_COM_INS = MSG_ERR + "al insertar el registro SIIE empresa: ";
+    public static final String MSG_ERR_SIIE_COM_UPD = MSG_ERR + "al actualizar el registro SIIE empresa: ";
+    public static final String MSG_ERR_SIIE_CUS_QRY = MSG_ERR + "al consultar el registro SIIE cliente: ";
+    public static final String MSG_ERR_SIIE_CUS_INS = MSG_ERR + "al insertar el registro SIIE cliente: ";
+    public static final String MSG_ERR_SIIE_CUS_UPD = MSG_ERR + "al actualizar el registro SIIE cliente: ";
+    public static final String MSG_ERR_SIIE_ITM_QRY = MSG_ERR + "al consultar el registro SIIE ítem: ";
+    public static final String MSG_ERR_SIIE_ITM_INS = MSG_ERR + "al insertar el registro SIIE ítem: ";
+    public static final String MSG_ERR_SIIE_ITM_UPD = MSG_ERR + "al actualizar el registro SIIE ítem: ";
+    public static final String MSG_ERR_SIIE_DOC_QRY = MSG_ERR + "al consultar el registro SIIE documento: ";
+    public static final String MSG_ERR_SIIE_DOC_INS = MSG_ERR + "al insertar el registro SIIE documento: ";
+    public static final String MSG_ERR_SIIE_DOC_UPD = MSG_ERR + "al actualizar el registro SIIE documento: ";
 }

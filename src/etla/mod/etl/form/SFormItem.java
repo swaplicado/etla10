@@ -28,7 +28,7 @@ public class SFormItem extends SBeanForm implements ActionListener {
     private SDbItem moRegistry;
     
     /**
-     * Creates new form SFormGroup
+     * Creates new form SFormCustomer
      * @param client
      * @param title
      */
@@ -68,6 +68,7 @@ public class SFormItem extends SBeanForm implements ActionListener {
         jlDesItemId = new javax.swing.JLabel();
         moIntDesItemId = new sa.lib.gui.bean.SBeanFieldInteger();
         jbEditDesItemId = new javax.swing.JButton();
+        jlSiie = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Datos del registro:"));
@@ -136,7 +137,7 @@ public class SFormItem extends SBeanForm implements ActionListener {
 
         jPanel12.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
-        jlDesItemId.setText("ID SIIE:*");
+        jlDesItemId.setText("ID ítem:*");
         jlDesItemId.setPreferredSize(new java.awt.Dimension(100, 23));
         jPanel12.add(jlDesItemId);
         jPanel12.add(moIntDesItemId);
@@ -145,6 +146,11 @@ public class SFormItem extends SBeanForm implements ActionListener {
         jbEditDesItemId.setToolTipText("Modificar");
         jbEditDesItemId.setPreferredSize(new java.awt.Dimension(23, 23));
         jPanel12.add(jbEditDesItemId);
+
+        jlSiie.setForeground(java.awt.Color.gray);
+        jlSiie.setText("(Primary Key SIIE)");
+        jlSiie.setPreferredSize(new java.awt.Dimension(100, 23));
+        jPanel12.add(jlSiie);
 
         jPanel2.add(jPanel12);
 
@@ -170,6 +176,7 @@ public class SFormItem extends SBeanForm implements ActionListener {
     private javax.swing.JLabel jlCode;
     private javax.swing.JLabel jlDesItemId;
     private javax.swing.JLabel jlName;
+    private javax.swing.JLabel jlSiie;
     private javax.swing.JLabel jlSrcCustomer;
     private javax.swing.JLabel jlSrcRequiredCurrency;
     private javax.swing.JLabel jlSrcRequiredUnitOfMeasure;

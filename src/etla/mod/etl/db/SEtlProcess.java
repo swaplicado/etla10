@@ -85,13 +85,17 @@ public abstract class SEtlProcess {
         
         // ETL customers:
         
-        SEtlProcessCustomers.computeEtlCustomers(session, etlPackage);
+        SEtlProcessCatCustomers.computeEtlCustomers(session, etlPackage);
         
         // ETL items:
         
-        SEtlProcessItems.computeEtlItems(session, etlPackage);
+        SEtlProcessCatItems.computeEtlItems(session, etlPackage);
         
         // ETL invoices:
+        
+        if (mode == SEtlConsts.ETL_MODE_CAT_INV) {
+            SEtlProcessDocInvoices.computeEtlInvoices(session, etlPackage);
+        }
         
         // Finishing ETL process:
         

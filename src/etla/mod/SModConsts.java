@@ -29,6 +29,7 @@ public abstract class SModConsts {
     public static final int AS_UOM = 211021;
     public static final int AS_PAY_MET = 211111;
 
+    public static final int AU_SAL_AGT = 212016;
     public static final int AU_CUS = 212021;
     public static final int AU_ITM = 212031;
 
@@ -38,7 +39,7 @@ public abstract class SModConsts {
     public static final int A_EXR = 213061;
     public static final int A_ETL_LOG = 213501;
     
-    public static final int AX_EXP = 215001;
+    public static final int AX_ETL = 215001;
     
     public static final HashMap<Integer, String> TablesMap = new HashMap<>();
 
@@ -57,6 +58,7 @@ public abstract class SModConsts {
         TablesMap.put(AS_UOM, "as_uom");
         TablesMap.put(AS_PAY_MET, "as_pay_met");
 
+        TablesMap.put(AU_SAL_AGT, "au_sal_agt");
         TablesMap.put(AU_CUS, "au_cus");
         TablesMap.put(AU_ITM, "au_itm");
 

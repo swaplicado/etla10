@@ -13,7 +13,6 @@ import etla.mod.SModConsts;
 import etla.mod.cfg.db.SDbConfig;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.text.DecimalFormat;
 import sa.lib.SLibConsts;
 import sa.lib.SLibUtils;
 import sa.lib.gui.SGuiSession;
@@ -38,16 +37,17 @@ public class SEtlProcessCatItems {
         ResultSet resultSetEtl = null;
         ResultSet resultSetSiie = null;
         ResultSet resultSetAvista = null;
-        DecimalFormat decimalFormat = new DecimalFormat("000000");
         SDataItem dataItem = null;
         SDbConfigAvista dbConfigAvista = ((SDbConfig) session.getConfigSystem()).getRegConfigAvista();
         SDbItem dbItem = null;
-        SEtlCatalogs etlCatalogs = new SEtlCatalogs(session);
+        SEtlCatalogs etlCatalogs = null;
         
         etlPackage.EtlLog.setStep(SEtlConsts.STEP_ITM_STA);
         
         etlPackage.EtlLog.setStepAux(SEtlConsts.STEP_AUX_NA);
         etlPackage.EtlLog.save(session);
+        
+        etlCatalogs = new SEtlCatalogs(session, false, false);
         
         // Obtain items list from Avista:
         
@@ -65,7 +65,7 @@ public class SEtlProcessCatItems {
         while (resultSetAvista.next()) {
             /****************************************************************/
             if (SEtlConsts.SHOW_DEBUG_MSGS) {
-                System.out.println(resultSetAvista.getString("ShortDesc"));
+                System.out.println(SEtlConsts.TXT_ITM + ": " + resultSetAvista.getString("ShortDesc") + " " + resultSetAvista.getString("Flute"));
             }
             /****************************************************************/
             
@@ -76,7 +76,7 @@ public class SEtlProcessCatItems {
 
             nSiieItemAliveId = 0;
             nSiieItemDeletedId = 0;
-            sItemCode = dbConfigAvista.getDesItemCodePrefix() + "-" + decimalFormat.format(resultSetAvista.getInt("PlantBoardTypeKey")) + "-" + resultSetAvista.getString("Flute");
+            sItemCode = SEtlUtils.composeItemCode(dbConfigAvista.getDesItemCodePrefix(), resultSetAvista.getInt("PlantBoardTypeKey"), resultSetAvista.getString("Flute"));
             sItemName = SLibUtils.textTrim(resultSetAvista.getString("ShortDesc")) + " " + resultSetAvista.getString("Flute");
             
             sql = "SELECT id_item, b_del "

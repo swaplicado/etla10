@@ -86,14 +86,19 @@
             </MenuItem>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="jsEtl2">
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jmiEtlItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="&#xcd;tems"/>
+              </Properties>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jmiEtlCustomer">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Clientes"/>
               </Properties>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jmiEtlItem">
+            <MenuItem class="javax.swing.JMenuItem" name="jmiEtlSalesAgent">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#xcd;tems"/>
+                <Property name="text" type="java.lang.String" value="Agentes ventas"/>
               </Properties>
             </MenuItem>
           </SubComponents>

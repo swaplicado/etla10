@@ -31,7 +31,7 @@ public class SDialogExport extends SBeanFormDialog implements ItemListener {
      * Creates new form SDialogExport
      */
     public SDialogExport(SGuiClient client, String title) {
-        setFormSettings(client, SGuiConsts.BEAN_FORM_EDIT, SModConsts.AX_EXP, SLibConsts.UNDEFINED, title);
+        setFormSettings(client, SGuiConsts.BEAN_FORM_EDIT, SModConsts.AX_ETL, SLibConsts.UNDEFINED, title);
         initComponents();
         initComponentsCustom();
     }
@@ -245,7 +245,7 @@ public class SDialogExport extends SBeanFormDialog implements ItemListener {
                     
                     SEtlProcess.computeEtl(
                             miClient.getSession(), 
-                            moRadModeCat.isSelected() ? SEtlConsts.MODE_CAT : SEtlConsts.MODE_CAT_INV, 
+                            moRadModeCat.isSelected() ? SEtlConsts.ETL_MODE_CAT : SEtlConsts.ETL_MODE_CAT_INV, 
                             moDatePeriodStart.getValue(), 
                             moDatePeriodEnd.getValue(), 
                             moDateIssue.getValue());

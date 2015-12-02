@@ -139,8 +139,9 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
         jsEtl1 = new javax.swing.JPopupMenu.Separator();
         jmiEtlInvoice = new javax.swing.JMenuItem();
         jsEtl2 = new javax.swing.JPopupMenu.Separator();
-        jmiEtlCustomer = new javax.swing.JMenuItem();
         jmiEtlItem = new javax.swing.JMenuItem();
+        jmiEtlCustomer = new javax.swing.JMenuItem();
+        jmiEtlSalesAgent = new javax.swing.JMenuItem();
         jmHelp = new javax.swing.JMenu();
         jmiHelpHelp = new javax.swing.JMenuItem();
         jsHelp1 = new javax.swing.JPopupMenu.Separator();
@@ -272,11 +273,14 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
         jmEtl.add(jmiEtlInvoice);
         jmEtl.add(jsEtl2);
 
+        jmiEtlItem.setText("Ítems");
+        jmEtl.add(jmiEtlItem);
+
         jmiEtlCustomer.setText("Clientes");
         jmEtl.add(jmiEtlCustomer);
 
-        jmiEtlItem.setText("Ítems");
-        jmEtl.add(jmiEtlItem);
+        jmiEtlSalesAgent.setText("Agentes ventas");
+        jmEtl.add(jmiEtlSalesAgent);
 
         jMenuBar.add(jmEtl);
 
@@ -383,6 +387,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
     private javax.swing.JMenuItem jmiEtlExchangeRate;
     private javax.swing.JMenuItem jmiEtlInvoice;
     private javax.swing.JMenuItem jmiEtlItem;
+    private javax.swing.JMenuItem jmiEtlSalesAgent;
     private javax.swing.JMenuItem jmiFileCloseSession;
     private javax.swing.JMenuItem jmiFileCloseViewsAll;
     private javax.swing.JMenuItem jmiFileCloseViewsOther;
@@ -483,8 +488,9 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
         jmiEtlExchangeRate.addActionListener(this);
         jmiEtlEtl.addActionListener(this);
         jmiEtlInvoice.addActionListener(this);
-        jmiEtlCustomer.addActionListener(this);
         jmiEtlItem.addActionListener(this);
+        jmiEtlCustomer.addActionListener(this);
+        jmiEtlSalesAgent.addActionListener(this);
         
         jmiHelpHelp.addActionListener(this);
         jmiHelpAbout.addActionListener(this);
@@ -955,11 +961,14 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
             else if (menuItem == jmiEtlInvoice) {
                 moSession.showView(SModConsts.A_INV, SLibConsts.UNDEFINED, null);
             }
+            else if (menuItem == jmiEtlItem) {
+                moSession.showView(SModConsts.AU_ITM, SLibConsts.UNDEFINED, null);
+            }
             else if (menuItem == jmiEtlCustomer) {
                 moSession.showView(SModConsts.AU_CUS, SLibConsts.UNDEFINED, null);
             }
-            else if (menuItem == jmiEtlItem) {
-                moSession.showView(SModConsts.AU_ITM, SLibConsts.UNDEFINED, null);
+            else if (menuItem == jmiEtlSalesAgent) {
+                moSession.showView(SModConsts.AU_SAL_AGT, SLibConsts.UNDEFINED, null);
             }
             else if (menuItem == jmiHelpHelp) {
                 actionHelpHelp();

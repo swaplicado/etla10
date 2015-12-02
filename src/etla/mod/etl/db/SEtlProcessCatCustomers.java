@@ -34,6 +34,8 @@ public abstract class SEtlProcessCatCustomers {
         int nBizPartnerId = 0;
         int nBizPartnerAliveId = 0;
         int nBizPartnerDeletedId = 0;
+        int nBizPartnerBranchId = 0;
+        int nSalesAgentId = 0;
         int nCustomerId = 0;
         int nAvistaCurrencyCustomerFk = 0;
         String sAvistaCountry = "";
@@ -64,20 +66,92 @@ public abstract class SEtlProcessCatCustomers {
         SDbSysUnitOfMeasure dbSysUnitOfMeasureCustomer = null;
         SDbSysUnitOfMeasure dbSysUnitOfMeasureRequired = null;
         SDbConfigAvista dbConfigAvista = ((SDbConfig) session.getConfigSystem()).getRegConfigAvista();
+        SDbSalesAgent dbSalesAgent = null;
         SDbCustomer dbCustomer = null;
-        SEtlCatalogs etlCatalogs = new SEtlCatalogs(session);
+        SEtlCatalogs etlCatalogs = null;
         
         etlPackage.EtlLog.setStep(SEtlConsts.STEP_CUS_STA);
         
         etlPackage.EtlLog.setStepAux(SEtlConsts.STEP_AUX_NA);
         etlPackage.EtlLog.save(session);
         
+        // Obtain sales agents list from Avista:
+        
+        sql = "SELECT DISTINCT c.SalesUserKey, u.UserId, u.FullName "
+                + "FROM dbo.CustomerInvoices AS ci "
+                + "INNER JOIN dbo.Customers AS c ON c.CustomerId=ci.CustomerId "
+                + "INNER JOIN dbo.Users AS u ON u.UserKey=c.SalesUserKey "
+                + "WHERE CAST(ci.Created AS DATE) BETWEEN '" + SLibUtils.DbmsDateFormatDate.format(etlPackage.PeriodStart) + "' AND '" + SLibUtils.DbmsDateFormatDate.format(etlPackage.PeriodEnd) + "' AND "
+                + "ci.CurrentStatusKey IN (" + SEtlConsts.AVISTA_INV_STA_APP + ", " + SEtlConsts.AVISTA_INV_STA_ARC + ") AND "
+                + "ci.CustomerInvoiceTypeKey=" + SEtlConsts.AVISTA_INV_TP_INV + " "
+                + "ORDER BY c.SalesUserKey, u.UserId ";
+        resultSetAvista = statementAvista.executeQuery(sql);
+        while (resultSetAvista.next()) {
+            /****************************************************************/
+            if (SEtlConsts.SHOW_DEBUG_MSGS) {
+                System.out.println(SEtlConsts.TXT_SAL_AGT + ": " + resultSetAvista.getString("FullName"));
+            }
+            /****************************************************************/
+            
+            // From Avista obtain sales agent:
+            
+            nSalesAgentId = 0;
+            
+            sql = "SELECT id_sal_agt "
+                    + "FROM " + SModConsts.TablesMap.get(SModConsts.AU_SAL_AGT) + " "
+                    + "WHERE src_sal_agt_id='" + resultSetAvista.getString("SalesUserKey") + "' "
+                    + "ORDER BY id_sal_agt ";
+            resultSetEtl = statementEtl.executeQuery(sql);
+            if (resultSetEtl.next()) {
+                nSalesAgentId = resultSetEtl.getInt(1);
+            }
+            
+            try {
+                if (nSalesAgentId == 0) {
+                    // Sales agent is new on ETL:
+
+                    statementEtl.execute("START TRANSACTION");
+                    
+                    dbSalesAgent = new SDbSalesAgent(); // set on save
+                    //dbSalesAgent.setPkSalesAgentId(...); // set on save
+                    dbSalesAgent.setSrcSalesAgentId(resultSetAvista.getInt("SalesUserKey"));
+                    //dbSalesAgent.setDesSalesAgentId(..); // user defined
+                    dbSalesAgent.setCode(resultSetAvista.getString("UserId"));
+                    dbSalesAgent.setName(resultSetAvista.getString("FullName"));
+                    //dbSalesAgent.setFirstEtlInsert(...); // set on save
+                    //dbSalesAgent.setLastEtlUpdate(...); // set on save
+                    dbSalesAgent.setDeleted(false);
+                    dbSalesAgent.setSystem(false);
+                    dbSalesAgent.setFkLastEtlLogId(etlPackage.EtlLog.getPkEtlLogId());
+                    //dbSalesAgent.setFkUserInsertId(...); // set on save
+                    //dbSalesAgent.setFkUserUpdateId(...); // set on save
+                    //dbSalesAgent.setTsUserInsert(...); // set on save
+                    //dbSalesAgent.setTsUserUpdate(...); // set on save
+                    
+                    dbSalesAgent.save(session);
+                    
+                    statementEtl.execute("COMMIT");
+                }
+                else {
+                    // Sales agent already exists on ETL:
+
+                    //dbSalesAgent = new SDbSalesAgent();
+                }
+            }
+            catch (Exception e) {
+                statementEtl.execute("ROLLBACK");
+                throw e;
+            }
+        }
+        
+        etlCatalogs = new SEtlCatalogs(session, true, false);
+        
         // Obtain customers list from Avista:
         
         sql = "SELECT DISTINCT c.CustomerId, c.TaxId, c.CustomerNumber, c.CustomerName, c.ShortName, c.Active, c.DeletedFlag, "
                 + "c.Address1, c.Address2, c.Address3, c.AddressInternalNumber, c.County AS Neighborhood, c.City, c.District AS County, "
                 + "c.State, sc.StateDescription, c.Country, cc.CountryDescription, c.Zip, c.Phone, c.Fax, "
-                + "c.AddressReference, c.PayTermCode, c.CreditLimit, c.CreditStatusCode, c.DefaultPricePerCode, c.CurrencyKey "
+                + "c.AddressReference, c.PayTermCode, c.CreditLimit, c.CreditStatusCode, c.DefaultPricePerCode, c.CurrencyKey, c.SalesUserKey "
                 + "FROM dbo.CustomerInvoices AS ci "
                 + "INNER JOIN dbo.Customers AS c ON c.CustomerId=ci.CustomerId "
                 + "LEFT OUTER JOIN dbo.StateCodes AS sc ON sc.StateCode=c.State "
@@ -90,7 +164,7 @@ public abstract class SEtlProcessCatCustomers {
         while (resultSetAvista.next()) {
             /****************************************************************/
             if (SEtlConsts.SHOW_DEBUG_MSGS) {
-                System.out.println(resultSetAvista.getString("CustomerName"));
+                System.out.println(SEtlConsts.TXT_CUS + ": " + resultSetAvista.getString("CustomerName"));
             }
             /****************************************************************/
             
@@ -152,6 +226,13 @@ public abstract class SEtlProcessCatCustomers {
             else {
                 dbSysUnitOfMeasureCustomer = etlCatalogs.getEtlUnitOfMeasure(etlCatalogs.getEtlIdForUnitOfMeasure(sAvistaUnitOfMeasureCustomerFk));
                 dbSysUnitOfMeasureRequired = dbSysUnitOfMeasureCustomer.getPkUnitOfMeasureId() == dbConfigAvista.getFkSrcDefaultUnitOfMeasureId() ? null : dbSysUnitOfMeasureCustomer;
+            }
+            
+            // Select customer's sales agent:
+            
+            dbSalesAgent = etlCatalogs.getEtlSalesAgent(etlCatalogs.getEtlIdForSalesAgent(resultSetAvista.getInt("SalesUserKey")));
+            if (dbSalesAgent != null && dbSalesAgent.getDesSalesAgentId() == 0) {
+                throw new Exception(SEtlConsts.MSG_ERR_UNK_SAL_AGT + "'" + dbSalesAgent.getName() + "' (" + SEtlConsts.TXT_CUS + "='" + SLibUtils.textTrim(resultSetAvista.getString("CustomerName")) + "').");
             }
 
             // From SIIE, obtain oldest business partner, alive and deleted ones, both of them when possible:
@@ -284,7 +365,7 @@ public abstract class SEtlProcessCatCustomers {
                     dataBizPartnerCustomerConfig.setFkMarketSegmentId(SEtlConsts.SIIE_DEFAULT);
                     dataBizPartnerCustomerConfig.setFkMarketSubsegmentId(SEtlConsts.SIIE_DEFAULT);
                     dataBizPartnerCustomerConfig.setFkDistributionChannelId(SEtlConsts.SIIE_DEFAULT);
-                    dataBizPartnerCustomerConfig.setFkSalesAgentId_n(SLibConsts.UNDEFINED);
+                    dataBizPartnerCustomerConfig.setFkSalesAgentId_n(dbSalesAgent == null ? SLibConsts.UNDEFINED : dbSalesAgent.getDesSalesAgentId());
                     dataBizPartnerCustomerConfig.setFkSalesSupervisorId_n(SLibConsts.UNDEFINED);
                     dataBizPartnerCustomerConfig.setFkUserNewId(SDataConstantsSys.USRX_USER_NA);
                     dataBizPartnerCustomerConfig.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
@@ -438,6 +519,7 @@ public abstract class SEtlProcessCatCustomers {
                     }
                 }
                 
+                nBizPartnerBranchId = dataBizPartner.getDbmsHqBranch().getPkBizPartnerBranchId();
             }
             catch (Exception e) {
                 statementSiie.execute("ROLLBACK");
@@ -470,6 +552,7 @@ public abstract class SEtlProcessCatCustomers {
                     //dbCustomersetPkCustomerId(...); // set on save
                     dbCustomer.setSrcCustomerId(resultSetAvista.getString("CustomerId"));
                     dbCustomer.setDesCustomerId(nBizPartnerId); // user defined, but default value set
+                    dbCustomer.setDesCustomerBranchId(nBizPartnerBranchId); // user defined, but default value set
                     dbCustomer.setCode(SLibUtils.textTrim(resultSetAvista.getString("CustomerNumber")));
                     dbCustomer.setName(SLibUtils.textTrim(resultSetAvista.getString("CustomerName")).replaceAll("'", "''"));
                     dbCustomer.setNameShort(SLibUtils.textTrim(resultSetAvista.getString("ShortName")).replaceAll("'", "''"));
@@ -495,6 +578,7 @@ public abstract class SEtlProcessCatCustomers {
                     dbCustomer.setPayTermCode(SLibUtils.textTrim(resultSetAvista.getString("PayTermCode")));
                     dbCustomer.setSrcCustomerCurrencyFk_n(nAvistaCurrencyCustomerFk);
                     dbCustomer.setSrcCustomerUnitOfMeasureFk_n(sAvistaUnitOfMeasureCustomerFk);
+                    dbCustomer.setSrcCustomerSalesAgentFk_n(resultSetAvista.getInt("SalesUserKey"));
                     dbCustomer.setSrcRequiredCurrencyFk_n(dbSysCurrencyRequired == null ? SLibConsts.UNDEFINED : dbSysCurrencyRequired.getSrcCurrencyId()); // user defined, but default value set
                     dbCustomer.setSrcRequiredUnitOfMeasureFk_n(dbSysUnitOfMeasureRequired == null ? "" : dbSysUnitOfMeasureRequired.getSrcUnitOfMeasureId()); // user defined, but default value set
                     //dbCustomersetFirstEtlInsert(...); // set on save
@@ -504,6 +588,7 @@ public abstract class SEtlProcessCatCustomers {
                     dbCustomer.setSystem(false);
                     dbCustomer.setFkSrcCustomerCurrencyId_n(dbSysCurrencyCustomer == null ? SLibConsts.UNDEFINED : dbSysCurrencyCustomer.getPkCurrencyId());
                     dbCustomer.setFkSrcCustomerUnitOfMeasureId_n(dbSysUnitOfMeasureCustomer == null ? SLibConsts.UNDEFINED : dbSysUnitOfMeasureCustomer.getPkUnitOfMeasureId());
+                    dbCustomer.setFkSrcCustomerSalesAgentId_n(dbSalesAgent == null ? SLibConsts.UNDEFINED : dbSalesAgent.getPkSalesAgentId());
                     dbCustomer.setFkSrcRequiredCurrencyId_n(dbSysCurrencyRequired == null ? SLibConsts.UNDEFINED : dbSysCurrencyRequired.getPkCurrencyId()); // user defined, but default value set
                     dbCustomer.setFkSrcRequiredUnitOfMeasureId_n(dbSysUnitOfMeasureRequired == null ? SLibConsts.UNDEFINED : dbSysUnitOfMeasureRequired.getPkUnitOfMeasureId()); // user defined, but default value set
                     dbCustomer.setFkDesRequiredPayMethodId_n(SLibConsts.UNDEFINED);
@@ -537,6 +622,7 @@ public abstract class SEtlProcessCatCustomers {
         etlPackage.EtlLog.setStepAux(SEtlConsts.STEP_AUX_NA);
         etlPackage.EtlLog.save(session);
         
+        session.notifySuscriptors(SModConsts.AU_SAL_AGT);
         session.notifySuscriptors(SModConsts.AU_CUS);
     }
 }
