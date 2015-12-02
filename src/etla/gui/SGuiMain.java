@@ -7,7 +7,7 @@ import etla.mod.SModUtils;
 import etla.mod.cfg.db.SDbConfig;
 import etla.mod.cfg.db.SDbUser;
 import etla.mod.cfg.db.SDbUserGui;
-import etla.mod.etl.form.SDialogExport;
+import etla.mod.etl.form.SDialogEtl;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -711,7 +711,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
     }
 
     private void actionEtlEtl() {
-        SDialogExport dialog = new SDialogExport(this, "Exportación a SIIE");
+        SDialogEtl dialog = new SDialogEtl(this, "Exportación a SIIE");
         dialog.initForm();
         dialog.setVisible(true);
     }
