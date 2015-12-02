@@ -71,7 +71,7 @@ public abstract class SEtlUtils {
         SDbConfigAvista configAvista = ((SDbConfig) session.getConfigSystem()).getRegConfigAvista();
         
         sql = "SELECT COALESCE(MAX(CAST(num AS SIGNED)) + 1, 0) "
-                + "FROM th.trn_dps "
+                + "FROM trn_dps "
                 + "WHERE num_ser='" + configAvista.getInvoiceSeries() + "' AND "
                 + "fid_ct_dps=" + SModSysConsts.TRNU_TP_DPS_SAL_INV[0] + " AND "
                 + "fid_cl_dps=" + SModSysConsts.TRNU_TP_DPS_SAL_INV[1] + " AND "
