@@ -31,11 +31,11 @@ public abstract class SEtlConsts {
     
     public static final String AVISTA_UOM_MSM = "MSM";
     public static final String AVISTA_UOM_MSF = "MSF";
-    //public static final String AVISTA_UOM_SQM = "SQM"; // not supported yet
-    //public static final String AVISTA_UOM_SQF = "SQF"; // not supported yet
+    public static final String AVISTA_UOM_SQM = "SQM"; // not supported yet
+    public static final String AVISTA_UOM_SQF = "SQF"; // not supported yet
     public static final String AVISTA_UOM_PC = "PC";
-    //public static final String AVISTA_UOM_M = "M"; // not supported yet
-    //public static final String AVISTA_UOM_KG = "KG"; // not supported yet
+    public static final String AVISTA_UOM_M = "M"; // not supported yet
+    public static final String AVISTA_UOM_KG = "KG"; // not supported yet
     public static final String AVISTA_UOM_TON = "TON";
     
     public static final String AVISTA_PAY_TERM_CNT = "CNT"; // contado

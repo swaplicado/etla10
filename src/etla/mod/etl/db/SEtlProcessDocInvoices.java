@@ -795,7 +795,7 @@ public class SEtlProcessDocInvoices {
                         //dataDpsEntryNotes.setPkNotesId(...);
                         dataDpsEntryNotes.setNotes(
                                 "CANT. SOL/EMB: " + row.getQuantityOrdered() + "/" + row.getQuantity() + "; "
-                                        + SEtlConsts.TXT_MISC_WEI.toUpperCase() + ": " + SLibUtils.getDecimalFormatQuantity().format(dEntryWeight) + "; "
+                                        + SEtlConsts.TXT_MISC_WEI.toUpperCase() + ": " + SLibUtils.getDecimalFormatQuantity().format(dEntryWeight) + " " + SEtlConsts.AVISTA_UOM_KG + "; "
                                         + row.getEstimateNumber());
                         dataDpsEntryNotes.setIsAllDocs(true);
                         dataDpsEntryNotes.setIsPrintable(true);
