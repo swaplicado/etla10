@@ -6,6 +6,8 @@
 package etla.mod.etl.form;
 
 import etla.mod.SModConsts;
+import etla.mod.cfg.db.SDbConfig;
+import etla.mod.etl.db.SDbConfigAvista;
 import etla.mod.etl.db.SDbItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -61,9 +63,11 @@ public class SFormItem extends SBeanForm implements ActionListener {
         jPanel6 = new javax.swing.JPanel();
         jlSrcRequiredCurrency = new javax.swing.JLabel();
         moKeySrcRequiredCurrency = new sa.lib.gui.bean.SBeanFieldKey();
+        jtfDefaultCurrency = new javax.swing.JTextField();
         jPanel11 = new javax.swing.JPanel();
         jlSrcRequiredUnitOfMeasure = new javax.swing.JLabel();
         moKeySrcRequiredUnitOfMeasure = new sa.lib.gui.bean.SBeanFieldKey();
+        jtfDefaultUnitOfMeasure = new javax.swing.JTextField();
         jPanel12 = new javax.swing.JPanel();
         jlDesItemId = new javax.swing.JLabel();
         moIntDesItemId = new sa.lib.gui.bean.SBeanFieldInteger();
@@ -122,6 +126,12 @@ public class SFormItem extends SBeanForm implements ActionListener {
         moKeySrcRequiredCurrency.setPreferredSize(new java.awt.Dimension(300, 23));
         jPanel6.add(moKeySrcRequiredCurrency);
 
+        jtfDefaultCurrency.setEditable(false);
+        jtfDefaultCurrency.setToolTipText("Moneda predeterminada");
+        jtfDefaultCurrency.setFocusable(false);
+        jtfDefaultCurrency.setPreferredSize(new java.awt.Dimension(100, 23));
+        jPanel6.add(jtfDefaultCurrency);
+
         jPanel2.add(jPanel6);
 
         jPanel11.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
@@ -132,6 +142,12 @@ public class SFormItem extends SBeanForm implements ActionListener {
 
         moKeySrcRequiredUnitOfMeasure.setPreferredSize(new java.awt.Dimension(300, 23));
         jPanel11.add(moKeySrcRequiredUnitOfMeasure);
+
+        jtfDefaultUnitOfMeasure.setEditable(false);
+        jtfDefaultUnitOfMeasure.setToolTipText("Unidad predeterminada");
+        jtfDefaultUnitOfMeasure.setFocusable(false);
+        jtfDefaultUnitOfMeasure.setPreferredSize(new java.awt.Dimension(100, 23));
+        jPanel11.add(jtfDefaultUnitOfMeasure);
 
         jPanel2.add(jPanel11);
 
@@ -181,6 +197,8 @@ public class SFormItem extends SBeanForm implements ActionListener {
     private javax.swing.JLabel jlSrcRequiredCurrency;
     private javax.swing.JLabel jlSrcRequiredUnitOfMeasure;
     private javax.swing.JTextField jtfCode;
+    private javax.swing.JTextField jtfDefaultCurrency;
+    private javax.swing.JTextField jtfDefaultUnitOfMeasure;
     private javax.swing.JTextField jtfName;
     private sa.lib.gui.bean.SBeanFieldInteger moIntDesItemId;
     private sa.lib.gui.bean.SBeanFieldKey moKeySrcCustomer;
@@ -193,7 +211,9 @@ public class SFormItem extends SBeanForm implements ActionListener {
      */
     
     private void initComponentsCustom() {
-        SGuiUtils.setWindowBounds(this, 480, 300);
+        SDbConfigAvista configAvista = ((SDbConfig) miClient.getSession().getConfigSystem()).getRegConfigAvista();
+        
+        SGuiUtils.setWindowBounds(this, 560, 350);
         
         moKeySrcCustomer.setKeySettings(miClient, SGuiUtils.getLabelName(jlSrcCustomer), false);
         moKeySrcRequiredCurrency.setKeySettings(miClient, SGuiUtils.getLabelName(jlSrcRequiredCurrency), false);
@@ -206,6 +226,12 @@ public class SFormItem extends SBeanForm implements ActionListener {
         moFields.addField(moIntDesItemId);
         
         moFields.setFormButton(jbSave);
+        
+        jtfDefaultCurrency.setText((String) miClient.getSession().readField(SModConsts.AS_CUR, new int[] { configAvista.getFkSrcDefaultCurrencyId() }, SDbRegistry.FIELD_CODE));
+        jtfDefaultUnitOfMeasure.setText((String) miClient.getSession().readField(SModConsts.AS_UOM, new int[] { configAvista.getFkSrcDefaultUnitOfMeasureId() }, SDbRegistry.FIELD_CODE));
+        
+        jtfDefaultCurrency.setCaretPosition(0);
+        jtfDefaultUnitOfMeasure.setCaretPosition(0);
     }
 
     private void enableEditDesItemId(boolean enable) {

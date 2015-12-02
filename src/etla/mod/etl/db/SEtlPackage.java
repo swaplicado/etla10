@@ -20,6 +20,7 @@ public class SEtlPackage {
     Date PeriodStart;
     Date PeriodEnd;
     Date Issue;
+    boolean UpdateData;
     
     public SEtlPackage() {
         EtlLog = null;
@@ -28,5 +29,6 @@ public class SEtlPackage {
         PeriodStart = null;
         PeriodEnd = null;
         Issue = null;
+        UpdateData = true;
     }
 }

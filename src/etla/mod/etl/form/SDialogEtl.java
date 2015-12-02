@@ -55,10 +55,20 @@ public class SDialogEtl extends SBeanFormDialog {
         jPanel4 = new javax.swing.JPanel();
         jlDatePeriodEnd = new javax.swing.JLabel();
         moDatePeriodEnd = new sa.lib.gui.bean.SBeanFieldDate();
+        jPanel5 = new javax.swing.JPanel();
+        jPanel8 = new javax.swing.JPanel();
+        jPanel9 = new javax.swing.JPanel();
+        sBeanFieldBoolean1 = new sa.lib.gui.bean.SBeanFieldBoolean();
+        jPanel10 = new javax.swing.JPanel();
+        sBeanFieldRadio1 = new sa.lib.gui.bean.SBeanFieldRadio();
+        jLabel1 = new javax.swing.JLabel();
+        jPanel11 = new javax.swing.JPanel();
+        sBeanFieldRadio2 = new sa.lib.gui.bean.SBeanFieldRadio();
+        jLabel2 = new javax.swing.JLabel();
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Parámetros de exportación:"));
-        jPanel1.setLayout(new java.awt.BorderLayout());
+        jPanel1.setLayout(new java.awt.BorderLayout(0, 5));
 
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Parámetros de exportación:"));
         jPanel2.setLayout(new java.awt.GridLayout(4, 0, 0, 5));
 
         jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
@@ -99,24 +109,80 @@ public class SDialogEtl extends SBeanFormDialog {
 
         jPanel1.add(jPanel2, java.awt.BorderLayout.NORTH);
 
+        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Criterio de actualización de catálogos:"));
+        jPanel5.setLayout(new java.awt.BorderLayout());
+
+        jPanel8.setLayout(new java.awt.GridLayout(3, 1, 0, 5));
+
+        jPanel9.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
+
+        sBeanFieldBoolean1.setText("Actualizar catálogos exportados anteriormente");
+        sBeanFieldBoolean1.setEnabled(false);
+        sBeanFieldBoolean1.setPreferredSize(new java.awt.Dimension(300, 23));
+        jPanel9.add(sBeanFieldBoolean1);
+
+        jPanel8.add(jPanel9);
+
+        jPanel10.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
+
+        sBeanFieldRadio1.setText("Actualizar selectivamente");
+        sBeanFieldRadio1.setEnabled(false);
+        sBeanFieldRadio1.setPreferredSize(new java.awt.Dimension(150, 23));
+        jPanel10.add(sBeanFieldRadio1);
+
+        jLabel1.setForeground(java.awt.Color.gray);
+        jLabel1.setText("(Últimos cambios realizados por usuarios se conservan)");
+        jLabel1.setPreferredSize(new java.awt.Dimension(300, 23));
+        jPanel10.add(jLabel1);
+
+        jPanel8.add(jPanel10);
+
+        jPanel11.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
+
+        sBeanFieldRadio2.setText("Actualizar siempre");
+        sBeanFieldRadio2.setEnabled(false);
+        sBeanFieldRadio2.setPreferredSize(new java.awt.Dimension(150, 23));
+        jPanel11.add(sBeanFieldRadio2);
+
+        jLabel2.setForeground(java.awt.Color.gray);
+        jLabel2.setText("(Últimos cambios realizados por usuarios se pierden)");
+        jLabel2.setPreferredSize(new java.awt.Dimension(300, 23));
+        jPanel11.add(jLabel2);
+
+        jPanel8.add(jPanel11);
+
+        jPanel5.add(jPanel8, java.awt.BorderLayout.NORTH);
+
+        jPanel1.add(jPanel5, java.awt.BorderLayout.CENTER);
+
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup bgMode;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JLabel jlDatePeriodEnd;
     private javax.swing.JLabel jlDatePeriodStart;
     private sa.lib.gui.bean.SBeanFieldDate moDatePeriodEnd;
     private sa.lib.gui.bean.SBeanFieldDate moDatePeriodStart;
     private sa.lib.gui.bean.SBeanFieldRadio moRadModeCat;
     private sa.lib.gui.bean.SBeanFieldRadio moRadModeCatInv;
+    private sa.lib.gui.bean.SBeanFieldBoolean sBeanFieldBoolean1;
+    private sa.lib.gui.bean.SBeanFieldRadio sBeanFieldRadio1;
+    private sa.lib.gui.bean.SBeanFieldRadio sBeanFieldRadio2;
     // End of variables declaration//GEN-END:variables
 
     /*
@@ -205,7 +271,8 @@ public class SDialogEtl extends SBeanFormDialog {
                             moRadModeCat.isSelected() ? SEtlConsts.ETL_MODE_CAT : SEtlConsts.ETL_MODE_CAT_INV, 
                             moDatePeriodStart.getValue(), 
                             moDatePeriodEnd.getValue(), 
-                            miClient.getSession().getSystemDate());
+                            miClient.getSession().getSystemDate(), 
+                            sBeanFieldBoolean1.getValue());
                     
                     miClient.showMsgBoxInformation(SLibConsts.MSG_PROCESS_FINISHED);
                     

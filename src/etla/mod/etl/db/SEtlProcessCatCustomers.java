@@ -75,7 +75,7 @@ public abstract class SEtlProcessCatCustomers {
         etlPackage.EtlLog.setStepAux(SEtlConsts.STEP_AUX_NA);
         etlPackage.EtlLog.save(session);
         
-        // Obtain sales agents list from Avista:
+        // I. Obtain sales agents list from Avista:
         
         sql = "SELECT DISTINCT c.SalesUserKey, u.UserId, u.FullName "
                 + "FROM dbo.CustomerInvoices AS ci "
@@ -146,7 +146,7 @@ public abstract class SEtlProcessCatCustomers {
         
         etlCatalogs = new SEtlCatalogs(session, true, false);
         
-        // Obtain customers list from Avista:
+        // II. Obtain customers list from Avista:
         
         sql = "SELECT DISTINCT c.CustomerId, c.TaxId, c.CustomerNumber, c.CustomerName, c.ShortName, c.Active, c.DeletedFlag, "
                 + "c.Address1, c.Address2, c.Address3, c.AddressInternalNumber, c.County AS Neighborhood, c.City, c.District AS County, "
@@ -235,11 +235,13 @@ public abstract class SEtlProcessCatCustomers {
                 throw new Exception(SEtlConsts.MSG_ERR_UNK_SAL_AGT + "'" + dbSalesAgent.getName() + "' (" + SEtlConsts.TXT_CUS + "='" + SLibUtils.textTrim(resultSetAvista.getString("CustomerName")) + "').");
             }
 
-            // From SIIE, obtain oldest business partner, alive and deleted ones, both of them when possible:
+            // II.1. Export business partner to SIIE:
             
             etlPackage.EtlLog.setStepAux(SEtlConsts.STEP_AUX_CUS_AUX_1);
             etlPackage.EtlLog.save(session);
 
+            // From SIIE, obtain oldest business partner, alive and deleted ones, both of them when possible:
+            
             nBizPartnerAliveId = 0;
             nBizPartnerDeletedId = 0;
             bIsBizPartnerPerson = resultSetAvista.getString("TaxId").length() == SEtlConsts.RFC_LEN_PER || resultSetAvista.getString("TaxId").isEmpty();
@@ -278,7 +280,6 @@ public abstract class SEtlProcessCatCustomers {
                 nBizPartnerId = nBizPartnerAliveId != 0 ? nBizPartnerAliveId : nBizPartnerDeletedId;
 
                 if (nBizPartnerId == 0) {
-                    // Business partner is new on SIIE:
 
                     statementSiie.execute("START TRANSACTION");
 
@@ -526,10 +527,12 @@ public abstract class SEtlProcessCatCustomers {
                 throw e;
             }
             
-            // From Avista obtain customer:
+            // II.2. Export business partner to ETL:
             
             etlPackage.EtlLog.setStepAux(SEtlConsts.STEP_AUX_CUS_AUX_2);
             etlPackage.EtlLog.save(session);
+            
+            // From Avista obtain customer:
             
             nCustomerId = 0;
             

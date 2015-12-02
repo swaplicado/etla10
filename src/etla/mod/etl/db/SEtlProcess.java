@@ -18,7 +18,7 @@ import sa.lib.gui.SGuiSession;
  */
 public abstract class SEtlProcess {
     
-    public static void computeEtl(final SGuiSession session, final int mode, final Date periodStart, final Date periodEnd, final Date issue) throws Exception {
+    public static void computeEtl(final SGuiSession session, final int mode, final Date periodStart, final Date periodEnd, final Date issue, final boolean updateData) throws Exception {
         SDbEtlLog etlLog = new SDbEtlLog();
         SDbConfig config = (SDbConfig) session.getConfigSystem();
         SDbConfigAvista configAvista = config.getRegConfigAvista();

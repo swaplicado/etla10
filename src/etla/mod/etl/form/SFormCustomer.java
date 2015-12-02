@@ -6,6 +6,8 @@
 package etla.mod.etl.form;
 
 import etla.mod.SModConsts;
+import etla.mod.cfg.db.SDbConfig;
+import etla.mod.etl.db.SDbConfigAvista;
 import etla.mod.etl.db.SDbCustomer;
 import etla.mod.etl.db.SEtlConsts;
 import java.awt.event.ActionEvent;
@@ -59,9 +61,11 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
         jPanel6 = new javax.swing.JPanel();
         jlSrcRequiredCurrency = new javax.swing.JLabel();
         moKeySrcRequiredCurrency = new sa.lib.gui.bean.SBeanFieldKey();
+        jtfDefaultCurrency = new javax.swing.JTextField();
         jPanel11 = new javax.swing.JPanel();
         jlSrcRequiredUnitOfMeasure = new javax.swing.JLabel();
         moKeySrcRequiredUnitOfMeasure = new sa.lib.gui.bean.SBeanFieldKey();
+        jtfDefaultUnitOfMeasure = new javax.swing.JTextField();
         jPanel16 = new javax.swing.JPanel();
         jlSrcCustomerSalesAgent = new javax.swing.JLabel();
         moKeySrcCustomerSalesAgent = new sa.lib.gui.bean.SBeanFieldKey();
@@ -78,6 +82,7 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
         jPanel13 = new javax.swing.JPanel();
         jlDesRequiredPayMethod = new javax.swing.JLabel();
         moKeyDesRequiredPayMethod = new sa.lib.gui.bean.SBeanFieldKey();
+        jtfDefaultPayMethod = new javax.swing.JTextField();
         jPanel14 = new javax.swing.JPanel();
         jlPayAccount = new javax.swing.JLabel();
         moTextPayAccount = new sa.lib.gui.bean.SBeanFieldText();
@@ -124,6 +129,12 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
         moKeySrcRequiredCurrency.setPreferredSize(new java.awt.Dimension(300, 23));
         jPanel6.add(moKeySrcRequiredCurrency);
 
+        jtfDefaultCurrency.setEditable(false);
+        jtfDefaultCurrency.setToolTipText("Moneda predeterminada");
+        jtfDefaultCurrency.setFocusable(false);
+        jtfDefaultCurrency.setPreferredSize(new java.awt.Dimension(100, 23));
+        jPanel6.add(jtfDefaultCurrency);
+
         jPanel2.add(jPanel6);
 
         jPanel11.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
@@ -134,6 +145,12 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
 
         moKeySrcRequiredUnitOfMeasure.setPreferredSize(new java.awt.Dimension(300, 23));
         jPanel11.add(moKeySrcRequiredUnitOfMeasure);
+
+        jtfDefaultUnitOfMeasure.setEditable(false);
+        jtfDefaultUnitOfMeasure.setToolTipText("Unidad predeterminada");
+        jtfDefaultUnitOfMeasure.setFocusable(false);
+        jtfDefaultUnitOfMeasure.setPreferredSize(new java.awt.Dimension(100, 23));
+        jPanel11.add(jtfDefaultUnitOfMeasure);
 
         jPanel2.add(jPanel11);
 
@@ -195,6 +212,12 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
         moKeyDesRequiredPayMethod.setPreferredSize(new java.awt.Dimension(200, 23));
         jPanel13.add(moKeyDesRequiredPayMethod);
 
+        jtfDefaultPayMethod.setEditable(false);
+        jtfDefaultPayMethod.setToolTipText("Método de pago predeterminado");
+        jtfDefaultPayMethod.setFocusable(false);
+        jtfDefaultPayMethod.setPreferredSize(new java.awt.Dimension(100, 23));
+        jPanel13.add(jtfDefaultPayMethod);
+
         jPanel2.add(jPanel13);
 
         jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
@@ -249,6 +272,9 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
     private javax.swing.JLabel jlSrcRequiredCurrency;
     private javax.swing.JLabel jlSrcRequiredUnitOfMeasure;
     private javax.swing.JTextField jtfCode;
+    private javax.swing.JTextField jtfDefaultCurrency;
+    private javax.swing.JTextField jtfDefaultPayMethod;
+    private javax.swing.JTextField jtfDefaultUnitOfMeasure;
     private javax.swing.JTextField jtfName;
     private sa.lib.gui.bean.SBeanFieldInteger moIntDesCustomerBranchId;
     private sa.lib.gui.bean.SBeanFieldInteger moIntDesCustomerId;
@@ -264,7 +290,9 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
      */
     
     private void initComponentsCustom() {
-        SGuiUtils.setWindowBounds(this, 480, 300);
+        SDbConfigAvista configAvista = ((SDbConfig) miClient.getSession().getConfigSystem()).getRegConfigAvista();
+        
+        SGuiUtils.setWindowBounds(this, 560, 350);
         
         moKeySrcRequiredCurrency.setKeySettings(miClient, SGuiUtils.getLabelName(jlSrcRequiredCurrency), false);
         moKeySrcRequiredUnitOfMeasure.setKeySettings(miClient, SGuiUtils.getLabelName(jlSrcRequiredUnitOfMeasure), false);
@@ -283,6 +311,14 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
         moFields.addField(moTextPayAccount);
         
         moFields.setFormButton(jbSave);
+        
+        jtfDefaultCurrency.setText((String) miClient.getSession().readField(SModConsts.AS_CUR, new int[] { configAvista.getFkSrcDefaultCurrencyId() }, SDbRegistry.FIELD_CODE));
+        jtfDefaultUnitOfMeasure.setText((String) miClient.getSession().readField(SModConsts.AS_UOM, new int[] { configAvista.getFkSrcDefaultUnitOfMeasureId() }, SDbRegistry.FIELD_CODE));
+        jtfDefaultPayMethod.setText((String) miClient.getSession().readField(SModConsts.AS_PAY_MET, new int[] { configAvista.getFkDesDefaultPayMethodId()}, SDbRegistry.FIELD_NAME));
+        
+        jtfDefaultCurrency.setCaretPosition(0);
+        jtfDefaultUnitOfMeasure.setCaretPosition(0);
+        jtfDefaultPayMethod.setCaretPosition(0);
     }
     
     private void enableEditDesCustomerId(boolean enable) {

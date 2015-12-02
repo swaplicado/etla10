@@ -105,13 +105,13 @@ public class SModModuleEtl extends SGuiModule {
         switch (type) {
             case SModConsts.AS_CUR:
                 settings = new SGuiCatalogueSettings("Moneda", 1, 0, SLibConsts.DATA_TYPE_INT);
-                sql = "SELECT id_cur AS " + SDbConsts.FIELD_ID + "1, name AS " + SDbConsts.FIELD_ITEM + ", "
+                sql = "SELECT id_cur AS " + SDbConsts.FIELD_ID + "1, CONCAT(name, ' (', code, ')') AS " + SDbConsts.FIELD_ITEM + ", "
                         + "src_cur_id AS " + SDbConsts.FIELD_COMP + " "
                         + "FROM " + SModConsts.TablesMap.get(type) + " WHERE b_del = 0 ORDER BY sort ";
                 break;
             case SModConsts.AS_UOM:
                 settings = new SGuiCatalogueSettings("Unidad", 1, 0, SLibConsts.DATA_TYPE_TEXT);
-                sql = "SELECT id_uom AS " + SDbConsts.FIELD_ID + "1, name AS " + SDbConsts.FIELD_ITEM + ", "
+                sql = "SELECT id_uom AS " + SDbConsts.FIELD_ID + "1, CONCAT(name, ' (', code, ')') AS " + SDbConsts.FIELD_ITEM + ", "
                         + "src_uom_id AS " + SDbConsts.FIELD_COMP + " "
                         + "FROM " + SModConsts.TablesMap.get(type) + " WHERE b_del = 0 ORDER BY sort ";
                 break;
@@ -122,13 +122,13 @@ public class SModModuleEtl extends SGuiModule {
                         + "FROM " + SModConsts.TablesMap.get(type) + " WHERE b_del = 0 ORDER BY sort ";
                 break;
             case SModConsts.AU_SAL_AGT:
-                settings = new SGuiCatalogueSettings("Agente ventas", 1, 0, SLibConsts.DATA_TYPE_TEXT);
+                settings = new SGuiCatalogueSettings("Agente ventas", 1, 0, SLibConsts.DATA_TYPE_INT);
                 sql = "SELECT id_sal_agt AS " + SDbConsts.FIELD_ID + "1, CONCAT(name, ' (', code, ')') AS " + SDbConsts.FIELD_ITEM + ", "
                         + "src_sal_agt_id AS " + SDbConsts.FIELD_COMP + " "
                         + "FROM " + SModConsts.TablesMap.get(type) + " WHERE b_del = 0 ORDER BY name, code, id_sal_agt ";
                 break;
             case SModConsts.AU_CUS:
-                settings = new SGuiCatalogueSettings("Cliente", 1, 0, SLibConsts.DATA_TYPE_TEXT);
+                settings = new SGuiCatalogueSettings("Cliente", 1, 0, SLibConsts.DATA_TYPE_INT);
                 sql = "SELECT id_cus AS " + SDbConsts.FIELD_ID + "1, CONCAT(name, ' (', code, ')') AS " + SDbConsts.FIELD_ITEM + ", "
                         + "src_cus_id AS " + SDbConsts.FIELD_COMP + " "
                         + "FROM " + SModConsts.TablesMap.get(type) + " WHERE b_del = 0 ORDER BY name, code, id_cus ";

@@ -610,7 +610,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
                 jmEtl.setEnabled(true);
                 jmHelp.setEnabled(true);
                 jmiCfgUser.setEnabled(user.isSupervisor());
-                jmiFileWorkingDate.setEnabled(user.isAdministrator());
+                jmiFileWorkingDate.setEnabled(true);
                 jbWorkingDate.setEnabled(jmiFileWorkingDate.isEnabled());
 
                 //renderClientSession((SGuiMainSessionCustom) moSession.getSessionCustom());
