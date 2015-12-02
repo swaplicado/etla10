@@ -729,9 +729,9 @@ public class SEtlProcessDocInvoices {
                         dataDpsEntry.setCommissionsCy_r(0);
                         
                         dEntryTotal = SLibUtils.round(dataDpsEntry.getTotalCy_r() * dataDps.getExchangeRate(), nMiscDecsAmount);
-                        dEntryTaxCharged = SLibUtils.round(dEntryTotal / (1 + SEtlConsts.SIIE_TAX_RATE), nMiscDecsAmount);
+                        dEntrySubtotal = SLibUtils.round(dEntryTotal / (1.0 + SEtlConsts.SIIE_TAX_RATE), nMiscDecsAmount);
                         dEntryTaxRetained = 0;
-                        dEntrySubtotal = SLibUtils.round(dEntryTotal - dEntryTaxCharged + dEntryTaxRetained, nMiscDecsAmount);
+                        dEntryTaxCharged = SLibUtils.round(dEntryTotal - dEntrySubtotal, nMiscDecsAmount);
                         
                         dataDpsEntry.setPriceUnitary(SLibUtils.round(dEntrySubtotal / dataDpsEntry.getQuantity(), nMiscDecsAmountUnitary));
                         dataDpsEntry.setPriceUnitarySystem(dataDpsEntry.getPriceUnitary());
