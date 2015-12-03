@@ -24,6 +24,7 @@ import sa.lib.gui.SGuiSession;
 public class SEtlProcessCatItems {
     
     public static void computeEtlItems(final SGuiSession session, final SEtlPackage etlPackage) throws Exception {
+        int nCount = 0;
         int nSiieItemId = 0;
         int nSiieItemAliveId = 0;
         int nSiieItemDeletedId = 0;
@@ -65,7 +66,7 @@ public class SEtlProcessCatItems {
         while (resultSetAvista.next()) {
             /****************************************************************/
             if (SEtlConsts.SHOW_DEBUG_MSGS) {
-                System.out.println(SEtlConsts.TXT_ITM + ": " + resultSetAvista.getString("ShortDesc") + " " + resultSetAvista.getString("Flute"));
+                System.out.println(SEtlConsts.TXT_ITM + " (" + ++nCount + "): " + resultSetAvista.getString("ShortDesc") + " " + resultSetAvista.getString("Flute"));
             }
             /****************************************************************/
             

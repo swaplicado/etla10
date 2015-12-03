@@ -31,6 +31,7 @@ import sa.lib.gui.SGuiSession;
 public abstract class SEtlProcessCatCustomers {
     
     public static void computeEtlCustomers(final SGuiSession session, final SEtlPackage etlPackage) throws Exception {
+        int nCount = 0;
         int nBizPartnerId = 0;
         int nBizPartnerAliveId = 0;
         int nBizPartnerDeletedId = 0;
@@ -89,7 +90,7 @@ public abstract class SEtlProcessCatCustomers {
         while (resultSetAvista.next()) {
             /****************************************************************/
             if (SEtlConsts.SHOW_DEBUG_MSGS) {
-                System.out.println(SEtlConsts.TXT_SAL_AGT + ": " + resultSetAvista.getString("FullName"));
+                System.out.println(SEtlConsts.TXT_SAL_AGT + " (" + ++nCount + "): " + resultSetAvista.getString("FullName"));
             }
             /****************************************************************/
             
@@ -148,6 +149,8 @@ public abstract class SEtlProcessCatCustomers {
         
         // II. Obtain customers list from Avista:
         
+        nCount = 0;
+        
         sql = "SELECT DISTINCT c.CustomerId, c.TaxId, c.CustomerNumber, c.CustomerName, c.ShortName, c.Active, c.DeletedFlag, "
                 + "c.Address1, c.Address2, c.Address3, c.AddressInternalNumber, c.County AS Neighborhood, c.City, c.District AS County, "
                 + "c.State, sc.StateDescription, c.Country, cc.CountryDescription, c.Zip, c.Phone, c.Fax, "
@@ -164,7 +167,7 @@ public abstract class SEtlProcessCatCustomers {
         while (resultSetAvista.next()) {
             /****************************************************************/
             if (SEtlConsts.SHOW_DEBUG_MSGS) {
-                System.out.println(SEtlConsts.TXT_CUS + ": " + resultSetAvista.getString("CustomerName"));
+                System.out.println(SEtlConsts.TXT_CUS + " (" + ++nCount + "): " + resultSetAvista.getString("CustomerName"));
             }
             /****************************************************************/
             

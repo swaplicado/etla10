@@ -108,6 +108,8 @@ public abstract class SEtlConsts {
     public static final String TXT_MISC_QTY = "Cantidad";
     public static final String TXT_MISC_SIZ = "Tamaño";
     public static final String TXT_MISC_WEI = "Peso";
+    public static final String TXT_MISC_O = "Orden";
+    public static final String TXT_MISC_O_ACR = "O";
     public static final String TXT_MISC_PO = "Orden de compra";
     public static final String TXT_MISC_PO_ACR = "OC";
     public static final String TXT_DB_SIIE = "SIIE";

@@ -57,7 +57,7 @@ public class SViewInvoice extends SGridPaneView {
         }
 
         filter = (SGuiDate) moFiltersMap.get(SGridConsts.FILTER_DATE_PERIOD).getValue();
-        sql += (sql.isEmpty() ? "" : "AND ") + SGridUtils.getSqlFilterDate("v.dat", (SGuiDate) filter);
+        sql += (sql.isEmpty() ? "" : "AND ") + SGridUtils.getSqlFilterDate("v.fin_dat", (SGuiDate) filter);
         
         msSql = "SELECT "
                 + "v.id_inv AS " + SDbConsts.FIELD_ID + "1, "
@@ -69,7 +69,8 @@ public class SViewInvoice extends SGridPaneView {
                 + "v.ori_num, "
                 + "v.fin_ser, "
                 + "v.fin_num, "
-                + "v.dat, "
+                + "v.ori_dat, "
+                + "v.fin_dat, "
                 + "v.pay_acc, "
                 + "v.cdt_day, "
                 + "v.ori_amt, "
@@ -119,15 +120,16 @@ public class SViewInvoice extends SGridPaneView {
     public ArrayList<SGridColumnView> createGridColumns() {
         ArrayList<SGridColumnView> columns = new ArrayList<SGridColumnView>();
 
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.fin_ser", "Serie"));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.fin_num", "Folio"));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.fin_ser", "Serie " + SEtlConsts.TXT_DB_SIIE));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.fin_num", "Folio " + SEtlConsts.TXT_DB_SIIE));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.ori_num", "Folio " + SEtlConsts.TXT_DB_AVISTA));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_DATE, "v.dat", "Fecha"));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_DATE, "v.ori_dat", "Fecha original"));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_DATE, "v.fin_dat", "Fecha final"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.src_inv_id", "ID " + SEtlConsts.TXT_DB_AVISTA));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.des_inv_yea_id", "ID año " + SEtlConsts.TXT_DB_SIIE));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.des_inv_doc_id", "ID doc " + SEtlConsts.TXT_DB_SIIE));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_M, "cus.name", SGridConsts.COL_TITLE_NAME));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_BPR, "cus.code", SGridConsts.COL_TITLE_CODE));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_M, "cus.name", SGridConsts.COL_TITLE_NAME + " " + SEtlConsts.TXT_CUS.toLowerCase()));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_BPR, "cus.code", SGridConsts.COL_TITLE_CODE + " " + SEtlConsts.TXT_CUS.toLowerCase()));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "cus.tax_id", "RFC"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_DEC_AMT, "v.ori_amt", "Monto original $"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_UNT, "cur_ori.code", "Moneda original"));

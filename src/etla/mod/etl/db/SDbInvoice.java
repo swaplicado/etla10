@@ -30,7 +30,8 @@ public class SDbInvoice extends SDbRegistryUser {
     protected String msOriginalNumber;
     protected String msFinalSeries;
     protected String msFinalNumber;
-    protected Date mtDate;
+    protected Date mtOriginalDate;
+    protected Date mtFinalDate;
     protected String msPayAccount;
     protected int mnCreditDays;
     protected double mdOriginalAmount;
@@ -84,7 +85,8 @@ public class SDbInvoice extends SDbRegistryUser {
     public void setOriginalNumber(String s) { msOriginalNumber = s; }
     public void setFinalSeries(String s) { msFinalSeries = s; }
     public void setFinalNumber(String s) { msFinalNumber = s; }
-    public void setDate(Date t) { mtDate = t; }
+    public void setOriginalDate(Date t) { mtOriginalDate = t; }
+    public void setFinalDate(Date t) { mtFinalDate = t; }
     public void setPayAccount(String s) { msPayAccount = s; }
     public void setCreditDays(int n) { mnCreditDays = n; }
     public void setOriginalAmount(double d) { mdOriginalAmount = d; }
@@ -124,7 +126,8 @@ public class SDbInvoice extends SDbRegistryUser {
     public String getOriginalNumber() { return msOriginalNumber; }
     public String getFinalSeries() { return msFinalSeries; }
     public String getFinalNumber() { return msFinalNumber; }
-    public Date getDate() { return mtDate; }
+    public Date getOriginalDate() { return mtOriginalDate; }
+    public Date getFinalDate() { return mtFinalDate; }
     public String getPayAccount() { return msPayAccount; }
     public int getCreditDays() { return mnCreditDays; }
     public double getOriginalAmount() { return mdOriginalAmount; }
@@ -184,7 +187,8 @@ public class SDbInvoice extends SDbRegistryUser {
         msOriginalNumber = "";
         msFinalSeries = "";
         msFinalNumber = "";
-        mtDate = null;
+        mtOriginalDate = null;
+        mtFinalDate = null;
         msPayAccount = "";
         mnCreditDays = 0;
         mdOriginalAmount = 0;
@@ -270,7 +274,8 @@ public class SDbInvoice extends SDbRegistryUser {
             msOriginalNumber = resultSet.getString("ori_num");
             msFinalSeries = resultSet.getString("fin_ser");
             msFinalNumber = resultSet.getString("fin_num");
-            mtDate = resultSet.getDate("dat");
+            mtOriginalDate = resultSet.getDate("ori_dat");
+            mtFinalDate = resultSet.getDate("fin_dat");
             msPayAccount = resultSet.getString("pay_acc");
             mnCreditDays = resultSet.getInt("cdt_day");
             mdOriginalAmount = resultSet.getDouble("ori_amt");
@@ -344,7 +349,8 @@ public class SDbInvoice extends SDbRegistryUser {
                     "'" + msOriginalNumber + "', " + 
                     "'" + msFinalSeries + "', " + 
                     "'" + msFinalNumber + "', " + 
-                    "'" + SLibUtils.DbmsDateFormatDate.format(mtDate) + "', " + 
+                    "'" + SLibUtils.DbmsDateFormatDate.format(mtOriginalDate) + "', " + 
+                    "'" + SLibUtils.DbmsDateFormatDate.format(mtFinalDate) + "', " + 
                     "'" + msPayAccount + "', " + 
                     mnCreditDays + ", " + 
                     mdOriginalAmount + ", " + 
@@ -389,7 +395,8 @@ public class SDbInvoice extends SDbRegistryUser {
                     "ori_num = '" + msOriginalNumber + "', " +
                     "fin_ser = '" + msFinalSeries + "', " +
                     "fin_num = '" + msFinalNumber + "', " +
-                    "dat = '" + SLibUtils.DbmsDateFormatDate.format(mtDate) + "', " +
+                    "ori_dat = '" + SLibUtils.DbmsDateFormatDate.format(mtOriginalDate) + "', " +
+                    "fin_dat = '" + SLibUtils.DbmsDateFormatDate.format(mtFinalDate) + "', " +
                     "pay_acc = '" + msPayAccount + "', " +
                     "cdt_day = " + mnCreditDays + ", " +
                     "ori_amt = " + mdOriginalAmount + ", " +
@@ -455,7 +462,8 @@ public class SDbInvoice extends SDbRegistryUser {
         registry.setOriginalNumber(this.getOriginalNumber());
         registry.setFinalSeries(this.getFinalSeries());
         registry.setFinalNumber(this.getFinalNumber());
-        registry.setDate(this.getDate());
+        registry.setOriginalDate(this.getOriginalDate());
+        registry.setFinalDate(this.getFinalDate());
         registry.setPayAccount(this.getPayAccount());
         registry.setCreditDays(this.getCreditDays());
         registry.setOriginalAmount(this.getOriginalAmount());

@@ -9,20 +9,27 @@ import etla.mod.SModConsts;
 import etla.mod.etl.db.SEtlConsts;
 import etla.mod.etl.db.SEtlProcess;
 import java.awt.Cursor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import javax.swing.JButton;
 import sa.lib.SLibConsts;
+import sa.lib.SLibTimeUtils;
 import sa.lib.SLibUtils;
 import sa.lib.db.SDbRegistry;
 import sa.lib.gui.SGuiClient;
 import sa.lib.gui.SGuiConsts;
 import sa.lib.gui.SGuiUtils;
 import sa.lib.gui.SGuiValidation;
+import sa.lib.gui.bean.SBeanFieldRadio;
 import sa.lib.gui.bean.SBeanFormDialog;
 
 /**
  *
  * @author Sergio Flores
  */
-public class SDialogEtl extends SBeanFormDialog {
+public class SDialogEtl extends SBeanFormDialog implements ActionListener, ItemListener {
 
     /**
      * Creates new form SDialogEtl
@@ -55,6 +62,11 @@ public class SDialogEtl extends SBeanFormDialog {
         jPanel4 = new javax.swing.JPanel();
         jlDatePeriodEnd = new javax.swing.JLabel();
         moDatePeriodEnd = new sa.lib.gui.bean.SBeanFieldDate();
+        jPanel12 = new javax.swing.JPanel();
+        jlDateIssue = new javax.swing.JLabel();
+        moDateIssue = new sa.lib.gui.bean.SBeanFieldDate();
+        jbIssueBackward = new javax.swing.JButton();
+        jbIssueForward = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         jPanel9 = new javax.swing.JPanel();
@@ -69,7 +81,7 @@ public class SDialogEtl extends SBeanFormDialog {
         jPanel1.setLayout(new java.awt.BorderLayout(0, 5));
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Parámetros de exportación:"));
-        jPanel2.setLayout(new java.awt.GridLayout(4, 0, 0, 5));
+        jPanel2.setLayout(new java.awt.GridLayout(5, 0, 0, 5));
 
         jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
@@ -91,7 +103,7 @@ public class SDialogEtl extends SBeanFormDialog {
 
         jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
-        jlDatePeriodStart.setText("Fecha inicial:");
+        jlDatePeriodStart.setText("Fecha inicial:*");
         jlDatePeriodStart.setPreferredSize(new java.awt.Dimension(100, 23));
         jPanel3.add(jlDatePeriodStart);
         jPanel3.add(moDatePeriodStart);
@@ -100,12 +112,33 @@ public class SDialogEtl extends SBeanFormDialog {
 
         jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
-        jlDatePeriodEnd.setText("Fecha final:");
+        jlDatePeriodEnd.setText("Fecha final:*");
         jlDatePeriodEnd.setPreferredSize(new java.awt.Dimension(100, 23));
         jPanel4.add(jlDatePeriodEnd);
         jPanel4.add(moDatePeriodEnd);
 
         jPanel2.add(jPanel4);
+
+        jPanel12.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
+
+        jlDateIssue.setText("Fecha emisión:*");
+        jlDateIssue.setPreferredSize(new java.awt.Dimension(100, 23));
+        jPanel12.add(jlDateIssue);
+        jPanel12.add(moDateIssue);
+
+        jbIssueBackward.setText("-");
+        jbIssueBackward.setToolTipText("Disminuir día");
+        jbIssueBackward.setMargin(new java.awt.Insets(2, 0, 2, 0));
+        jbIssueBackward.setPreferredSize(new java.awt.Dimension(23, 23));
+        jPanel12.add(jbIssueBackward);
+
+        jbIssueForward.setText("+");
+        jbIssueForward.setToolTipText("Aumentar día");
+        jbIssueForward.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        jbIssueForward.setPreferredSize(new java.awt.Dimension(23, 23));
+        jPanel12.add(jbIssueForward);
+
+        jPanel2.add(jPanel12);
 
         jPanel1.add(jPanel2, java.awt.BorderLayout.NORTH);
 
@@ -127,7 +160,7 @@ public class SDialogEtl extends SBeanFormDialog {
 
         sBeanFieldRadio1.setText("Actualizar selectivamente");
         sBeanFieldRadio1.setEnabled(false);
-        sBeanFieldRadio1.setPreferredSize(new java.awt.Dimension(150, 23));
+        sBeanFieldRadio1.setPreferredSize(new java.awt.Dimension(200, 23));
         jPanel10.add(sBeanFieldRadio1);
 
         jLabel1.setForeground(java.awt.Color.gray);
@@ -141,7 +174,7 @@ public class SDialogEtl extends SBeanFormDialog {
 
         sBeanFieldRadio2.setText("Actualizar siempre");
         sBeanFieldRadio2.setEnabled(false);
-        sBeanFieldRadio2.setPreferredSize(new java.awt.Dimension(150, 23));
+        sBeanFieldRadio2.setPreferredSize(new java.awt.Dimension(200, 23));
         jPanel11.add(sBeanFieldRadio2);
 
         jLabel2.setForeground(java.awt.Color.gray);
@@ -166,6 +199,7 @@ public class SDialogEtl extends SBeanFormDialog {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -174,8 +208,12 @@ public class SDialogEtl extends SBeanFormDialog {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JButton jbIssueBackward;
+    private javax.swing.JButton jbIssueForward;
+    private javax.swing.JLabel jlDateIssue;
     private javax.swing.JLabel jlDatePeriodEnd;
     private javax.swing.JLabel jlDatePeriodStart;
+    private sa.lib.gui.bean.SBeanFieldDate moDateIssue;
     private sa.lib.gui.bean.SBeanFieldDate moDatePeriodEnd;
     private sa.lib.gui.bean.SBeanFieldDate moDatePeriodStart;
     private sa.lib.gui.bean.SBeanFieldRadio moRadModeCat;
@@ -190,20 +228,55 @@ public class SDialogEtl extends SBeanFormDialog {
      */
     
     private void initComponentsCustom () {
-        SGuiUtils.setWindowBounds(this, 480, 300);
+        SGuiUtils.setWindowBounds(this, 560, 350);
         
         moRadModeCat.setBooleanSettings(SGuiUtils.getLabelName(moRadModeCat.getText()), false);
         moRadModeCatInv.setBooleanSettings(SGuiUtils.getLabelName(moRadModeCatInv.getText()), true);
         moDatePeriodStart.setDateSettings(miClient, SGuiUtils.getLabelName(jlDatePeriodStart), true);
         moDatePeriodEnd.setDateSettings(miClient, SGuiUtils.getLabelName(jlDatePeriodEnd), true);
+        moDateIssue.setDateSettings(miClient, SGuiUtils.getLabelName(jlDateIssue), true);
         
         moFields.addField(moRadModeCat);
         moFields.addField(moRadModeCatInv);
         moFields.addField(moDatePeriodStart);
         moFields.addField(moDatePeriodEnd);
+        moFields.addField(moDateIssue);
         moFields.setFormButton(jbSave);
         
         jbSave.setText(SGuiConsts.TXT_BTN_OK);
+    }
+    
+    private void actionPerformedIssueBackward() {
+        moDateIssue.setValue(SLibTimeUtils.addDate(moDateIssue.getValue() != null ? moDateIssue.getValue() : moDatePeriodEnd.getValue(), 0, 0, -1));
+        moDateIssue.requestFocus();
+    }
+    
+    private void actionPerformedIssueForward() {
+        moDateIssue.setValue(SLibTimeUtils.addDate(moDateIssue.getValue() != null ? moDateIssue.getValue() : moDatePeriodEnd.getValue(), 0, 0, 1));
+        moDateIssue.requestFocus();
+    }
+            
+    private void updateStatusDateIssue() {
+        if (moRadModeCat.isSelected()) {
+            moDateIssue.setValue(null);
+            moDateIssue.setEditable(false);
+            jbIssueBackward.setEnabled(false);
+            jbIssueForward.setEnabled(false);
+        }
+        else {
+            moDateIssue.setValue(moDatePeriodEnd.getValue());
+            moDateIssue.setEditable(true);
+            jbIssueBackward.setEnabled(true);
+            jbIssueForward.setEnabled(true);
+        }
+    }
+    
+    private void itemStateChangedRadModeCat() {
+        updateStatusDateIssue();
+    }
+    
+    private void itemStateChangedRadModeCatInv() {
+        updateStatusDateIssue();
     }
     
     /*
@@ -216,12 +289,18 @@ public class SDialogEtl extends SBeanFormDialog {
     
     @Override
     public void addAllListeners() {
-
+        jbIssueBackward.addActionListener(this);
+        jbIssueForward.addActionListener(this);
+        moRadModeCat.addItemListener(this);
+        moRadModeCatInv.addItemListener(this);
     }
 
     @Override
     public void removeAllListeners() {
-
+        jbIssueBackward.removeActionListener(this);
+        jbIssueForward.removeActionListener(this);
+        moRadModeCat.removeItemListener(this);
+        moRadModeCatInv.removeItemListener(this);
     }
 
     @Override
@@ -243,6 +322,19 @@ public class SDialogEtl extends SBeanFormDialog {
     public SGuiValidation validateForm() {
         SGuiValidation validation = moFields.validateFields();
         
+        if (validation.isValid()) {
+            if (moRadModeCatInv.isSelected()) {
+                if (moDateIssue.getValue().after(moDatePeriodEnd.getValue())) {
+                    validation.setMessage(SGuiConsts.ERR_MSG_FIELD_DATE_ + "'" + SGuiUtils.getLabelName(jlDateIssue) + "'" + SGuiConsts.ERR_MSG_FIELD_DATE_LESS_EQUAL + "'" + SLibUtils.DateFormatDate.format(moDatePeriodEnd.getValue()) + "'.");
+                    validation.setComponent(moDateIssue.getComponent());
+                }
+                else if (moDateIssue.getValue().before(SLibTimeUtils.addDate(moDatePeriodEnd.getValue(), 0, 0, -1))) {
+                    validation.setMessage(SGuiConsts.ERR_MSG_FIELD_DATE_ + "'" + SGuiUtils.getLabelName(jlDateIssue) + "'" + SGuiConsts.ERR_MSG_FIELD_DATE_GREAT_EQUAL + "'" + SLibUtils.DateFormatDate.format(SLibTimeUtils.addDate(moDatePeriodEnd.getValue(), 0, 0, -1)) + "'.");
+                    validation.setComponent(moDateIssue.getComponent());
+                }
+            }
+        }
+        
         return validation;
     }
 
@@ -251,10 +343,11 @@ public class SDialogEtl extends SBeanFormDialog {
         removeAllListeners();
         reloadCatalogues();
         
-        moRadModeCatInv.setValue(true);
+        moRadModeCatInv.setSelected(true);
         moDatePeriodStart.setValue(miClient.getSession().getCurrentDate());
         moDatePeriodEnd.setValue(miClient.getSession().getCurrentDate());
-        //moDateIssue.setValue(...);
+        
+        updateStatusDateIssue();
         
         addAllListeners();
     }
@@ -271,7 +364,7 @@ public class SDialogEtl extends SBeanFormDialog {
                             moRadModeCat.isSelected() ? SEtlConsts.ETL_MODE_CAT : SEtlConsts.ETL_MODE_CAT_INV, 
                             moDatePeriodStart.getValue(), 
                             moDatePeriodEnd.getValue(), 
-                            miClient.getSession().getSystemDate(), 
+                            moDateIssue.getValue(), 
                             sBeanFieldBoolean1.getValue());
                     
                     miClient.showMsgBoxInformation(SLibConsts.MSG_PROCESS_FINISHED);
@@ -284,6 +377,36 @@ public class SDialogEtl extends SBeanFormDialog {
                 }
                 finally {
                     this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                }
+            }
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() instanceof JButton) {
+            JButton button = (JButton) e.getSource();
+            
+            if (button == jbIssueBackward) {
+                actionPerformedIssueBackward();
+            }
+            else if (button == jbIssueForward) {
+                actionPerformedIssueForward();
+            }
+        }
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+        if (e.getSource() instanceof SBeanFieldRadio) {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                SBeanFieldRadio field = (SBeanFieldRadio) e.getSource();
+                
+                if (field == moRadModeCat) {
+                    itemStateChangedRadModeCat();
+                }
+                else if (field == moRadModeCatInv) {
+                    itemStateChangedRadModeCatInv();
                 }
             }
         }
