@@ -19,8 +19,10 @@ public class SEtlPackage {
     Connection ConnectionAvista;
     Date PeriodStart;
     Date PeriodEnd;
-    Date Issue;
+    Date DateIssue;
+    int InvoiceBatch;
     boolean UpdateData;
+    int UpdateMode;
     
     public SEtlPackage() {
         EtlLog = null;
@@ -28,7 +30,9 @@ public class SEtlPackage {
         ConnectionAvista = null;
         PeriodStart = null;
         PeriodEnd = null;
-        Issue = null;
-        UpdateData = true;
+        DateIssue = null;
+        InvoiceBatch = 0;
+        UpdateData = false;
+        UpdateMode = 0;
     }
 }

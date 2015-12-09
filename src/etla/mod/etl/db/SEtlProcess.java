@@ -6,6 +6,7 @@
 package etla.mod.etl.db;
 
 import etla.mod.cfg.db.SDbConfig;
+import etla.mod.cfg.db.SDbUser;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Date;
@@ -18,7 +19,7 @@ import sa.lib.gui.SGuiSession;
  */
 public abstract class SEtlProcess {
     
-    public static void computeEtl(final SGuiSession session, final int mode, final Date periodStart, final Date periodEnd, final Date issue, final boolean updateData) throws Exception {
+    public static void computeEtl(final SGuiSession session, final int mode, final Date periodStart, final Date periodEnd, final Date dateIssue, final int invoiceLot, final boolean updateData, final int updateMode) throws Exception {
         SDbEtlLog etlLog = new SDbEtlLog();
         SDbConfig config = (SDbConfig) session.getConfigSystem();
         SDbConfigAvista configAvista = config.getRegConfigAvista();
@@ -27,10 +28,13 @@ public abstract class SEtlProcess {
         SEtlPackage etlPackage = null;
         
         //etlLog.setPkEtlLogId(this.getPkEtlLogId());
-        etlLog.setMode(mode);
+        etlLog.setEtlMode(mode);
         etlLog.setDateStart(periodStart);
         etlLog.setDateEnd(periodEnd);
-        etlLog.setDateIssue_n(issue);
+        etlLog.setDateIssue_n(dateIssue);
+        etlLog.setInvoiceBatch(invoiceLot);
+        etlLog.setUpdateData(updateData);
+        etlLog.setUpdateMode(updateMode);
         //etlLog.setTsStart(...);
         //etlLog.setTsEnd_n(...);
         etlLog.setStep(SEtlConsts.STEP_NA);
@@ -38,6 +42,12 @@ public abstract class SEtlProcess {
         //etlLog.setDeleted(...);
         etlLog.setSystem(true);
         etlLog.save(session);
+        
+        // Validate current user:
+        
+        if (((SDbUser) session.getUser()).getDesUserId() == 0) {
+            throw new Exception(SEtlConsts.MSG_ERR_USR_DES_ID); // no ID SIIE available
+        }
         
         // Starting ETL process:
         
@@ -81,7 +91,10 @@ public abstract class SEtlProcess {
         etlPackage.ConnectionAvista = connectionAvista;
         etlPackage.PeriodStart = periodStart;
         etlPackage.PeriodEnd = periodEnd;
-        etlPackage.Issue = issue;
+        etlPackage.DateIssue = dateIssue;
+        etlPackage.InvoiceBatch = invoiceLot;
+        etlPackage.UpdateData = updateData;
+        etlPackage.UpdateMode = updateMode;
         
         // ETL customers:
         
@@ -93,7 +106,7 @@ public abstract class SEtlProcess {
         
         // ETL invoices:
         
-        if (mode == SEtlConsts.ETL_MODE_CAT_INV) {
+        if (mode == SEtlConsts.EXP_MODE_ALL) {
             SEtlProcessDocInvoices.computeEtlInvoices(session, etlPackage);
         }
         
@@ -101,6 +114,7 @@ public abstract class SEtlProcess {
         
         etlLog.setStep(SEtlConsts.STEP_ETL_END);
         etlLog.setStepAux(SEtlConsts.STEP_AUX_NA);
+        etlLog.setAuxClosed(true);
         etlLog.save(session);
     }
     

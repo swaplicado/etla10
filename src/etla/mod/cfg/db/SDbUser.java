@@ -32,6 +32,7 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
     public static final int FIELD_PASSWORD = 1;
 
     protected int mnPkUserId;
+    protected int mnDesUserId;
     protected String msName;
     protected String msPassword;
     /*
@@ -51,6 +52,7 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
     }
 
     public void setPkUserId(int n) { mnPkUserId = n; }
+    public void setDesUserId(int n) { mnDesUserId = n; }
     public void setName(String s) { msName = s; }
     public void setPassword(String s) { msPassword = s; }
     public void setDeleted(boolean b) { mbDeleted = b; }
@@ -62,6 +64,7 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
     public void setTsUserUpdate(Date t) { mtTsUserUpdate = t; }
 
     public int getPkUserId() { return mnPkUserId; }
+    public int getDesUserId() { return mnDesUserId; }
     public String getName() { return msName; }
     public String getPassword() { return msPassword; }
     public boolean isDeleted() { return mbDeleted; }
@@ -177,6 +180,7 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
         initBaseRegistry();
 
         mnPkUserId = 0;
+        mnDesUserId = 0;
         msName = "";
         msPassword = "";
         mbDeleted = false;
@@ -231,6 +235,7 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
         }
         else {
             mnPkUserId = resultSet.getInt("id_usr");
+            mnDesUserId = resultSet.getInt("des_usr_id");
             msName = resultSet.getString("name");
             //msPassword = resultSet.getString("pswd");     // stored value is a string digestion, so it is useless
             mbDeleted = resultSet.getBoolean("b_del");
@@ -265,6 +270,7 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
 
             msSql = "INSERT INTO " + getSqlTable() + " VALUES (" +
                     mnPkUserId + ", " +
+                    mnDesUserId + ", " + 
                     "'" + msName + "', " +
                     "PASSWORD('" + msPassword + "'), " +
                     (mbDeleted ? 1 : 0) + ", " +
@@ -281,6 +287,7 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
 
             msSql = "UPDATE " + getSqlTable() + " SET " +
                     //"id_usr = " + mnPkUserId + ", " +
+                    "des_usr_id = " + mnDesUserId + ", " +
                     "name = '" + msName + "', " +
                     (msPassword.isEmpty() ? "" : "pswd = PASSWORD('" + msPassword + "'), ") +
                     "b_del = " + (mbDeleted ? 1 : 0) + ", " +
@@ -303,6 +310,7 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
         SDbUser registry = new SDbUser();
 
         registry.setPkUserId(this.getPkUserId());
+        registry.setDesUserId(this.getDesUserId());
         registry.setName(this.getName());
         registry.setPassword(this.getPassword());
         registry.setDeleted(this.isDeleted());

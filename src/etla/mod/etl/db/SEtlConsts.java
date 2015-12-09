@@ -6,7 +6,6 @@
 package etla.mod.etl.db;
 
 import java.util.HashMap;
-import sa.lib.SLibUtils;
 
 /**
  *
@@ -16,8 +15,11 @@ public abstract class SEtlConsts {
     
     public static final boolean SHOW_DEBUG_MSGS = true;
     
-    public static final int ETL_MODE_CAT = 1;
-    public static final int ETL_MODE_CAT_INV = 2;
+    public static final int EXP_MODE_CAT = 1; // catalogs
+    public static final int EXP_MODE_ALL = 2; // all (catalogs & invoices)
+    
+    public static final int UPD_MODE_SEL = 1; // selective
+    public static final int UPD_MODE_ALL = 2; // all
     
     public static final int DB_MYSQL = 1;
     public static final int DB_SQL_SERVER = 2;
@@ -112,32 +114,37 @@ public abstract class SEtlConsts {
     public static final String TXT_MISC_O_ACR = "O";
     public static final String TXT_MISC_PO = "Orden de compra";
     public static final String TXT_MISC_PO_ACR = "OC";
-    public static final String TXT_DB_SIIE = "SIIE";
-    public static final String TXT_DB_AVISTA = "Avista";
+    public static final String TXT_SYS_SIIE = "SIIE";
+    public static final String TXT_SYS_AVISTA = "Avista";
     
-    public static final String MSG_ERR = "Ha ocurrido una excepción ";
-    public static final String MSG_ERR_UNS_UOM = SLibUtils.textTrim(MSG_ERR) + ": unidad de medida no soportada.";
-    public static final String MSG_ERR_WRG_QTY = SLibUtils.textTrim(MSG_ERR) + ": cantidad igual a cero.";
-    public static final String MSG_ERR_UNK_CTY = MSG_ERR + "al determinar el país: ";
-    public static final String MSG_ERR_UNK_STA = MSG_ERR + "al determinar el estado: ";
-    public static final String MSG_ERR_UNK_CUR = MSG_ERR + "al determinar la moneda: ";
+    public static final String MSG_ERR = "Ha ocurrido una excepción";
+    public static final String MSG_ERR_UNS_UOM = MSG_ERR + ": unidad de medida no soportada.";
+    public static final String MSG_ERR_WRG_QTY = MSG_ERR + ": cantidad igual a cero.";
+    public static final String MSG_ERR_USR_DES_ID = MSG_ERR + ": el usuario no tiene su ID " + TXT_SYS_SIIE + ".";
+    public static final String MSG_ERR_UNK_CTY = MSG_ERR + " al determinar el país: ";
+    public static final String MSG_ERR_UNK_STA = MSG_ERR + " al determinar el estado: ";
+    public static final String MSG_ERR_UNK_CUR = MSG_ERR + " al determinar la moneda: ";
     public static final String MSG_ERR_UNK_CUR_MLT_ETL = MSG_ERR_UNK_CUR + "múltiples monedas de exportación.";
     public static final String MSG_ERR_UNK_CUR_MLT_SRC = MSG_ERR_UNK_CUR + "múltiples monedas de origen.";
-    public static final String MSG_ERR_UNK_UOM = MSG_ERR + "al determinar la unidad de medida: ";
-    public static final String MSG_ERR_UNK_SAL_AGT = MSG_ERR + "al determinar el agente de ventas: ";
-    public static final String MSG_ERR_UNK_CUS = MSG_ERR + "al determinar el cliente: ";
-    public static final String MSG_ERR_UNK_ITM = MSG_ERR + "al determinar el ítem: ";
-    public static final String MSG_ERR_UNK_EXR = MSG_ERR + "al determinar el tipo de cambio: ";
-    public static final String MSG_ERR_SIIE_COM_QRY = MSG_ERR + "al consultar el registro SIIE empresa: ";
-    public static final String MSG_ERR_SIIE_COM_INS = MSG_ERR + "al insertar el registro SIIE empresa: ";
-    public static final String MSG_ERR_SIIE_COM_UPD = MSG_ERR + "al actualizar el registro SIIE empresa: ";
-    public static final String MSG_ERR_SIIE_CUS_QRY = MSG_ERR + "al consultar el registro SIIE cliente: ";
-    public static final String MSG_ERR_SIIE_CUS_INS = MSG_ERR + "al insertar el registro SIIE cliente: ";
-    public static final String MSG_ERR_SIIE_CUS_UPD = MSG_ERR + "al actualizar el registro SIIE cliente: ";
-    public static final String MSG_ERR_SIIE_ITM_QRY = MSG_ERR + "al consultar el registro SIIE ítem: ";
-    public static final String MSG_ERR_SIIE_ITM_INS = MSG_ERR + "al insertar el registro SIIE ítem: ";
-    public static final String MSG_ERR_SIIE_ITM_UPD = MSG_ERR + "al actualizar el registro SIIE ítem: ";
-    public static final String MSG_ERR_SIIE_DOC_QRY = MSG_ERR + "al consultar el registro SIIE documento: ";
-    public static final String MSG_ERR_SIIE_DOC_INS = MSG_ERR + "al insertar el registro SIIE documento: ";
-    public static final String MSG_ERR_SIIE_DOC_UPD = MSG_ERR + "al actualizar el registro SIIE documento: ";
+    public static final String MSG_ERR_UNK_UOM = MSG_ERR + " al determinar la unidad de medida: ";
+    public static final String MSG_ERR_UNK_SAL_AGT = MSG_ERR + " al determinar el agente de ventas: ";
+    public static final String MSG_ERR_UNK_CUS = MSG_ERR + " al determinar el cliente: ";
+    public static final String MSG_ERR_UNK_ITM = MSG_ERR + " al determinar el ítem: ";
+    public static final String MSG_ERR_UNK_EXR = MSG_ERR + " al determinar el tipo de cambio: ";
+    public static final String MSG_ERR_SIIE_COM_QRY = MSG_ERR + " al consultar el registro SIIE empresa: ";
+    public static final String MSG_ERR_SIIE_COM_INS = MSG_ERR + " al insertar el registro SIIE empresa: ";
+    public static final String MSG_ERR_SIIE_COM_UPD = MSG_ERR + " al actualizar el registro SIIE empresa: ";
+    public static final String MSG_ERR_SIIE_CUS_QRY = MSG_ERR + " al consultar el registro SIIE cliente: ";
+    public static final String MSG_ERR_SIIE_CUS_INS = MSG_ERR + " al insertar el registro SIIE cliente: ";
+    public static final String MSG_ERR_SIIE_CUS_UPD = MSG_ERR + " al actualizar el registro SIIE cliente: ";
+    public static final String MSG_ERR_SIIE_CUS_STA = MSG_ERR + " en el estatus del registro SIIE cliente: ";
+    public static final String MSG_ERR_SIIE_ITM_QRY = MSG_ERR + " al consultar el registro SIIE ítem: ";
+    public static final String MSG_ERR_SIIE_ITM_INS = MSG_ERR + " al insertar el registro SIIE ítem: ";
+    public static final String MSG_ERR_SIIE_ITM_UPD = MSG_ERR + " al actualizar el registro SIIE ítem: ";
+    public static final String MSG_ERR_SIIE_ITM_STA = MSG_ERR + " en el estatus del registro SIIE ítem: ";
+    public static final String MSG_ERR_SIIE_DOC_QRY = MSG_ERR + " al consultar el registro SIIE documento: ";
+    public static final String MSG_ERR_SIIE_DOC_INS = MSG_ERR + " al insertar el registro SIIE documento: ";
+    public static final String MSG_ERR_SIIE_DOC_UPD = MSG_ERR + " al actualizar el registro SIIE documento: ";
+    public static final String MSG_ERR_SIIE_DOC_STA = MSG_ERR + " en el estatus del registro SIIE documento: ";
+    public static final String MSG_ERR_REC_STA_DEL = "El registro está eliminado.";
 }

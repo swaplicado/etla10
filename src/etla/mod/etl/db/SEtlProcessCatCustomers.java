@@ -17,6 +17,7 @@ import erp.mmkt.data.SDataCustomerConfig;
 import erp.mod.SModSysConsts;
 import etla.mod.SModConsts;
 import etla.mod.cfg.db.SDbConfig;
+import etla.mod.cfg.db.SDbUser;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import sa.lib.SLibConsts;
@@ -85,6 +86,7 @@ public abstract class SEtlProcessCatCustomers {
                 + "WHERE CAST(ci.Created AS DATE) BETWEEN '" + SLibUtils.DbmsDateFormatDate.format(etlPackage.PeriodStart) + "' AND '" + SLibUtils.DbmsDateFormatDate.format(etlPackage.PeriodEnd) + "' AND "
                 + "ci.CurrentStatusKey IN (" + SEtlConsts.AVISTA_INV_STA_APP + ", " + SEtlConsts.AVISTA_INV_STA_ARC + ") AND "
                 + "ci.CustomerInvoiceTypeKey=" + SEtlConsts.AVISTA_INV_TP_INV + " "
+                + (etlPackage.InvoiceBatch == SLibConsts.UNDEFINED ? "" : "AND ci.BatchNumber=" + etlPackage.InvoiceBatch + " ")
                 + "ORDER BY c.SalesUserKey, u.UserId ";
         resultSetAvista = statementAvista.executeQuery(sql);
         while (resultSetAvista.next()) {
@@ -162,6 +164,7 @@ public abstract class SEtlProcessCatCustomers {
                 + "WHERE CAST(ci.Created AS DATE) BETWEEN '" + SLibUtils.DbmsDateFormatDate.format(etlPackage.PeriodStart) + "' AND '" + SLibUtils.DbmsDateFormatDate.format(etlPackage.PeriodEnd) + "' AND "
                 + "ci.CurrentStatusKey IN (" + SEtlConsts.AVISTA_INV_STA_APP + ", " + SEtlConsts.AVISTA_INV_STA_ARC + ") AND "
                 + "ci.CustomerInvoiceTypeKey=" + SEtlConsts.AVISTA_INV_TP_INV + " "
+                + (etlPackage.InvoiceBatch == SLibConsts.UNDEFINED ? "" : "AND ci.BatchNumber=" + etlPackage.InvoiceBatch + " ")
                 + "ORDER BY c.CustomerId, c.TaxId ";
         resultSetAvista = statementAvista.executeQuery(sql);
         while (resultSetAvista.next()) {
@@ -317,7 +320,7 @@ public abstract class SEtlProcessCatCustomers {
                     dataBizPartner.setFkTaxIdentityId(bIsBizPartnerPerson ? SModSysConsts.BPSS_TP_BP_IDY_PER : SModSysConsts.BPSS_TP_BP_IDY_ORG);
                     dataBizPartner.setFkFiscalBankId(SModSysConsts.FINS_FISCAL_BANK_NA);
                     dataBizPartner.setFkBizAreaId(SModSysConsts.BPSU_BA_DEF);
-                    dataBizPartner.setFkUserNewId(SDataConstantsSys.USRX_USER_NA);
+                    dataBizPartner.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
                     dataBizPartner.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
                     dataBizPartner.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);
                     //dataBizPartner.setUserNewTs(...);
@@ -345,7 +348,7 @@ public abstract class SEtlProcessCatCustomers {
                     dataBizPartnerCategory.setFkCfdAddendaTypeId(SModSysConsts.BPSS_TP_CFD_ADD_CFD_ADD_NA);
                     dataBizPartnerCategory.setFkLanguageId_n(SLibConsts.UNDEFINED);
                     dataBizPartnerCategory.setFkCurrencyId_n(nSiieCurrencyFk);
-                    dataBizPartnerCategory.setFkUserNewId(SDataConstantsSys.USRX_USER_NA);
+                    dataBizPartnerCategory.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
                     dataBizPartnerCategory.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
                     dataBizPartnerCategory.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);
                     //dataBizPartnerCategory.setUserNewTs(...);
@@ -371,7 +374,7 @@ public abstract class SEtlProcessCatCustomers {
                     dataBizPartnerCustomerConfig.setFkDistributionChannelId(SEtlConsts.SIIE_DEFAULT);
                     dataBizPartnerCustomerConfig.setFkSalesAgentId_n(dbSalesAgent == null ? SLibConsts.UNDEFINED : dbSalesAgent.getDesSalesAgentId());
                     dataBizPartnerCustomerConfig.setFkSalesSupervisorId_n(SLibConsts.UNDEFINED);
-                    dataBizPartnerCustomerConfig.setFkUserNewId(SDataConstantsSys.USRX_USER_NA);
+                    dataBizPartnerCustomerConfig.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
                     dataBizPartnerCustomerConfig.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
                     dataBizPartnerCustomerConfig.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);
                     //dataBizPartnerCustomerConfig.setUserNewTs(...);
@@ -392,7 +395,7 @@ public abstract class SEtlProcessCatCustomers {
                     dataBizPartnerBranch.setFkBizPartnerBranchTypeId(SModSysConsts.BPSS_TP_BPB_HQ);
                     dataBizPartnerBranch.setFkTaxRegionId_n(SLibConsts.UNDEFINED);
                     dataBizPartnerBranch.setFkAddressFormatTypeId_n(SLibConsts.UNDEFINED);
-                    dataBizPartnerBranch.setFkUserNewId(SDataConstantsSys.USRX_USER_NA);
+                    dataBizPartnerBranch.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
                     dataBizPartnerBranch.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
                     dataBizPartnerBranch.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);
                     //dataBizPartnerBranch.setUserNewTs();
@@ -419,7 +422,7 @@ public abstract class SEtlProcessCatCustomers {
                     dataBizPartnerBranchAddress.setIsDeleted(false);
                     dataBizPartnerBranchAddress.setFkAddressTypeId(SModSysConsts.BPSS_TP_ADD_OFF);
                     dataBizPartnerBranchAddress.setFkCountryId_n(SLibConsts.UNDEFINED); // by now, only local country allowed (i.e., MX)
-                    dataBizPartnerBranchAddress.setFkUserNewId(SDataConstantsSys.USRX_USER_NA);
+                    dataBizPartnerBranchAddress.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
                     dataBizPartnerBranchAddress.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
                     dataBizPartnerBranchAddress.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);
                     //dataBizPartnerBranchAddress.setUserNewTs(...);
@@ -460,7 +463,7 @@ public abstract class SEtlProcessCatCustomers {
                     dataBizPartnerBranchContact.setPkTelephoneType01Id(SLibUtils.textTrim(resultSetAvista.getString("Phone")).isEmpty() ? SModSysConsts.BPSS_TP_TEL_NA : SModSysConsts.BPSS_TP_TEL_TEL);
                     dataBizPartnerBranchContact.setPkTelephoneType02Id(SLibUtils.textTrim(resultSetAvista.getString("Fax")).isEmpty() ? SModSysConsts.BPSS_TP_TEL_NA : SModSysConsts.BPSS_TP_TEL_FAX);
                     dataBizPartnerBranchContact.setPkTelephoneType03Id(SModSysConsts.BPSS_TP_TEL_NA);
-                    dataBizPartnerBranchContact.setFkUserNewId(SDataConstantsSys.USRX_USER_NA);
+                    dataBizPartnerBranchContact.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
                     dataBizPartnerBranchContact.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
                     dataBizPartnerBranchContact.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);
                     //dataBizPartnerBranchContact.setUserNewTs(...);
@@ -477,7 +480,7 @@ public abstract class SEtlProcessCatCustomers {
                     dataBizPartnerCustomerBranchConfig.setFkSalesRouteId(SEtlConsts.SIIE_DEFAULT);
                     dataBizPartnerCustomerBranchConfig.setFkSalesAgentId_n(SLibConsts.UNDEFINED);
                     dataBizPartnerCustomerBranchConfig.setFkSalesSupervisorId_n(SLibConsts.UNDEFINED);
-                    dataBizPartnerCustomerBranchConfig.setFkUserNewId(SDataConstantsSys.USRX_USER_NA);
+                    dataBizPartnerCustomerBranchConfig.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
                     dataBizPartnerCustomerBranchConfig.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
                     dataBizPartnerCustomerBranchConfig.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);
                     //dataBizPartnerCustomerBranchConfig.setUserNewTs(...);

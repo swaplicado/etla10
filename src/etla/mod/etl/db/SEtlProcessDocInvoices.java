@@ -17,6 +17,7 @@ import erp.mtrn.data.SDataDpsNotes;
 import etla.mod.SModConsts;
 import etla.mod.SModSysConsts;
 import etla.mod.cfg.db.SDbConfig;
+import etla.mod.cfg.db.SDbUser;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.HashSet;
@@ -100,6 +101,11 @@ public class SEtlProcessDocInvoices {
         etlPackage.EtlLog.setStepAux(SEtlConsts.STEP_AUX_NA);
         etlPackage.EtlLog.save(session);
         
+        // Validate issue period is open:
+        if (!SEtlUtils.isSiiePeriodOpen(SLibTimeUtils.digestMonth(etlPackage.DateIssue), etlPackage.ConnectionSiie.createStatement())) {
+            throw new Exception(SLibConstants.MSG_ERR_GUI_PER_CLOSE);
+        }
+        
         // Prepare miscellaneous values:
         
         etlCatalogs = new SEtlCatalogs(session, true, true);
@@ -120,6 +126,7 @@ public class SEtlProcessDocInvoices {
                 + "WHERE CAST(ci.Created AS DATE) BETWEEN '" + SLibUtils.DbmsDateFormatDate.format(etlPackage.PeriodStart) + "' AND '" + SLibUtils.DbmsDateFormatDate.format(etlPackage.PeriodEnd) + "' AND "
                 + "ci.CurrentStatusKey IN (" + SEtlConsts.AVISTA_INV_STA_APP + ", " + SEtlConsts.AVISTA_INV_STA_ARC + ") AND "
                 + "ci.CustomerInvoiceTypeKey=" + SEtlConsts.AVISTA_INV_TP_INV + " "
+                + (etlPackage.InvoiceBatch == SLibConsts.UNDEFINED ? "" : "AND ci.BatchNumber=" + etlPackage.InvoiceBatch + " ")
                 + "ORDER BY CAST(ci.Created AS DATE), ci.InvoiceNumber, ci.CustomerInvoiceKey ";
         
         rsAvistaInvoiceList = stAvistaInvoiceList.executeQuery(sql);
@@ -266,11 +273,11 @@ public class SEtlProcessDocInvoices {
                     dInvoiceExchangeRate = 1;
                 }
                 else {
-                    dInvoiceExchangeRate = SEtlUtils.getExchangeRate(session, nInvoiceCurrencyReqId, etlPackage.Issue);
+                    dInvoiceExchangeRate = SEtlUtils.getEtlExchangeRate(session, nInvoiceCurrencyReqId, etlPackage.DateIssue);
                     if (dInvoiceExchangeRate == 0) {
                         throw new Exception(SEtlConsts.MSG_ERR_UNK_CUR
                                 + SEtlConsts.TXT_CUR + "='" + dbInvoiceCurrencyReq.getName() + "', "
-                                + SEtlConsts.TXT_MISC_DAT + "='" + SLibUtils.DateFormatDate.format(etlPackage.Issue) + "'.\n"
+                                + SEtlConsts.TXT_MISC_DAT + "='" + SLibUtils.DateFormatDate.format(etlPackage.DateIssue) + "'.\n"
                                 + "(" + SEtlConsts.TXT_INV + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
                     }
                 }
@@ -292,7 +299,7 @@ public class SEtlProcessDocInvoices {
                 try {
                     sql = "SELECT ci.CustomerInvoiceKey, ci.InvoiceNumber, ci.Created AS InvoiceCreated, ci.CustomerId, ci.Description AS InvoiceDescription, ci.CurrentStatusKey, "
                             + "cii.ItemNumber, cii.LineAmount, cii.UnitPrice AS LinePrice, cii.PricePer AS LinePricePerCode, cii.Units, cii.Pieces, cii.Area, cii.Weight, cii.ProductDescription, cii.CurrencyKey, cii.ExchangeToLocal, "
-                            + "co.OrderNumber, co.CustomerPO, co.QuantityOrdered, co.ItemDescription AS OrderItemDescription, co.Price AS OrderPrice, co.PricePerCode AS OrderPricePerCode, "
+                            + "co.OrderNumber, COALESCE(co.CustomerPO, '') as CustomerPO, co.QuantityOrdered, co.ItemDescription AS OrderItemDescription, co.Price AS OrderPrice, co.PricePerCode AS OrderPricePerCode, "
                             + "pe.EstNo, pe.ItemDescription AS EstItemDescription, pe.Width, pe.Length, pe.Flute, pe.Price AS EstPrice, pe.PricePerCode AS EstPricePerCode, pe.PlantBoardTypeKey, pbt.ShortDesc, "
                             + "COALESCE(ci.PayTermCode, '') AS PayTermCode, COALESCE(pt.Description, 'Contado') AS PayTermDescription "
                             + "FROM dbo.CustomerInvoices AS ci "
@@ -316,7 +323,7 @@ public class SEtlProcessDocInvoices {
                         dbInvoice.setFinalSeries(""); // set when SIIE record saved
                         dbInvoice.setFinalNumber(""); // set when SIIE record saved
                         dbInvoice.setOriginalDate(rsAvistaInvoiceData.getDate("InvoiceCreated"));
-                        dbInvoice.setFinalDate(etlPackage.Issue);
+                        dbInvoice.setFinalDate(etlPackage.DateIssue);
                         dbInvoice.setPayAccount(dbInvoiceCustomer.getPayAccount());
                         dbInvoice.setCreditDays(SLibUtils.parseInt(rsAvistaInvoiceData.getString("PayTermCode")));
                         dbInvoice.setOriginalAmount(dInvoiceAmountSrc);
@@ -327,6 +334,8 @@ public class SEtlProcessDocInvoices {
                         dbInvoice.setBillOfLading(rsAvistaInvoiceData.getString("InvoiceDescription"));
                         dbInvoice.setSrcCustomerFk(dbInvoiceCustomer.getSrcCustomerId());
                         dbInvoice.setDesCustomerFk(dbInvoiceCustomer.getDesCustomerId());
+                        dbInvoice.setSrcSalesAgentFk(dbInvoiceSalesAgent == null ? SLibConsts.UNDEFINED : dbInvoiceSalesAgent.getSrcSalesAgentId());
+                        dbInvoice.setDesSalesAgentFk(dbInvoiceSalesAgent == null ? SLibConsts.UNDEFINED : dbInvoiceSalesAgent.getDesSalesAgentId());
                         dbInvoice.setSrcOriginalCurrencyFk(dbInvoiceCurrencySrc.getSrcCurrencyId());
                         dbInvoice.setSrcFinalCurrencyFk(dbInvoiceCurrencyReq.getSrcCurrencyId());
                         dbInvoice.setDesOriginalCurrencyFk(dbInvoiceCurrencySrc.getDesCurrencyId());
@@ -337,6 +346,7 @@ public class SEtlProcessDocInvoices {
                         dbInvoice.setDeleted(false);
                         dbInvoice.setSystem(false);
                         dbInvoice.setFkSrcCustomerId(dbInvoiceCustomer.getPkCustomerId());
+                        dbInvoice.setFkSrcSalesAgentId_n(dbInvoiceSalesAgent == null ? SLibConsts.UNDEFINED : dbInvoiceSalesAgent.getPkSalesAgentId());
                         dbInvoice.setFkSrcOriginalCurrencyId(dbInvoiceCurrencySrc.getPkCurrencyId());
                         dbInvoice.setFkSrcFinalCurrencyId(dbInvoiceCurrencyReq.getPkCurrencyId());
                         dbInvoice.setFkDesPayMethodId(nInvoicePayMethodId);
@@ -483,7 +493,7 @@ public class SEtlProcessDocInvoices {
                             dbInvoiceRow.setCode(dbLineItem.getCode());
                             dbInvoiceRow.setName(dbLineItem.getName());
                             dbInvoiceRow.setProductDescription(rsAvistaInvoiceData.getString("ProductDescription"));
-                            dbInvoiceRow.setCustomerOrder(rsAvistaInvoiceData.getString("CustomerPO"));
+                            dbInvoiceRow.setCustomerOrder(rsAvistaInvoiceData.getString("CustomerPO").toUpperCase());
                             dbInvoiceRow.setOrderNumber(rsAvistaInvoiceData.getString("OrderNumber"));
                             dbInvoiceRow.setOrderDescription(rsAvistaInvoiceData.getString("OrderItemDescription"));
                             dbInvoiceRow.setEstimateNumber(rsAvistaInvoiceData.getString("EstNo"));
@@ -543,6 +553,10 @@ public class SEtlProcessDocInvoices {
                                                 + "(" + SEtlConsts.TXT_INV + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
                     }
                     
+                    if (dataBizPartnerCustomer.getIsDeleted() || dataBizPartnerCustomer.getDbmsCategorySettingsCus().getIsDeleted()) {
+                        throw new Exception(SEtlConsts.MSG_ERR_SIIE_CUS_STA + SEtlConsts.MSG_ERR_REC_STA_DEL); // record is deleted
+                    }
+                    
                     stSiie.execute("START TRANSACTION");
 
                     // Create business partner registry:
@@ -558,7 +572,7 @@ public class SEtlProcessDocInvoices {
                     dataDps.setDateDocLapsing_n(null);
                     dataDps.setDateDocDelivery_n(null);
                     dataDps.setNumberSeries(dbConfigAvista.getInvoiceSeries());
-                    dataDps.setNumber("" + SEtlUtils.getNextDpsNumber(session, stSiie));
+                    dataDps.setNumber("" + SEtlUtils.getSiieNextDpsNumber(session, stSiie));
                     dataDps.setNumberReference(dbInvoice.getCustomerOrder().length() <= 25 ? dbInvoice.getCustomerOrder() : dbInvoice.getCustomerOrder().substring(0, 25));
                     dataDps.setCommissionsReference("");
                     dataDps.setApproveYear(dataDps.getPkYearId());
@@ -647,7 +661,7 @@ public class SEtlProcessDocInvoices {
                     dataDps.setFkUserShippedId(SDataConstantsSys.USRX_USER_NA);
                     dataDps.setFkUserAuditedId(SDataConstantsSys.USRX_USER_NA);
                     dataDps.setFkUserAuthorizedId(SDataConstantsSys.USRX_USER_NA);
-                    dataDps.setFkUserNewId(SDataConstantsSys.USRX_USER_NA);
+                    dataDps.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
                     dataDps.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
                     dataDps.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);
                     //dataDps.setUserLinkedTs(...);
@@ -668,7 +682,7 @@ public class SEtlProcessDocInvoices {
                     dataDpsNotes.setIsAllDocs(true);
                     dataDpsNotes.setIsPrintable(true);
                     dataDpsNotes.setIsDeleted(false);
-                    dataDpsNotes.setFkUserNewId(SDataConstantsSys.USRX_USER_NA);
+                    dataDpsNotes.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
                     dataDpsNotes.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
                     dataDpsNotes.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);
                     //dataDpsNotes.setUserNewTs(...);
@@ -715,7 +729,7 @@ public class SEtlProcessDocInvoices {
                         //dataDpsEntry.setPkDocId(...); // set on save
                         //dataDpsEntry.setPkEntryId(...); // set on save
                         dataDpsEntry.setConceptKey(row.getCode());
-                        dataDpsEntry.setConcept(SEtlConsts.TXT_MISC_O + ": " + row.getOrderNumber() + "; " + SEtlConsts.TXT_BRD + ": " + row.getName() + "; " + row.getLength() + "X" + row.getWidth() + "; " + SEtlConsts.TXT_MISC_PO_ACR + ": " + row.getCustomerOrder());
+                        dataDpsEntry.setConcept(SEtlConsts.TXT_MISC_O + ": " + row.getOrderNumber() + "; " + SEtlConsts.TXT_BRD + ": " + row.getName() + "; " + row.getLength() + " X " + row.getWidth() + "; " + SEtlConsts.TXT_MISC_PO_ACR + ": " + row.getCustomerOrder());
                         
                         dataDpsEntry.setQuantity(dEntryQuantity);
                         
@@ -799,9 +813,9 @@ public class SEtlProcessDocInvoices {
                         dataDpsEntry.setFkDpsAdjustmentSubtypeId(SDataConstantsSys.TRNS_STP_DPS_ADJ_NA_NA[1]);
                         dataDpsEntry.setFkDpsEntryTypeId(SDataConstantsSys.TRNS_TP_DPS_ETY_ORDY);
                         dataDpsEntry.setFkVehicleTypeId_n(SLibConsts.UNDEFINED);
-                        dataDpsEntry.setFkCostCenterId_n("");
+                        dataDpsEntry.setFkCostCenterId_n(dbConfigAvista.getDesDefaultCostCenterFk());
                         dataDpsEntry.setFkItemRefId_n(SLibConsts.UNDEFINED);
-                        dataDpsEntry.setFkUserNewId(SDataConstantsSys.USRX_USER_NA);
+                        dataDpsEntry.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
                         dataDpsEntry.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
                         dataDpsEntry.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);
                         //dataDpsEntry.setUserNewTs(...);
@@ -820,7 +834,7 @@ public class SEtlProcessDocInvoices {
                         dataDpsEntryNotes.setIsAllDocs(true);
                         dataDpsEntryNotes.setIsPrintable(true);
                         dataDpsEntryNotes.setIsDeleted(false);
-                        dataDpsEntryNotes.setFkUserNewId(SDataConstantsSys.USRX_USER_NA);
+                        dataDpsEntryNotes.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
                         dataDpsEntryNotes.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
                         dataDpsEntryNotes.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);
                         //dataDpsEntryNotes.setUserNewTs(...);

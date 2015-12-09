@@ -424,7 +424,7 @@ public class SDbCustomer extends SDbRegistryUser {
                     (mnFkSrcRequiredCurrencyId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkSrcRequiredCurrencyId_n) + ", " + 
                     (mnFkSrcRequiredUnitOfMeasureId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkSrcRequiredUnitOfMeasureId_n) + ", " + 
                     (mnFkDesRequiredPayMethodId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkDesRequiredPayMethodId_n) + ", " + 
-                    (mnFkLastEtlLogId == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkLastEtlLogId) + ", " + 
+                    mnFkLastEtlLogId + ", " + 
                     mnFkUserInsertId + ", " + 
                     mnFkUserUpdateId + ", " + 
                     "NOW()" + ", " + 
@@ -474,11 +474,11 @@ public class SDbCustomer extends SDbRegistryUser {
                     "b_sys = " + (mbSystem ? 1 : 0) + ", " +
                     "fk_src_cus_cur_n = " + (mnFkSrcCustomerCurrencyId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkSrcCustomerCurrencyId_n) + ", " +
                     "fk_src_cus_uom_n = " + (mnFkSrcCustomerUnitOfMeasureId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkSrcCustomerUnitOfMeasureId_n) + ", " +
-                    "fk_src_cus_sal_agt_n = " + (mnFkSrcCustomerUnitOfMeasureId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkSrcCustomerUnitOfMeasureId_n) + ", " +
+                    "fk_src_cus_sal_agt_n = " + (mnFkSrcCustomerSalesAgentId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkSrcCustomerSalesAgentId_n) + ", " +
                     "fk_src_req_cur_n = " + (mnFkSrcRequiredCurrencyId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkSrcRequiredCurrencyId_n) + ", " +
                     "fk_src_req_uom_n = " + (mnFkSrcRequiredUnitOfMeasureId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkSrcRequiredUnitOfMeasureId_n) + ", " +
                     "fk_des_req_pay_met_n = " + (mnFkDesRequiredPayMethodId_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkDesRequiredPayMethodId_n) + ", " +
-                    "fk_lst_etl_log = " + (mnFkLastEtlLogId == SLibConsts.UNDEFINED ? "NULL" : "" + mnFkLastEtlLogId) + ", " +
+                    "fk_lst_etl_log = " + mnFkLastEtlLogId + ", " +
                     //"fk_usr_ins = " + mnFkUserInsertId + ", " +
                     "fk_usr_upd = " + mnFkUserUpdateId + ", " +
                     //"ts_usr_ins = " + "NOW()" + ", " +

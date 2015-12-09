@@ -120,14 +120,14 @@ public class SViewInvoice extends SGridPaneView {
     public ArrayList<SGridColumnView> createGridColumns() {
         ArrayList<SGridColumnView> columns = new ArrayList<SGridColumnView>();
 
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.fin_ser", "Serie " + SEtlConsts.TXT_DB_SIIE));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.fin_num", "Folio " + SEtlConsts.TXT_DB_SIIE));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.ori_num", "Folio " + SEtlConsts.TXT_DB_AVISTA));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.fin_ser", "Serie " + SEtlConsts.TXT_SYS_SIIE));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.fin_num", "Folio " + SEtlConsts.TXT_SYS_SIIE));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.ori_num", "Folio " + SEtlConsts.TXT_SYS_AVISTA));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_DATE, "v.ori_dat", "Fecha original"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_DATE, "v.fin_dat", "Fecha final"));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.src_inv_id", "ID " + SEtlConsts.TXT_DB_AVISTA));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.des_inv_yea_id", "ID año " + SEtlConsts.TXT_DB_SIIE));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.des_inv_doc_id", "ID doc " + SEtlConsts.TXT_DB_SIIE));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.src_inv_id", "ID " + SEtlConsts.TXT_SYS_AVISTA));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.des_inv_yea_id", "ID año " + SEtlConsts.TXT_SYS_SIIE));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.des_inv_doc_id", "ID doc " + SEtlConsts.TXT_SYS_SIIE));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_M, "cus.name", SGridConsts.COL_TITLE_NAME + " " + SEtlConsts.TXT_CUS.toLowerCase()));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_BPR, "cus.code", SGridConsts.COL_TITLE_CODE + " " + SEtlConsts.TXT_CUS.toLowerCase()));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "cus.tax_id", "RFC"));

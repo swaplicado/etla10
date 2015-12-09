@@ -314,7 +314,7 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
         
         jtfDefaultCurrency.setText((String) miClient.getSession().readField(SModConsts.AS_CUR, new int[] { configAvista.getFkSrcDefaultCurrencyId() }, SDbRegistry.FIELD_CODE));
         jtfDefaultUnitOfMeasure.setText((String) miClient.getSession().readField(SModConsts.AS_UOM, new int[] { configAvista.getFkSrcDefaultUnitOfMeasureId() }, SDbRegistry.FIELD_CODE));
-        jtfDefaultPayMethod.setText((String) miClient.getSession().readField(SModConsts.AS_PAY_MET, new int[] { configAvista.getFkDesDefaultPayMethodId()}, SDbRegistry.FIELD_NAME));
+        jtfDefaultPayMethod.setText((String) miClient.getSession().readField(SModConsts.AS_PAY_MET, new int[] { configAvista.getFkDesDefaultPayMethodId() }, SDbRegistry.FIELD_NAME));
         
         jtfDefaultCurrency.setCaretPosition(0);
         jtfDefaultUnitOfMeasure.setCaretPosition(0);
@@ -396,11 +396,11 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
         jtfName.setText(moRegistry.getName());
         jtfName.setCaretPosition(0);
         moKeySrcRequiredCurrency.setValue(new int[] { moRegistry.getFkSrcRequiredCurrencyId_n() });
-        moKeySrcRequiredUnitOfMeasure.setValue(new int[] { moRegistry.getFkSrcRequiredUnitOfMeasureId_n()});
-        moKeySrcCustomerSalesAgent.setValue(new int[] { moRegistry.getFkSrcCustomerSalesAgentId_n()});
+        moKeySrcRequiredUnitOfMeasure.setValue(new int[] { moRegistry.getFkSrcRequiredUnitOfMeasureId_n() });
+        moKeySrcCustomerSalesAgent.setValue(new int[] { moRegistry.getFkSrcCustomerSalesAgentId_n() });
         moIntDesCustomerId.setValue(moRegistry.getDesCustomerId());
         moIntDesCustomerBranchId.setValue(moRegistry.getDesCustomerBranchId());
-        moKeyDesRequiredPayMethod.setValue(new int[] { moRegistry.getFkDesRequiredPayMethodId_n()});
+        moKeyDesRequiredPayMethod.setValue(new int[] { moRegistry.getFkDesRequiredPayMethodId_n()} );
         moTextPayAccount.setValue(moRegistry.getPayAccount());
 
         setFormEditable(true);

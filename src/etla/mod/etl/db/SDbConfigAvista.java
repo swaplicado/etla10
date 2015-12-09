@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import sa.gui.util.SUtilConsts;
+import sa.lib.SLibConsts;
 import sa.lib.db.SDbConsts;
 import sa.lib.db.SDbRegistryUser;
 import sa.lib.gui.SGuiSession;
@@ -25,12 +26,15 @@ public class SDbConfigAvista extends SDbRegistryUser {
     protected String msAvistaName;
     protected String msAvistaUser;
     protected String msAvistaPassword;
+    protected boolean mbGuiEtlUpdateData;
+    protected int mnGuiEtlUpdateMode;
     protected String msInvoiceSeries;
     protected int mnInvoiceNumberStarting;
     protected int mnDesCompanyFk;
     protected int mnDesCompanyBranchFk;
     protected int mnDesLocalCountryFk;
     protected int mnDesLocalCurrencyFk;
+    protected String msDesDefaultCostCenterFk;
     protected int mnDesDefaultItemGenericFk;
     protected String msDesItemCodePrefix;
     protected String msSrcLocalCountryFk;
@@ -67,12 +71,15 @@ public class SDbConfigAvista extends SDbRegistryUser {
     public void setAvistaName(String s) { msAvistaName = s; }
     public void setAvistaUser(String s) { msAvistaUser = s; }
     public void setAvistaPassword(String s) { msAvistaPassword = s; }
+    public void setGuiEtlUpdateData(boolean b) { mbGuiEtlUpdateData = b; }
+    public void setGuiEtlUpdateMode(int n) { mnGuiEtlUpdateMode = n; }
     public void setInvoiceSeries(String s) { msInvoiceSeries = s; }
     public void setInvoiceNumberStarting(int n) { mnInvoiceNumberStarting = n; }
     public void setDesCompanyFk(int n) { mnDesCompanyFk = n; }
     public void setDesCompanyBranchFk(int n) { mnDesCompanyBranchFk = n; }
     public void setDesLocalCountryFk(int n) { mnDesLocalCountryFk = n; }
     public void setDesLocalCurrencyFk(int n) { mnDesLocalCurrencyFk = n; }
+    public void setDesDefaultCostCenterFk(String s) { msDesDefaultCostCenterFk = s; }
     public void setDesDefaultItemGenericFk(int n) { mnDesDefaultItemGenericFk = n; }
     public void setDesItemCodePrefix(String s) { msDesItemCodePrefix = s; }
     public void setSrcLocalCountryFk(String s) { msSrcLocalCountryFk = s; }
@@ -97,12 +104,15 @@ public class SDbConfigAvista extends SDbRegistryUser {
     public String getAvistaName() { return msAvistaName; }
     public String getAvistaUser() { return msAvistaUser; }
     public String getAvistaPassword() { return msAvistaPassword; }
+    public boolean isGuiEtlUpdateData() { return mbGuiEtlUpdateData; }
+    public int getGuiEtlUpdateMode() { return mnGuiEtlUpdateMode; }
     public String getInvoiceSeries() { return msInvoiceSeries; }
     public int getInvoiceNumberStarting() { return mnInvoiceNumberStarting; }
     public int getDesCompanyFk() { return mnDesCompanyFk; }
     public int getDesCompanyBranchFk() { return mnDesCompanyBranchFk; }
     public int getDesLocalCountryFk() { return mnDesLocalCountryFk; }
     public int getDesLocalCurrencyFk() { return mnDesLocalCurrencyFk; }
+    public String getDesDefaultCostCenterFk() { return msDesDefaultCostCenterFk; }
     public int getDesDefaultItemGenericFk() { return mnDesDefaultItemGenericFk; }
     public String getDesItemCodePrefix() { return msDesItemCodePrefix; }
     public String getSrcLocalCountryFk() { return msSrcLocalCountryFk; }
@@ -145,12 +155,15 @@ public class SDbConfigAvista extends SDbRegistryUser {
         msAvistaName = "";
         msAvistaUser = "";
         msAvistaPassword = "";
+        mbGuiEtlUpdateData = false;
+        mnGuiEtlUpdateMode = 0;
         msInvoiceSeries = "";
         mnInvoiceNumberStarting = 0;
         mnDesCompanyFk = 0;
         mnDesCompanyBranchFk = 0;
         mnDesLocalCountryFk = 0;
         mnDesLocalCurrencyFk = 0;
+        msDesDefaultCostCenterFk = "";
         mnDesDefaultItemGenericFk = 0;
         msDesItemCodePrefix = "";
         msSrcLocalCountryFk = "";
@@ -218,12 +231,15 @@ public class SDbConfigAvista extends SDbRegistryUser {
             msAvistaName = resultSet.getString("avi_name");
             msAvistaUser = resultSet.getString("avi_user");
             msAvistaPassword = resultSet.getString("avi_pswd");
+            mbGuiEtlUpdateData = resultSet.getBoolean("b_gui_etl_upd_data");
+            mnGuiEtlUpdateMode = resultSet.getInt("gui_etl_upd_mode");
             msInvoiceSeries = resultSet.getString("inv_ser");
             mnInvoiceNumberStarting = resultSet.getInt("inv_num_sta");
             mnDesCompanyFk = resultSet.getInt("des_com_fk");
             mnDesCompanyBranchFk = resultSet.getInt("des_com_bra_fk");
             mnDesLocalCountryFk = resultSet.getInt("des_loc_cty_fk");
             mnDesLocalCurrencyFk = resultSet.getInt("des_loc_cur_fk");
+            msDesDefaultCostCenterFk = resultSet.getString("des_def_cc_fk");
             mnDesDefaultItemGenericFk = resultSet.getInt("des_def_itm_gen_fk");
             msDesItemCodePrefix = resultSet.getString("des_itm_code_pfx");
             msSrcLocalCountryFk = resultSet.getString("src_loc_cty_fk");
@@ -252,6 +268,10 @@ public class SDbConfigAvista extends SDbRegistryUser {
     public void save(SGuiSession session) throws SQLException, Exception {
         initQueryMembers();
         mnQueryResultId = SDbConsts.READ_ERROR;
+        
+        if (!mbGuiEtlUpdateData) {
+            mnGuiEtlUpdateMode = SLibConsts.UNDEFINED;
+        }
 
         if (mbRegistryNew) {
             computePrimaryKey(session);
@@ -267,12 +287,15 @@ public class SDbConfigAvista extends SDbRegistryUser {
                     "'" + msAvistaName + "', " + 
                     "'" + msAvistaUser + "', " + 
                     "'" + msAvistaPassword + "', " + 
+                    (mbGuiEtlUpdateData ? 1 : 0) + ", " + 
+                    mnGuiEtlUpdateMode + ", " + 
                     "'" + msInvoiceSeries + "', " + 
                     mnInvoiceNumberStarting + ", " + 
                     mnDesCompanyFk + ", " + 
                     mnDesCompanyBranchFk + ", " + 
                     mnDesLocalCountryFk + ", " + 
                     mnDesLocalCurrencyFk + ", " + 
+                    "'" + msDesDefaultCostCenterFk + "', " + 
                     mnDesDefaultItemGenericFk + ", " + 
                     "'" + msDesItemCodePrefix + "', " + 
                     "'" + msSrcLocalCountryFk + "', " + 
@@ -302,12 +325,15 @@ public class SDbConfigAvista extends SDbRegistryUser {
                     "avi_name = '" + msAvistaName + "', " +
                     "avi_user = '" + msAvistaUser + "', " +
                     "avi_pswd = '" + msAvistaPassword + "', " +
+                    "b_gui_etl_upd_data = " + (mbGuiEtlUpdateData ? 1 : 0) + ", " +
+                    "gui_etl_upd_mode = " + mnGuiEtlUpdateMode + ", " +
                     "inv_ser = '" + msInvoiceSeries + "', " +
                     "inv_num_sta = " + mnInvoiceNumberStarting + ", " +
                     "des_com_fk = " + mnDesCompanyFk + ", " +
                     "des_com_bra_fk = " + mnDesCompanyBranchFk + ", " +
                     "des_loc_cty_fk = " + mnDesLocalCountryFk + ", " +
                     "des_loc_cur_fk = " + mnDesLocalCurrencyFk + ", " +
+                    "des_def_cc_fk = '" + msDesDefaultCostCenterFk + "', " +
                     "des_def_itm_gen_fk = " + mnDesDefaultItemGenericFk + ", " +
                     "des_itm_code_pfx = '" + msDesItemCodePrefix + "', " +
                     "src_loc_cty_fk = '" + msSrcLocalCountryFk + "', " +
@@ -344,12 +370,15 @@ public class SDbConfigAvista extends SDbRegistryUser {
         registry.setAvistaName(this.getAvistaName());
         registry.setAvistaUser(this.getAvistaUser());
         registry.setAvistaPassword(this.getAvistaPassword());
+        registry.setGuiEtlUpdateData(this.isGuiEtlUpdateData());
+        registry.setGuiEtlUpdateMode(this.getGuiEtlUpdateMode());
         registry.setInvoiceSeries(this.getInvoiceSeries());
         registry.setInvoiceNumberStarting(this.getInvoiceNumberStarting());
         registry.setDesCompanyFk(this.getDesCompanyFk());
         registry.setDesCompanyBranchFk(this.getDesCompanyBranchFk());
         registry.setDesLocalCountryFk(this.getDesLocalCountryFk());
         registry.setDesLocalCurrencyFk(this.getDesLocalCurrencyFk());
+        registry.setDesDefaultCostCenterFk(this.getDesDefaultCostCenterFk());
         registry.setDesDefaultItemGenericFk(this.getDesDefaultItemGenericFk());
         registry.setDesItemCodePrefix(this.getDesItemCodePrefix());
         registry.setSrcLocalCountryFk(this.getSrcLocalCountryFk());

@@ -94,13 +94,13 @@ public class SViewItem extends SGridPaneView {
 
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_M, SDbConsts.FIELD_NAME, SGridConsts.COL_TITLE_NAME));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_ITM, SDbConsts.FIELD_CODE, SGridConsts.COL_TITLE_CODE));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_INT_RAW, "v.des_itm_id", "ID ítem " + SEtlConsts.TXT_DB_SIIE));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_INT_RAW, "v.des_itm_id", "ID ítem " + SEtlConsts.TXT_SYS_SIIE));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_M, "cus.name", SGridConsts.COL_TITLE_NAME + " cliente"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "cus.code", SGridConsts.COL_TITLE_CODE + " cliente"));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.src_req_cur_fk_n", "ID moneda req " + SEtlConsts.TXT_DB_AVISTA));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "cur.name", "Moneda req " + SEtlConsts.TXT_DB_AVISTA));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.src_req_uom_fk_n", "ID unidad req " + SEtlConsts.TXT_DB_AVISTA));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "uom.name", "Unidad req " + SEtlConsts.TXT_DB_AVISTA));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.src_req_cur_fk_n", "ID moneda req " + SEtlConsts.TXT_SYS_AVISTA));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "cur.name", "Moneda req " + SEtlConsts.TXT_SYS_AVISTA));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.src_req_uom_fk_n", "ID unidad req " + SEtlConsts.TXT_SYS_AVISTA));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "uom.name", "Unidad req " + SEtlConsts.TXT_SYS_AVISTA));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_DATE_DATETIME, "v.fst_etl_ins", "Primera exportación"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_DATE_DATETIME, "v.lst_etl_upd", "Última exportación"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_INT_4B, "v.fk_lst_etl_log", "# exportación"));

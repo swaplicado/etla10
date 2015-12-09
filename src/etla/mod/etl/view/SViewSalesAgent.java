@@ -79,8 +79,8 @@ public class SViewSalesAgent extends SGridPaneView {
 
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_M, SDbConsts.FIELD_NAME, SGridConsts.COL_TITLE_NAME));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, SDbConsts.FIELD_CODE, SGridConsts.COL_TITLE_CODE, 100));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.src_sal_agt_id", "ID " + SEtlConsts.TXT_DB_AVISTA));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_INT_RAW, "v.des_sal_agt_id", "ID asoc negocios " + SEtlConsts.TXT_DB_SIIE));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.src_sal_agt_id", "ID " + SEtlConsts.TXT_SYS_AVISTA));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_INT_RAW, "v.des_sal_agt_id", "ID asoc negocios " + SEtlConsts.TXT_SYS_SIIE));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_DATE_DATETIME, "v.fst_etl_ins", "Primera exportación"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_DATE_DATETIME, "v.lst_etl_upd", "Última exportación"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_INT_4B, "v.fk_lst_etl_log", "# exportación"));

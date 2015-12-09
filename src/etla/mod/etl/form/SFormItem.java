@@ -292,7 +292,7 @@ public class SFormItem extends SBeanForm implements ActionListener {
         jtfName.setCaretPosition(0);
         moKeySrcCustomer.setValue(new int[] { moRegistry.getFkSrcCustomerId_n() });
         moKeySrcRequiredCurrency.setValue(new int[] { moRegistry.getFkSrcRequiredCurrencyId_n() });
-        moKeySrcRequiredUnitOfMeasure.setValue(new int[] { moRegistry.getFkSrcRequiredUnitOfMeasureId_n()});
+        moKeySrcRequiredUnitOfMeasure.setValue(new int[] { moRegistry.getFkSrcRequiredUnitOfMeasureId_n() });
         moIntDesItemId.setValue(moRegistry.getDesItemId());
 
         setFormEditable(true);

@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import sa.gui.util.SUtilConsts;
+import sa.lib.SLibConsts;
 import sa.lib.SLibUtils;
 import sa.lib.db.SDbConsts;
 import sa.lib.db.SDbRegistryUser;
@@ -21,10 +22,13 @@ import sa.lib.gui.SGuiSession;
 public class SDbEtlLog extends SDbRegistryUser {
 
     protected int mnPkEtlLogId;
-    protected int mnMode;
+    protected int mnEtlMode;
     protected Date mtDateStart;
     protected Date mtDateEnd;
     protected Date mtDateIssue_n;
+    protected int mnInvoiceBatch;
+    protected boolean mbUpdateData;
+    protected int mnUpdateMode;
     protected Date mtTsStart;
     protected Date mtTsEnd_n;
     protected int mnStep;
@@ -49,10 +53,13 @@ public class SDbEtlLog extends SDbRegistryUser {
      */
 
     public void setPkEtlLogId(int n) { mnPkEtlLogId = n; }
-    public void setMode(int n) { mnMode = n; }
+    public void setEtlMode(int n) { mnEtlMode = n; }
     public void setDateStart(Date t) { mtDateStart = t; }
     public void setDateEnd(Date t) { mtDateEnd = t; }
     public void setDateIssue_n(Date t) { mtDateIssue_n = t; }
+    public void setInvoiceBatch(int n) { mnInvoiceBatch = n; }
+    public void setUpdateData(boolean b) { mbUpdateData = b; }
+    public void setUpdateMode(int n) { mnUpdateMode = n; }
     public void setTsStart(Date t) { mtTsStart = t; }
     public void setTsEnd_n(Date t) { mtTsEnd_n = t; }
     public void setStep(int n) { mnStep = n; }
@@ -65,10 +72,13 @@ public class SDbEtlLog extends SDbRegistryUser {
     public void setTsUserUpdate(Date t) { mtTsUserUpdate = t; }
 
     public int getPkEtlLogId() { return mnPkEtlLogId; }
-    public int getMode() { return mnMode; }
+    public int getEtlMode() { return mnEtlMode; }
     public Date getDateStart() { return mtDateStart; }
     public Date getDateEnd() { return mtDateEnd; }
     public Date getDateIssue_n() { return mtDateIssue_n; }
+    public int getInvoiceBatch() { return mnInvoiceBatch; }
+    public boolean isUpdateData() { return mbUpdateData; }
+    public int getUpdateMode() { return mnUpdateMode; }
     public Date getTsStart() { return mtTsStart; }
     public Date getTsEnd_n() { return mtTsEnd_n; }
     public int getStep() { return mnStep; }
@@ -103,10 +113,13 @@ public class SDbEtlLog extends SDbRegistryUser {
         initBaseRegistry();
 
         mnPkEtlLogId = 0;
-        mnMode = 0;
+        mnEtlMode = 0;
         mtDateStart = null;
         mtDateEnd = null;
         mtDateIssue_n = null;
+        mnInvoiceBatch = 0;
+        mbUpdateData = false;
+        mnUpdateMode = 0;
         mtTsStart = null;
         mtTsEnd_n = null;
         mnStep = 0;
@@ -164,10 +177,13 @@ public class SDbEtlLog extends SDbRegistryUser {
         }
         else {
             mnPkEtlLogId = resultSet.getInt("id_etl_log");
-            mnMode = resultSet.getInt("mode");
+            mnEtlMode = resultSet.getInt("etl_mode");
             mtDateStart = resultSet.getDate("dat_sta");
             mtDateEnd = resultSet.getDate("dat_end");
             mtDateIssue_n = resultSet.getDate("dat_iss_n");
+            mnInvoiceBatch = resultSet.getInt("inv_bat");
+            mbUpdateData = resultSet.getBoolean("b_upd_data");
+            mnUpdateMode = resultSet.getInt("upd_mode");
             mtTsStart = resultSet.getTimestamp("ts_sta");
             mtTsEnd_n = resultSet.getTimestamp("ts_end_n");
             mnStep = resultSet.getInt("step");
@@ -189,6 +205,10 @@ public class SDbEtlLog extends SDbRegistryUser {
     public void save(SGuiSession session) throws SQLException, Exception {
         initQueryMembers();
         mnQueryResultId = SDbConsts.READ_ERROR;
+        
+        if (!mbUpdateData) {
+            mnUpdateMode = SLibConsts.UNDEFINED;
+        }
 
         if (mbRegistryNew) {
             computePrimaryKey(session);
@@ -199,10 +219,13 @@ public class SDbEtlLog extends SDbRegistryUser {
 
             msSql = "INSERT INTO " + getSqlTable() + " VALUES (" +
                     mnPkEtlLogId + ", " + 
-                    mnMode + ", " + 
+                    mnEtlMode + ", " + 
                     "'" + SLibUtils.DbmsDateFormatDate.format(mtDateStart) + "', " + 
                     "'" + SLibUtils.DbmsDateFormatDate.format(mtDateEnd) + "', " + 
                     (mtDateIssue_n == null ? "NULL" : "'" + SLibUtils.DbmsDateFormatDate.format(mtDateIssue_n) + "'") + ", " + 
+                    mnInvoiceBatch + ", " + 
+                    (mbUpdateData ? 1 : 0) + ", " + 
+                    mnUpdateMode + ", " + 
                     "NOW(), " + 
                     (!mbAuxClosed ? "NULL" : "NOW()") + ", " + 
                     mnStep + ", " + 
@@ -220,10 +243,13 @@ public class SDbEtlLog extends SDbRegistryUser {
 
             msSql = "UPDATE " + getSqlTable() + " SET " +
                     //"id_etl_log = " + mnPkEtlLogId + ", " +
-                    "mode = " + mnMode + ", " +
+                    "etl_mode = " + mnEtlMode + ", " +
                     "dat_sta = '" + SLibUtils.DbmsDateFormatDate.format(mtDateStart) + "', " +
                     "dat_end = '" + SLibUtils.DbmsDateFormatDate.format(mtDateEnd) + "', " +
                     "dat_iss_n = " + (mtDateIssue_n == null ? "NULL" : "'" + SLibUtils.DbmsDateFormatDate.format(mtDateIssue_n) + "'") + ", " +
+                    "inv_bat = " + mnInvoiceBatch + ", " +
+                    "b_upd_data = " + (mbUpdateData ? 1 : 0) + ", " +
+                    "upd_mode = " + mnUpdateMode + ", " +
                     //"ts_sta = NOW(), " +
                     (!mbAuxClosed ? "" : "ts_end_n = NOW(), ") +
                     "step = " + mnStep + ", " +
@@ -248,10 +274,13 @@ public class SDbEtlLog extends SDbRegistryUser {
         SDbEtlLog registry = new SDbEtlLog();
 
         registry.setPkEtlLogId(this.getPkEtlLogId());
-        registry.setMode(this.getMode());
+        registry.setEtlMode(this.getEtlMode());
         registry.setDateStart(this.getDateStart());
         registry.setDateEnd(this.getDateEnd());
         registry.setDateIssue_n(this.getDateIssue_n());
+        registry.setInvoiceBatch(this.getInvoiceBatch());
+        registry.setUpdateData(this.isUpdateData());
+        registry.setUpdateMode(this.getUpdateMode());
         registry.setTsStart(this.getTsStart());
         registry.setTsEnd_n(this.getTsEnd_n());
         registry.setStep(this.getStep());

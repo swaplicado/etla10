@@ -11,6 +11,7 @@ import erp.mitm.data.SDataItem;
 import erp.mod.SModSysConsts;
 import etla.mod.SModConsts;
 import etla.mod.cfg.db.SDbConfig;
+import etla.mod.cfg.db.SDbUser;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import sa.lib.SLibConsts;
@@ -61,6 +62,7 @@ public class SEtlProcessCatItems {
                 + "WHERE CAST(ci.Created AS DATE) BETWEEN '" + SLibUtils.DbmsDateFormatDate.format(etlPackage.PeriodStart) + "' AND '" + SLibUtils.DbmsDateFormatDate.format(etlPackage.PeriodEnd) + "' AND "
                 + "ci.CurrentStatusKey IN (" + SEtlConsts.AVISTA_INV_STA_APP + ", " + SEtlConsts.AVISTA_INV_STA_ARC + ") AND "
                 + "ci.CustomerInvoiceTypeKey=" + SEtlConsts.AVISTA_INV_TP_INV + " "
+                + (etlPackage.InvoiceBatch == SLibConsts.UNDEFINED ? "" : "AND ci.BatchNumber=" + etlPackage.InvoiceBatch + " ")
                 + "ORDER BY pe.PlantBoardTypeKey, pe.Flute ";
         resultSetAvista = statementAvista.executeQuery(sql);
         while (resultSetAvista.next()) {
@@ -172,7 +174,7 @@ public class SEtlProcessCatItems {
                     dataItem.setFkFiscalAccountExpId(SModSysConsts.FIN_ACC_NA);
                     dataItem.setFkItemPackageId_n(SLibConsts.UNDEFINED);
                     dataItem.setFkDefaultItemRefId_n(SLibConsts.UNDEFINED);
-                    dataItem.setFkUserNewId(SDataConstantsSys.USRX_USER_NA);
+                    dataItem.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
                     dataItem.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
                     dataItem.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);
                     //dataItem.setUserNewTs(...);

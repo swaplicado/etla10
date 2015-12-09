@@ -61,11 +61,16 @@ public class SFormUser extends SBeanForm implements ActionListener {
         jPanel9 = new javax.swing.JPanel();
         jlType = new javax.swing.JLabel();
         moKeyType = new sa.lib.gui.bean.SBeanFieldKey();
+        jPanel12 = new javax.swing.JPanel();
+        jlDesUserId = new javax.swing.JLabel();
+        moIntDesUserId = new sa.lib.gui.bean.SBeanFieldInteger();
+        jbEditDesUserId = new javax.swing.JButton();
+        jlSiie = new javax.swing.JLabel();
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Datos del registro:"));
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        jPanel2.setLayout(new java.awt.GridLayout(4, 1, 0, 5));
+        jPanel2.setLayout(new java.awt.GridLayout(5, 1, 0, 5));
 
         jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
@@ -117,6 +122,25 @@ public class SFormUser extends SBeanForm implements ActionListener {
 
         jPanel2.add(jPanel9);
 
+        jPanel12.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
+
+        jlDesUserId.setText("ID user:*");
+        jlDesUserId.setPreferredSize(new java.awt.Dimension(100, 23));
+        jPanel12.add(jlDesUserId);
+        jPanel12.add(moIntDesUserId);
+
+        jbEditDesUserId.setIcon(new javax.swing.ImageIcon(getClass().getResource("/sa/lib/img/cmd_std_edit.gif"))); // NOI18N
+        jbEditDesUserId.setToolTipText("Modificar");
+        jbEditDesUserId.setPreferredSize(new java.awt.Dimension(23, 23));
+        jPanel12.add(jbEditDesUserId);
+
+        jlSiie.setForeground(java.awt.Color.gray);
+        jlSiie.setText("(Primary Key SIIE)");
+        jlSiie.setPreferredSize(new java.awt.Dimension(100, 23));
+        jPanel12.add(jlSiie);
+
+        jPanel2.add(jPanel12);
+
         jPanel1.add(jPanel2, java.awt.BorderLayout.NORTH);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -124,16 +148,21 @@ public class SFormUser extends SBeanForm implements ActionListener {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JButton jbChangePassword;
+    private javax.swing.JButton jbEditDesUserId;
     private javax.swing.JLabel jlConfirm;
+    private javax.swing.JLabel jlDesUserId;
     private javax.swing.JLabel jlName;
     private javax.swing.JLabel jlPassword;
+    private javax.swing.JLabel jlSiie;
     private javax.swing.JLabel jlType;
+    private sa.lib.gui.bean.SBeanFieldInteger moIntDesUserId;
     private sa.lib.gui.bean.SBeanFieldKey moKeyType;
     private sa.lib.gui.bean.SBeanFieldPassword moPswdConfirm;
     private sa.lib.gui.bean.SBeanFieldPassword moPswdPassword;
@@ -166,10 +195,20 @@ public class SFormUser extends SBeanForm implements ActionListener {
         moPswdConfirm.setEnabled(enable);
         jbChangePassword.setEnabled(!enable);
     }
+
+    private void enableEditDesUserId(boolean enable) {
+        moIntDesUserId.setEditable(enable);
+        jbEditDesUserId.setEnabled(!enable);
+    }
     
     private void actionChangePassword() {
         setEnabledPassword(true);
         moPswdPassword.requestFocus();
+    }
+    
+    private void actionEditDesUserId() {
+        enableEditDesUserId(true);
+        moIntDesUserId.requestFocus();
     }
     
     /*
@@ -183,11 +222,13 @@ public class SFormUser extends SBeanForm implements ActionListener {
     @Override
     public void addAllListeners() {
         jbChangePassword.addActionListener(this);
+        jbEditDesUserId.addActionListener(this);
     }
 
     @Override
     public void removeAllListeners() {
         jbChangePassword.removeActionListener(this);
+        jbEditDesUserId.removeActionListener(this);
     }
 
     @Override
@@ -222,14 +263,17 @@ public class SFormUser extends SBeanForm implements ActionListener {
         moPswdPassword.setValue("");
         moPswdConfirm.setValue("");
         moKeyType.setValue(new int[] { moRegistry.getFkUserTypeId() });
+        moIntDesUserId.setValue(moRegistry.getDesUserId());
 
         setFormEditable(true);
         
         if (moRegistry.isRegistryNew()) {
             setEnabledPassword(true);
+            enableEditDesUserId(true);
         }
         else {
             setEnabledPassword(false);
+            enableEditDesUserId(false);
         }
         
         addAllListeners();
@@ -241,6 +285,7 @@ public class SFormUser extends SBeanForm implements ActionListener {
 
         if (registry.isRegistryNew()) {}
 
+        registry.setDesUserId(moIntDesUserId.getValue());
         registry.setName(moTextName.getValue());
         registry.setPassword(new String(moPswdPassword.getPassword()));
         //registry.setDeleted(this.isDeleted());
@@ -275,6 +320,9 @@ public class SFormUser extends SBeanForm implements ActionListener {
             
             if (button == jbChangePassword) {
                 actionChangePassword();
+            }
+            else if (button == jbEditDesUserId) {
+                actionEditDesUserId();
             }
         }
     }
