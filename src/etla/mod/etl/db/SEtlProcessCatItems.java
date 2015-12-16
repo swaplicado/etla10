@@ -31,6 +31,7 @@ public class SEtlProcessCatItems {
         int nSiieItemDeletedId = 0;
         int nAvistaItemId = 0;
         String sItemCode = "";
+        String sItemCodeRaw = "";
         String sItemName = "";
         String sql = "";
         Statement statementEtl = session.getStatement().getConnection().createStatement();
@@ -80,6 +81,7 @@ public class SEtlProcessCatItems {
             nSiieItemAliveId = 0;
             nSiieItemDeletedId = 0;
             sItemCode = SEtlUtils.composeItemCode(dbConfigAvista.getDesItemCodePrefix(), resultSetAvista.getInt("PlantBoardTypeKey"), resultSetAvista.getString("Flute"));
+            sItemCodeRaw = SEtlUtils.composeItemCodeRaw(resultSetAvista.getInt("PlantBoardTypeKey"), resultSetAvista.getString("Flute"));
             sItemName = SLibUtils.textTrim(resultSetAvista.getString("ShortDesc")) + " " + resultSetAvista.getString("Flute");
             
             sql = "SELECT id_item, b_del "
@@ -119,8 +121,8 @@ public class SEtlProcessCatItems {
                     dataItem.setNameShort(sItemName);
                     dataItem.setPresentation("");
                     dataItem.setPresentationShort("");
-                    dataItem.setCode("");
-                    dataItem.setIsInventoriable(false);
+                    dataItem.setCode(sItemCodeRaw);
+                    dataItem.setIsInventoriable(true); // required to enable alternative unit type (when quantity is required as unit instead of surface)
                     dataItem.setIsLotApplying(false);
                     dataItem.setIsBulk(true);
                     dataItem.setUnitsContained(0);
@@ -132,13 +134,13 @@ public class SEtlProcessCatItems {
                     dataItem.setLength(0);
                     dataItem.setLengthUnitary(0);
                     dataItem.setIsLengthVariable(false);
-                    dataItem.setSurface(0);
+                    dataItem.setSurface(1);
                     dataItem.setSurfaceUnitary(0);
                     dataItem.setIsSurfaceVariable(true);
                     dataItem.setVolume(0);
                     dataItem.setVolumeUnitary(0);
                     dataItem.setIsVolumeVariable(false);
-                    dataItem.setMass(0);
+                    dataItem.setMass(1);
                     dataItem.setMassUnitary(0);
                     dataItem.setIsMassVariable(true);
                     dataItem.setProductionTime(0);
@@ -160,7 +162,7 @@ public class SEtlProcessCatItems {
                     dataItem.setFkUnitUnitsVirtualId(SModSysConsts.ITMU_UNIT_NA);
                     dataItem.setFkUnitNetContentId(SModSysConsts.ITMU_UNIT_NA);
                     dataItem.setFkUnitNetContentUnitaryId(SModSysConsts.ITMU_UNIT_NA);
-                    dataItem.setFkUnitAlternativeTypeId(SModSysConsts.ITMU_UNIT_NA);
+                    dataItem.setFkUnitAlternativeTypeId(SModSysConsts.ITMU_TP_UNIT_QTY); // required to enable alternative unit type (when quantity is required as unit instead of surface)
                     dataItem.setFkLevelTypeId(SDataConstantsSys.ITMU_TP_LEV_NA);
                     dataItem.setFkBrandId(SDataConstantsSys.ITMU_BRD_NA);
                     dataItem.setFkManufacturerId(SDataConstantsSys.ITMU_MFR_NA);

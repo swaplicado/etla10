@@ -30,6 +30,10 @@ public abstract class SEtlUtils {
         return prefix + "-" + DecimalFormatPlantBoardType.format(plantBoardType) + "-" + flute;
     }
     
+    public static String composeItemCodeRaw(final int plantBoardType, final String flute) {
+        return DecimalFormatPlantBoardType.format(plantBoardType) + "-" + flute;
+    }
+    
     public static SDbCustomer getEtlCustomer(final SGuiSession session, final String customerId) throws Exception {
         String sql = "";
         Statement statement = null;

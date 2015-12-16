@@ -31,6 +31,59 @@ import sa.lib.gui.SGuiSession;
  */
 public abstract class SEtlProcessCatCustomers {
     
+    private static SDataBizPartnerCategory createBizPartnerCategory(final SGuiSession session, final SEtlPackage etlPackage, final ResultSet resultSet, final int idCurrency) throws Exception {
+        SDataBizPartnerCategory dataBizPartnerCategory = new SDataBizPartnerCategory();
+        
+        //dataBizPartnerCategory.setPkBizPartnerId(...); // set by business partner
+        dataBizPartnerCategory.setPkBizPartnerCategoryId(SModSysConsts.BPSS_CT_BP_CUS);
+        dataBizPartnerCategory.setKey(SLibUtils.textTrim(resultSet.getString("CustomerNumber")));
+        dataBizPartnerCategory.setCompanyKey("");
+        dataBizPartnerCategory.setCreditLimit(resultSet.getDouble("CreditLimit"));
+        dataBizPartnerCategory.setDaysOfCredit(SLibUtils.parseInt(resultSet.getString("PayTermCode")));
+        dataBizPartnerCategory.setDaysOfGrace(0);
+        dataBizPartnerCategory.setDateStart(SLibTimeUtils.getBeginOfYear(etlPackage.PeriodStart));
+        dataBizPartnerCategory.setDateEnd_n(null);
+        dataBizPartnerCategory.setIsCreditByUser(false);
+        dataBizPartnerCategory.setIsDeleted(false);
+        dataBizPartnerCategory.setFkBizPartnerCategoryId(SModSysConsts.BPSS_CT_BP_CUS);
+        dataBizPartnerCategory.setFkBizPartnerTypeId(SModSysConsts.BPSU_TP_BP_DEF);
+        dataBizPartnerCategory.setFkCreditTypeId_n(SLibConsts.UNDEFINED);
+        dataBizPartnerCategory.setFkRiskTypeId_n(SLibConsts.UNDEFINED);
+        dataBizPartnerCategory.setFkCfdAddendaTypeId(SModSysConsts.BPSS_TP_CFD_ADD_CFD_ADD_NA);
+        dataBizPartnerCategory.setFkLanguageId_n(SLibConsts.UNDEFINED);
+        dataBizPartnerCategory.setFkCurrencyId_n(idCurrency);
+        dataBizPartnerCategory.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
+        dataBizPartnerCategory.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
+        dataBizPartnerCategory.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);
+        //dataBizPartnerCategory.setUserNewTs(...);
+        //dataBizPartnerCategory.setUserEditTs(...);
+        //dataBizPartnerCategory.setUserDeleteTs(...);
+
+        return dataBizPartnerCategory;
+    }
+    
+    private static SDataCustomerConfig createCustomerConfig(final SGuiSession session, final SDbSalesAgent salesAgent) throws Exception {
+        SDataCustomerConfig dataBizPartnerCustomerConfig = new SDataCustomerConfig();
+        //dataBizPartnerCustomerConfig.setPkCustomerId(...); // set by business partner
+        dataBizPartnerCustomerConfig.setIsFreeDiscountDoc(false);
+        dataBizPartnerCustomerConfig.setIsFreeCommissions(false);
+        dataBizPartnerCustomerConfig.setIsDeleted(false);
+        dataBizPartnerCustomerConfig.setFkCustomerTypeId(SEtlConsts.SIIE_DEFAULT);
+        dataBizPartnerCustomerConfig.setFkMarketSegmentId(SEtlConsts.SIIE_DEFAULT);
+        dataBizPartnerCustomerConfig.setFkMarketSubsegmentId(SEtlConsts.SIIE_DEFAULT);
+        dataBizPartnerCustomerConfig.setFkDistributionChannelId(SEtlConsts.SIIE_DEFAULT);
+        dataBizPartnerCustomerConfig.setFkSalesAgentId_n(salesAgent == null ? SLibConsts.UNDEFINED : salesAgent.getDesSalesAgentId());
+        dataBizPartnerCustomerConfig.setFkSalesSupervisorId_n(SLibConsts.UNDEFINED);
+        dataBizPartnerCustomerConfig.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
+        dataBizPartnerCustomerConfig.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
+        dataBizPartnerCustomerConfig.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);
+        //dataBizPartnerCustomerConfig.setUserNewTs(...);
+        //dataBizPartnerCustomerConfig.setUserEditTs(...);
+        //dataBizPartnerCustomerConfig.setUserDeleteTs(...);
+        
+        return dataBizPartnerCustomerConfig;
+    }
+    
     public static void computeEtlCustomers(final SGuiSession session, final SEtlPackage etlPackage) throws Exception {
         int nCount = 0;
         int nBizPartnerId = 0;
@@ -283,9 +336,7 @@ public abstract class SEtlProcessCatCustomers {
             }
             
             try {
-                nBizPartnerId = nBizPartnerAliveId != 0 ? nBizPartnerAliveId : nBizPartnerDeletedId;
-
-                if (nBizPartnerId == 0) {
+                if (nBizPartnerAliveId  == 0 && nBizPartnerDeletedId == 0) {
 
                     statementSiie.execute("START TRANSACTION");
 
@@ -329,57 +380,17 @@ public abstract class SEtlProcessCatCustomers {
 
                     // Create business partner category registry:
 
-                    dataBizPartnerCategory = new SDataBizPartnerCategory();
-                    //dataBizPartnerCategory.setPkBizPartnerId(...); // set by business partner
-                    dataBizPartnerCategory.setPkBizPartnerCategoryId(SModSysConsts.BPSS_CT_BP_CUS);
-                    dataBizPartnerCategory.setKey(SLibUtils.textTrim(resultSetAvista.getString("CustomerNumber")));
-                    dataBizPartnerCategory.setCompanyKey("");
-                    dataBizPartnerCategory.setCreditLimit(resultSetAvista.getDouble("CreditLimit"));
-                    dataBizPartnerCategory.setDaysOfCredit(SLibUtils.parseInt(resultSetAvista.getString("PayTermCode")));
-                    dataBizPartnerCategory.setDaysOfGrace(0);
-                    dataBizPartnerCategory.setDateStart(SLibTimeUtils.getBeginOfYear(etlPackage.PeriodStart));
-                    dataBizPartnerCategory.setDateEnd_n(null);
-                    dataBizPartnerCategory.setIsCreditByUser(false);
-                    dataBizPartnerCategory.setIsDeleted(false);
-                    dataBizPartnerCategory.setFkBizPartnerCategoryId(SModSysConsts.BPSS_CT_BP_CUS);
-                    dataBizPartnerCategory.setFkBizPartnerTypeId(SModSysConsts.BPSU_TP_BP_DEF);
-                    dataBizPartnerCategory.setFkCreditTypeId_n(SLibConsts.UNDEFINED);
-                    dataBizPartnerCategory.setFkRiskTypeId_n(SLibConsts.UNDEFINED);
-                    dataBizPartnerCategory.setFkCfdAddendaTypeId(SModSysConsts.BPSS_TP_CFD_ADD_CFD_ADD_NA);
-                    dataBizPartnerCategory.setFkLanguageId_n(SLibConsts.UNDEFINED);
-                    dataBizPartnerCategory.setFkCurrencyId_n(nSiieCurrencyFk);
-                    dataBizPartnerCategory.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
-                    dataBizPartnerCategory.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
-                    dataBizPartnerCategory.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);
-                    //dataBizPartnerCategory.setUserNewTs(...);
-                    //dataBizPartnerCategory.setUserEditTs(...);
-                    //dataBizPartnerCategory.setUserDeleteTs(...);
+                    dataBizPartnerCategory = createBizPartnerCategory(session, etlPackage, resultSetAvista, nSiieCurrencyFk);
 
-                    dataBizPartner.setDbmsCategorySettingsCo(null);
-                    dataBizPartner.setDbmsCategorySettingsSup(null);
+                    //dataBizPartner.setDbmsCategorySettingsCo(...);
+                    //dataBizPartner.setDbmsCategorySettingsSup(...);
                     dataBizPartner.setDbmsCategorySettingsCus(dataBizPartnerCategory);
-                    dataBizPartner.setDbmsCategorySettingsCdr(null);
-                    dataBizPartner.setDbmsCategorySettingsDbr(null);
+                    //dataBizPartner.setDbmsCategorySettingsCdr(...);
+                    //dataBizPartner.setDbmsCategorySettingsDbr(...);
 
                     // Create business partner customer configuration:
 
-                    dataBizPartnerCustomerConfig = new SDataCustomerConfig();
-                    //dataBizPartnerCustomerConfig.setPkCustomerId(...); // set by business partner
-                    dataBizPartnerCustomerConfig.setIsFreeDiscountDoc(false);
-                    dataBizPartnerCustomerConfig.setIsFreeCommissions(false);
-                    dataBizPartnerCustomerConfig.setIsDeleted(false);
-                    dataBizPartnerCustomerConfig.setFkCustomerTypeId(SEtlConsts.SIIE_DEFAULT);
-                    dataBizPartnerCustomerConfig.setFkMarketSegmentId(SEtlConsts.SIIE_DEFAULT);
-                    dataBizPartnerCustomerConfig.setFkMarketSubsegmentId(SEtlConsts.SIIE_DEFAULT);
-                    dataBizPartnerCustomerConfig.setFkDistributionChannelId(SEtlConsts.SIIE_DEFAULT);
-                    dataBizPartnerCustomerConfig.setFkSalesAgentId_n(dbSalesAgent == null ? SLibConsts.UNDEFINED : dbSalesAgent.getDesSalesAgentId());
-                    dataBizPartnerCustomerConfig.setFkSalesSupervisorId_n(SLibConsts.UNDEFINED);
-                    dataBizPartnerCustomerConfig.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
-                    dataBizPartnerCustomerConfig.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
-                    dataBizPartnerCustomerConfig.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);
-                    //dataBizPartnerCustomerConfig.setUserNewTs(...);
-                    //dataBizPartnerCustomerConfig.setUserEditTs(...);
-                    //dataBizPartnerCustomerConfig.setUserDeleteTs(...);
+                    dataBizPartnerCustomerConfig = createCustomerConfig(session, dbSalesAgent);
 
                     dataBizPartner.setDbmsDataCustomerConfig(dataBizPartnerCustomerConfig);
 
@@ -503,20 +514,55 @@ public abstract class SEtlProcessCatCustomers {
                 }
                 else {
                     // Business partner already exists on SIIE:
+                    
+                    nBizPartnerId = nBizPartnerAliveId != 0 ? nBizPartnerAliveId : nBizPartnerDeletedId;
 
                     dataBizPartner = new SDataBizPartner();
                     if (dataBizPartner.read(new int[] { nBizPartnerId }, statementSiie) != SLibConstants.DB_ACTION_READ_OK) {
                         throw new Exception(SEtlConsts.MSG_ERR_SIIE_CUS_QRY + "'" + SLibUtils.textTrim(resultSetAvista.getString("CustomerName")) + "'.");
                     }
                     
-                    if (dataBizPartner.getExternalId().compareTo(resultSetAvista.getString("CustomerId")) != 0) {
+                    if (dataBizPartner.getExternalId().compareTo(resultSetAvista.getString("CustomerId")) != 0 ||
+                            dataBizPartner.getIsDeleted() ||
+                            dataBizPartner.getDbmsCategorySettingsCus() == null ||
+                            dataBizPartner.getDbmsCategorySettingsCus().getIsDeleted()) {
                         
                         statementSiie.execute("START TRANSACTION");
 
                         dataBizPartner.setExternalId(resultSetAvista.getString("CustomerId"));
-                        //dataBizPartner.setFkUserNewId(...); // by now, no trace of updating user required
-                        //dataBizPartner.setFkUserEditId(...); // by now, no trace of updating user required
-                        //dataBizPartner.setFkUserDeleteId(...); // by now, no trace of updating user required
+                        if (!bIsBizPartnerCustomer) {
+                            dataBizPartner.setIsCustomer(true);
+                        }
+                        dataBizPartner.setIsDeleted(false);
+                        //dataBizPartner.setFkUserNewId(...);
+                        dataBizPartner.setFkUserEditId(((SDbUser) session.getUser()).getDesUserId());
+                        //dataBizPartner.setFkUserDeleteId(...);
+                        
+                        if (dataBizPartner.getDbmsCategorySettingsCus() == null) {
+                            // Create business partner category registry:
+
+                            dataBizPartnerCategory = createBizPartnerCategory(session, etlPackage, resultSetAvista, nSiieCurrencyFk);
+
+                            //dataBizPartner.setDbmsCategorySettingsCo(...);
+                            //dataBizPartner.setDbmsCategorySettingsSup(...);
+                            dataBizPartner.setDbmsCategorySettingsCus(dataBizPartnerCategory);
+                            //dataBizPartner.setDbmsCategorySettingsCdr(...);
+                            //dataBizPartner.setDbmsCategorySettingsDbr(...);
+                            
+                            // Create business partner customer configuration:
+
+                            dataBizPartnerCustomerConfig = createCustomerConfig(session, dbSalesAgent);
+
+                            dataBizPartner.setDbmsDataCustomerConfig(dataBizPartnerCustomerConfig);
+                        }
+                        
+                        if (dataBizPartner.getDbmsCategorySettingsCus().getIsDeleted()) {
+                            dataBizPartnerCategory = dataBizPartner.getDbmsCategorySettingsCus();
+                            dataBizPartnerCategory.setIsDeleted(false);
+                            //dataBizPartnerCategory.setFkUserNewId(...);
+                            dataBizPartnerCategory.setFkUserEditId(((SDbUser) session.getUser()).getDesUserId());
+                            //dataBizPartnerCategory.setFkUserDeleteId(...);
+                        }
                         
                         if (dataBizPartner.save(etlPackage.ConnectionSiie) != SLibConstants.DB_ACTION_SAVE_OK) {
                             throw new Exception(SEtlConsts.MSG_ERR_SIIE_CUS_UPD + "'" + SLibUtils.textTrim(resultSetAvista.getString("CustomerName")) + "'.");
