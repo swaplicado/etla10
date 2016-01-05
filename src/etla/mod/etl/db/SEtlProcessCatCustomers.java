@@ -145,7 +145,7 @@ public abstract class SEtlProcessCatCustomers {
         while (resultSetAvista.next()) {
             /****************************************************************/
             if (SEtlConsts.SHOW_DEBUG_MSGS) {
-                System.out.println(SEtlConsts.TXT_SAL_AGT + " (" + ++nCount + "): " + resultSetAvista.getString("FullName"));
+                System.out.println(SEtlConsts.TXT_SAL_AGT + " (" + ++nCount + "): " + SLibUtils.textTrim(resultSetAvista.getString("FullName")));
             }
             /****************************************************************/
             
@@ -172,8 +172,8 @@ public abstract class SEtlProcessCatCustomers {
                     //dbSalesAgent.setPkSalesAgentId(...); // set on save
                     dbSalesAgent.setSrcSalesAgentId(resultSetAvista.getInt("SalesUserKey"));
                     //dbSalesAgent.setDesSalesAgentId(..); // user defined
-                    dbSalesAgent.setCode(resultSetAvista.getString("UserId"));
-                    dbSalesAgent.setName(resultSetAvista.getString("FullName"));
+                    dbSalesAgent.setCode(SLibUtils.textToSql(resultSetAvista.getString("UserId")));
+                    dbSalesAgent.setName(SLibUtils.textToSql(resultSetAvista.getString("FullName")));
                     //dbSalesAgent.setFirstEtlInsert(...); // set on save
                     //dbSalesAgent.setLastEtlUpdate(...); // set on save
                     dbSalesAgent.setDeleted(false);
@@ -223,7 +223,7 @@ public abstract class SEtlProcessCatCustomers {
         while (resultSetAvista.next()) {
             /****************************************************************/
             if (SEtlConsts.SHOW_DEBUG_MSGS) {
-                System.out.println(SEtlConsts.TXT_CUS + " (" + ++nCount + "): " + resultSetAvista.getString("CustomerName"));
+                System.out.println(SEtlConsts.TXT_CUS + " (" + ++nCount + "): " + SLibUtils.textTrim(resultSetAvista.getString("CustomerName")));
             }
             /****************************************************************/
             
@@ -303,7 +303,7 @@ public abstract class SEtlProcessCatCustomers {
             
             nBizPartnerAliveId = 0;
             nBizPartnerDeletedId = 0;
-            bIsBizPartnerPerson = resultSetAvista.getString("TaxId").length() == SEtlConsts.RFC_LEN_PER || resultSetAvista.getString("TaxId").isEmpty();
+            bIsBizPartnerPerson = SLibUtils.textToSql(resultSetAvista.getString("TaxId")).length() == SEtlConsts.RFC_LEN_PER || resultSetAvista.getString("TaxId").isEmpty();
             bIsBizPartnerCustomer = false;
             
             sqlQueries = new String[] {
@@ -313,7 +313,7 @@ public abstract class SEtlProcessCatCustomers {
                     + "ORDER BY id_bp ",
                 "SELECT id_bp, b_cus, b_del " // b) search by Tax ID
                     + "FROM erp.bpsu_bp "
-                    + "WHERE fiscal_id='" + resultSetAvista.getString("TaxId") + "' "
+                    + "WHERE fiscal_id='" + SLibUtils.textToSql(resultSetAvista.getString("TaxId")) + "' "
                     + "ORDER BY id_bp "
             };
             
@@ -344,11 +344,11 @@ public abstract class SEtlProcessCatCustomers {
 
                     dataBizPartner = new SDataBizPartner();
                     //dataBizPartner.setPkBizPartnerId(...); // set on save
-                    dataBizPartner.setBizPartner(SLibUtils.textTrim(resultSetAvista.getString("CustomerName")).replaceAll("'", "''"));
-                    dataBizPartner.setBizPartnerCommercial(SLibUtils.textTrim(resultSetAvista.getString("ShortName")).replaceAll("'", "''"));
-                    dataBizPartner.setLastname(!bIsBizPartnerPerson ? "" : SLibUtils.textTrim(resultSetAvista.getString("CustomerName")).replaceAll("'", "''"));
+                    dataBizPartner.setBizPartner(SLibUtils.textToSql(resultSetAvista.getString("CustomerName")).replaceAll("'", "''"));
+                    dataBizPartner.setBizPartnerCommercial(SLibUtils.textToSql(resultSetAvista.getString("ShortName")).replaceAll("'", "''"));
+                    dataBizPartner.setLastname(!bIsBizPartnerPerson ? "" : SLibUtils.textToSql(resultSetAvista.getString("CustomerName")).replaceAll("'", "''"));
                     dataBizPartner.setFirstname("");
-                    dataBizPartner.setFiscalId(SLibUtils.textTrim(resultSetAvista.getString("TaxId")));
+                    dataBizPartner.setFiscalId(SLibUtils.textToSql(resultSetAvista.getString("TaxId")));
                     dataBizPartner.setFiscalFrgId("");
                     dataBizPartner.setAlternativeId("");
                     dataBizPartner.setExternalId(resultSetAvista.getString("CustomerId")); // keystone for ETL processing!
@@ -419,15 +419,15 @@ public abstract class SEtlProcessCatCustomers {
                     //dataBizPartnerBranchAddress.setPkBizPartnerBranchId(...); // set by business partner branch
                     //dataBizPartnerBranchAddress.setPkAddressId(...); // set on save
                     dataBizPartnerBranchAddress.setAddress(SModSysConsts.TXT_OFFICIAL);
-                    dataBizPartnerBranchAddress.setStreet(SLibUtils.textTrim(resultSetAvista.getString("Address1")).replaceAll("'", "''"));
-                    dataBizPartnerBranchAddress.setStreetNumberExt(SLibUtils.textTrim(resultSetAvista.getString("Address2")).replaceAll("'", "''"));
-                    dataBizPartnerBranchAddress.setStreetNumberInt(SLibUtils.textTrim(resultSetAvista.getString("AddressInternalNumber")).replaceAll("'", "''"));
-                    dataBizPartnerBranchAddress.setNeighborhood(SLibUtils.textTrim(resultSetAvista.getString("Neighborhood")).replaceAll("'", "''"));
-                    dataBizPartnerBranchAddress.setReference(SLibUtils.textTrim(resultSetAvista.getString("AddressReference")).replaceAll("'", "''"));
-                    dataBizPartnerBranchAddress.setLocality(SLibUtils.textTrim(resultSetAvista.getString("City")));
-                    dataBizPartnerBranchAddress.setCounty(SLibUtils.textTrim(resultSetAvista.getString("County")));
+                    dataBizPartnerBranchAddress.setStreet(SLibUtils.textToSql(resultSetAvista.getString("Address1")).replaceAll("'", "''"));
+                    dataBizPartnerBranchAddress.setStreetNumberExt(SLibUtils.textToSql(resultSetAvista.getString("Address2")).replaceAll("'", "''"));
+                    dataBizPartnerBranchAddress.setStreetNumberInt(SLibUtils.textToSql(resultSetAvista.getString("AddressInternalNumber")).replaceAll("'", "''"));
+                    dataBizPartnerBranchAddress.setNeighborhood(SLibUtils.textToSql(resultSetAvista.getString("Neighborhood")).replaceAll("'", "''"));
+                    dataBizPartnerBranchAddress.setReference(SLibUtils.textToSql(resultSetAvista.getString("AddressReference")).replaceAll("'", "''"));
+                    dataBizPartnerBranchAddress.setLocality(SLibUtils.textToSql(resultSetAvista.getString("City")));
+                    dataBizPartnerBranchAddress.setCounty(SLibUtils.textToSql(resultSetAvista.getString("County")));
                     dataBizPartnerBranchAddress.setState(sAvistaState);
-                    dataBizPartnerBranchAddress.setZipCode(SLibUtils.textTrim(resultSetAvista.getString("Zip")));
+                    dataBizPartnerBranchAddress.setZipCode(SLibUtils.textToSql(resultSetAvista.getString("Zip")));
                     dataBizPartnerBranchAddress.setPoBox("");
                     dataBizPartnerBranchAddress.setIsDefault(true);
                     dataBizPartnerBranchAddress.setIsDeleted(false);
@@ -455,10 +455,10 @@ public abstract class SEtlProcessCatCustomers {
                     dataBizPartnerBranchContact.setFirstname("");
                     dataBizPartnerBranchContact.setCharge("");
                     dataBizPartnerBranchContact.setTelAreaCode01("");
-                    dataBizPartnerBranchContact.setTelNumber01(SLibUtils.textTrim(resultSetAvista.getString("Phone")));
+                    dataBizPartnerBranchContact.setTelNumber01(SLibUtils.textToSql(resultSetAvista.getString("Phone")));
                     dataBizPartnerBranchContact.setTelExt01("");
                     dataBizPartnerBranchContact.setTelAreaCode02("");
-                    dataBizPartnerBranchContact.setTelNumber02(SLibUtils.textTrim(resultSetAvista.getString("Fax")));
+                    dataBizPartnerBranchContact.setTelNumber02(SLibUtils.textToSql(resultSetAvista.getString("Fax")));
                     dataBizPartnerBranchContact.setTelExt02("");
                     dataBizPartnerBranchContact.setTelAreaCode03("");
                     dataBizPartnerBranchContact.setTelNumber03("");
@@ -471,8 +471,8 @@ public abstract class SEtlProcessCatCustomers {
                     dataBizPartnerBranchContact.setSkype02("");
                     dataBizPartnerBranchContact.setIsDeleted(false);
                     dataBizPartnerBranchContact.setPkContactTypeId(SModSysConsts.BPSS_TP_CON_ADM);
-                    dataBizPartnerBranchContact.setPkTelephoneType01Id(SLibUtils.textTrim(resultSetAvista.getString("Phone")).isEmpty() ? SModSysConsts.BPSS_TP_TEL_NA : SModSysConsts.BPSS_TP_TEL_TEL);
-                    dataBizPartnerBranchContact.setPkTelephoneType02Id(SLibUtils.textTrim(resultSetAvista.getString("Fax")).isEmpty() ? SModSysConsts.BPSS_TP_TEL_NA : SModSysConsts.BPSS_TP_TEL_FAX);
+                    dataBizPartnerBranchContact.setPkTelephoneType01Id(SLibUtils.textToSql(resultSetAvista.getString("Phone")).isEmpty() ? SModSysConsts.BPSS_TP_TEL_NA : SModSysConsts.BPSS_TP_TEL_TEL);
+                    dataBizPartnerBranchContact.setPkTelephoneType02Id(SLibUtils.textToSql(resultSetAvista.getString("Fax")).isEmpty() ? SModSysConsts.BPSS_TP_TEL_NA : SModSysConsts.BPSS_TP_TEL_FAX);
                     dataBizPartnerBranchContact.setPkTelephoneType03Id(SModSysConsts.BPSS_TP_TEL_NA);
                     dataBizPartnerBranchContact.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
                     dataBizPartnerBranchContact.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
@@ -609,28 +609,28 @@ public abstract class SEtlProcessCatCustomers {
                     dbCustomer.setDesCustomerId(nBizPartnerId); // user defined, but default value set
                     dbCustomer.setDesCustomerBranchId(nBizPartnerBranchId); // user defined, but default value set
                     dbCustomer.setCode(SLibUtils.textTrim(resultSetAvista.getString("CustomerNumber")));
-                    dbCustomer.setName(SLibUtils.textTrim(resultSetAvista.getString("CustomerName")).replaceAll("'", "''"));
-                    dbCustomer.setNameShort(SLibUtils.textTrim(resultSetAvista.getString("ShortName")).replaceAll("'", "''"));
-                    dbCustomer.setTaxId(SLibUtils.textTrim(resultSetAvista.getString("TaxId")));
-                    dbCustomer.setStreet(SLibUtils.textTrim(resultSetAvista.getString("Address1")).replaceAll("'", "''"));
-                    dbCustomer.setNumberExt(SLibUtils.textTrim(resultSetAvista.getString("Address2")).replaceAll("'", "''"));
-                    dbCustomer.setNumberInt(SLibUtils.textTrim(resultSetAvista.getString("AddressInternalNumber")).replaceAll("'", "''"));
-                    dbCustomer.setNeighborhood(SLibUtils.textTrim(resultSetAvista.getString("Neighborhood")).replaceAll("'", "''"));
-                    dbCustomer.setReference(SLibUtils.textTrim(resultSetAvista.getString("AddressReference")).replaceAll("'", "''"));
-                    dbCustomer.setLocality(SLibUtils.textTrim(resultSetAvista.getString("City")));
-                    dbCustomer.setCounty(SLibUtils.textTrim(resultSetAvista.getString("County")));
-                    dbCustomer.setSrcStateFk(resultSetAvista.getString("State") == null ? "" : SLibUtils.textTrim(resultSetAvista.getString("State"))); // preserve original source value, even if null or not set
+                    dbCustomer.setName(SLibUtils.textToSql(resultSetAvista.getString("CustomerName")).replaceAll("'", "''"));
+                    dbCustomer.setNameShort(SLibUtils.textToSql(resultSetAvista.getString("ShortName")).replaceAll("'", "''"));
+                    dbCustomer.setTaxId(SLibUtils.textToSql(resultSetAvista.getString("TaxId")));
+                    dbCustomer.setStreet(SLibUtils.textToSql(resultSetAvista.getString("Address1")).replaceAll("'", "''"));
+                    dbCustomer.setNumberExt(SLibUtils.textToSql(resultSetAvista.getString("Address2")).replaceAll("'", "''"));
+                    dbCustomer.setNumberInt(SLibUtils.textToSql(resultSetAvista.getString("AddressInternalNumber")).replaceAll("'", "''"));
+                    dbCustomer.setNeighborhood(SLibUtils.textToSql(resultSetAvista.getString("Neighborhood")).replaceAll("'", "''"));
+                    dbCustomer.setReference(SLibUtils.textToSql(resultSetAvista.getString("AddressReference")).replaceAll("'", "''"));
+                    dbCustomer.setLocality(SLibUtils.textToSql(resultSetAvista.getString("City")));
+                    dbCustomer.setCounty(SLibUtils.textToSql(resultSetAvista.getString("County")));
+                    dbCustomer.setSrcStateFk(resultSetAvista.getString("State") == null ? "" : SLibUtils.textToSql(resultSetAvista.getString("State"))); // preserve original source value, even if null or not set
                     dbCustomer.setState(sAvistaState); // original or customized value
-                    dbCustomer.setSrcCountryFk(resultSetAvista.getString("Country") == null ? "" : SLibUtils.textTrim(resultSetAvista.getString("Country"))); // preserve original source value, even if null or not set
+                    dbCustomer.setSrcCountryFk(resultSetAvista.getString("Country") == null ? "" : SLibUtils.textToSql(resultSetAvista.getString("Country"))); // preserve original source value, even if null or not set
                     dbCustomer.setCountry(sAvistaCountry); // original or customized value
-                    dbCustomer.setZip(SLibUtils.textTrim(resultSetAvista.getString("Zip")));
-                    dbCustomer.setPhone(SLibUtils.textTrim(resultSetAvista.getString("Phone")));
-                    dbCustomer.setFax(SLibUtils.textTrim(resultSetAvista.getString("Fax")));
+                    dbCustomer.setZip(SLibUtils.textToSql(resultSetAvista.getString("Zip")));
+                    dbCustomer.setPhone(SLibUtils.textToSql(resultSetAvista.getString("Phone")));
+                    dbCustomer.setFax(SLibUtils.textToSql(resultSetAvista.getString("Fax")));
                     dbCustomer.setPayAccount(SEtlConsts.SIIE_PAY_ACC_UNDEF); // user defined, but default value set
                     dbCustomer.setCreditDays(SLibUtils.parseInt(resultSetAvista.getString("PayTermCode")));
                     dbCustomer.setCreditLimit(resultSetAvista.getDouble("CreditLimit"));
-                    dbCustomer.setCreditStatusCode(SLibUtils.textTrim(resultSetAvista.getString("CreditStatusCode")));
-                    dbCustomer.setPayTermCode(SLibUtils.textTrim(resultSetAvista.getString("PayTermCode")));
+                    dbCustomer.setCreditStatusCode(SLibUtils.textToSql(resultSetAvista.getString("CreditStatusCode")));
+                    dbCustomer.setPayTermCode(SLibUtils.textToSql(resultSetAvista.getString("PayTermCode")));
                     dbCustomer.setSrcCustomerCurrencyFk_n(nAvistaCurrencyCustomerFk);
                     dbCustomer.setSrcCustomerUnitOfMeasureFk_n(sAvistaUnitOfMeasureCustomerFk);
                     dbCustomer.setSrcCustomerSalesAgentFk_n(resultSetAvista.getInt("SalesUserKey"));

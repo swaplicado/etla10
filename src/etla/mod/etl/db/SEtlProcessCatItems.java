@@ -69,7 +69,7 @@ public class SEtlProcessCatItems {
         while (resultSetAvista.next()) {
             /****************************************************************/
             if (SEtlConsts.SHOW_DEBUG_MSGS) {
-                System.out.println(SEtlConsts.TXT_ITM + " (" + ++nCount + "): " + resultSetAvista.getString("ShortDesc") + " " + resultSetAvista.getString("Flute"));
+                System.out.println(SEtlConsts.TXT_ITM + " (" + ++nCount + "): " + SLibUtils.textTrim(resultSetAvista.getString("ShortDesc") + " " + resultSetAvista.getString("Flute")));
             }
             /****************************************************************/
             
@@ -82,7 +82,7 @@ public class SEtlProcessCatItems {
             nSiieItemDeletedId = 0;
             sItemCode = SEtlUtils.composeItemCode(dbConfigAvista.getDesItemCodePrefix(), resultSetAvista.getInt("PlantBoardTypeKey"), resultSetAvista.getString("Flute"));
             sItemCodeRaw = SEtlUtils.composeItemCodeRaw(resultSetAvista.getInt("PlantBoardTypeKey"), resultSetAvista.getString("Flute"));
-            sItemName = SLibUtils.textTrim(resultSetAvista.getString("ShortDesc")) + " " + resultSetAvista.getString("Flute");
+            sItemName = SLibUtils.textToSql(resultSetAvista.getString("ShortDesc")) + " " + resultSetAvista.getString("Flute");
             
             sql = "SELECT id_item, b_del "
                     + "FROM erp.itmu_item "
@@ -253,7 +253,7 @@ public class SEtlProcessCatItems {
                     dbItem.setDesItemId(nSiieItemId);
                     dbItem.setCode(sItemCode);
                     dbItem.setName(sItemName);
-                    dbItem.setNameBoardType(SLibUtils.textTrim(resultSetAvista.getString("ShortDesc")));
+                    dbItem.setNameBoardType(SLibUtils.textToSql(resultSetAvista.getString("ShortDesc")));
                     dbItem.setNameFlute(resultSetAvista.getString("Flute"));
                     dbItem.setSrcBoardTypeFk(resultSetAvista.getInt("PlantBoardTypeKey"));
                     dbItem.setSrcFluteFk(resultSetAvista.getString("Flute"));

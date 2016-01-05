@@ -128,17 +128,10 @@ public class SEtlProcessDocInvoices {
         
         sql = "SELECT ci.CustomerInvoiceKey, ci.InvoiceNumber, ci.Created AS InvoiceCreated, ci.CustomerId "
                 + "FROM dbo.CustomerInvoices AS ci "
-                /****************
-                + "INNER JOIN dbo.CustomerInvoiceItems AS cii ON cii.CustomerInvoiceKey=ci.CustomerInvoiceKey " // XXX REMOVE THIS!!! For testing purpouses only. (sflores, 2015-12-14)
-                /****************/
                 + "WHERE CAST(ci.Created AS DATE) BETWEEN '" + SLibUtils.DbmsDateFormatDate.format(etlPackage.PeriodStart) + "' AND '" + SLibUtils.DbmsDateFormatDate.format(etlPackage.PeriodEnd) + "' AND "
                 + "ci.CurrentStatusKey IN (" + SEtlConsts.AVISTA_INV_STA_APP + ", " + SEtlConsts.AVISTA_INV_STA_ARC + ") AND "
                 + "ci.CustomerInvoiceTypeKey=" + SEtlConsts.AVISTA_INV_TP_INV + " "
                 + (etlPackage.InvoiceBatch == SLibConsts.UNDEFINED ? "" : "AND ci.BatchNumber=" + etlPackage.InvoiceBatch + " ")
-                /****************
-//                + "AND ci.CustomerId='3040' " // XXX REMOVE THIS!!! For testing purpouses only. (sflores, 2015-12-09)
-                + "AND cii.ProductDescription LIKE '%ESD%' " // XXX REMOVE THIS!!! For testing purpouses only. (sflores, 2015-12-14)
-                /****************/
                 + "ORDER BY CAST(ci.Created AS DATE), ci.InvoiceNumber, ci.CustomerInvoiceKey ";
         
         rsAvistaInvoiceList = stAvistaInvoiceList.executeQuery(sql);
@@ -337,9 +330,9 @@ public class SEtlProcessDocInvoices {
                         dbInvoice.setOriginalAmount(dInvoiceAmountSrc);
                         //dbInvoice.setFinalAmount(...); // set forward on this method
                         dbInvoice.setExchangeRate(dInvoiceExchangeRate);
-                        dbInvoice.setPaymentConditions(rsAvistaInvoiceData.getString("PayTermDescription").toUpperCase());
-                        dbInvoice.setCustomerOrder(rsAvistaInvoiceData.getString("CustomerPO").toUpperCase());
-                        dbInvoice.setBillOfLading(rsAvistaInvoiceData.getString("InvoiceDescription"));
+                        dbInvoice.setPaymentConditions(SLibUtils.textToSql(rsAvistaInvoiceData.getString("PayTermDescription").toUpperCase()));
+                        dbInvoice.setCustomerOrder(SLibUtils.textToSql(rsAvistaInvoiceData.getString("CustomerPO").toUpperCase()));
+                        dbInvoice.setBillOfLading(SLibUtils.textToSql(rsAvistaInvoiceData.getString("InvoiceDescription")));
                         dbInvoice.setSrcCustomerFk(dbInvoiceCustomer.getSrcCustomerId());
                         dbInvoice.setDesCustomerFk(dbInvoiceCustomer.getDesCustomerId());
                         dbInvoice.setSrcSalesAgentFk(dbInvoiceSalesAgent == null ? SLibConsts.UNDEFINED : dbInvoiceSalesAgent.getSrcSalesAgentId());
@@ -512,12 +505,12 @@ public class SEtlProcessDocInvoices {
                             dbInvoiceRow.setSrcInvoiceRowId(rsAvistaInvoiceData.getInt("ItemNumber"));
                             dbInvoiceRow.setCode(dbLineItem.getCode());
                             dbInvoiceRow.setName(dbLineItem.getName());
-                            dbInvoiceRow.setProductDescription(rsAvistaInvoiceData.getString("ProductDescription"));
-                            dbInvoiceRow.setCustomerOrder(rsAvistaInvoiceData.getString("CustomerPO").toUpperCase());
+                            dbInvoiceRow.setProductDescription(SLibUtils.textToSql(rsAvistaInvoiceData.getString("ProductDescription")));
+                            dbInvoiceRow.setCustomerOrder(SLibUtils.textToSql(rsAvistaInvoiceData.getString("CustomerPO").toUpperCase()));
                             dbInvoiceRow.setOrderNumber(rsAvistaInvoiceData.getString("OrderNumber"));
-                            dbInvoiceRow.setOrderDescription(rsAvistaInvoiceData.getString("OrderItemDescription"));
+                            dbInvoiceRow.setOrderDescription(SLibUtils.textToSql(rsAvistaInvoiceData.getString("OrderItemDescription")));
                             dbInvoiceRow.setEstimateNumber(rsAvistaInvoiceData.getString("EstNo"));
-                            dbInvoiceRow.setEstimateDescription(rsAvistaInvoiceData.getString("EstItemDescription"));
+                            dbInvoiceRow.setEstimateDescription(SLibUtils.textToSql(rsAvistaInvoiceData.getString("EstItemDescription")));
                             dbInvoiceRow.setQuantityOrdered(rsAvistaInvoiceData.getInt("QuantityOrdered"));
                             dbInvoiceRow.setQuantity(rsAvistaInvoiceData.getInt("Pieces"));
                             dbInvoiceRow.setLength(rsAvistaInvoiceData.getDouble("Length")); // mm
@@ -535,7 +528,7 @@ public class SEtlProcessDocInvoices {
                             dbInvoiceRow.setFinalUnits(dLineUnitsReq);
                             dbInvoiceRow.setFinalAmount(dLineAmountReq);
                             
-                            dbInvoiceRow.setSrcBoardType(rsAvistaInvoiceData.getString("ShortDesc"));
+                            dbInvoiceRow.setSrcBoardType(SLibUtils.textToSql(rsAvistaInvoiceData.getString("ShortDesc")));
                             dbInvoiceRow.setSrcBoardTypeFk(rsAvistaInvoiceData.getInt("PlantBoardTypeKey"));
                             dbInvoiceRow.setSrcFluteFk(rsAvistaInvoiceData.getString("Flute"));
                             dbInvoiceRow.setDesItemFk(dbLineItem.getDesItemId());

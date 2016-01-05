@@ -373,6 +373,7 @@ public class SDialogEtl extends SBeanFormDialog implements ActionListener, ItemL
         }
     }
     
+    @SuppressWarnings("unchecked")
     private void populateInvoiceBatchs() {
         ArrayList<SGuiItem> items = null;
         
