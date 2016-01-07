@@ -871,6 +871,7 @@ public class SEtlProcessDocInvoices {
                                         + row.getEstimateNumber());
                         dataDpsEntryNotes.setIsAllDocs(true);
                         dataDpsEntryNotes.setIsPrintable(true);
+                        dataDpsEntryNotes.setIsCfd(false);
                         dataDpsEntryNotes.setIsDeleted(false);
                         dataDpsEntryNotes.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
                         dataDpsEntryNotes.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
