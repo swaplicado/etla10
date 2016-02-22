@@ -42,7 +42,7 @@ public class SModModuleCfg extends SGuiModule {
     }
 
     @Override
-    public SDbRegistry getRegistry(int type) {
+    public SDbRegistry getRegistry(final int type, final SGuiParams params) {
         SDbRegistry registry = null;
 
         switch (type) {

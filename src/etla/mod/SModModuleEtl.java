@@ -55,7 +55,7 @@ public class SModModuleEtl extends SGuiModule {
     }
 
     @Override
-    public SDbRegistry getRegistry(int type) {
+    public SDbRegistry getRegistry(int type, SGuiParams params) {
         SDbRegistry registry = null;
 
         switch (type) {
