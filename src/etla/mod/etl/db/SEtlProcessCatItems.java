@@ -157,6 +157,7 @@ public class SEtlProcessCatItems {
                     dataItem.setIsDeleted(false);
                     dataItem.setFkItemGenericId(dbConfigAvista.getDesDefaultItemGenericFk());
                     dataItem.setFkItemLineId_n(SLibConsts.UNDEFINED);
+                    dataItem.setFkItemStatusId(SModSysConsts.ITMS_ST_ITEM_ACT);
                     dataItem.setFkUnitId(etlCatalogs.getEtlUnitOfMeasure(etlCatalogs.getEtlIdForUnitOfMeasure(dbConfigAvista.getSrcDefaultUnitOfMeasureFk())).getDesUnitOfMeasureId());
                     dataItem.setFkUnitUnitsContainedId(SModSysConsts.ITMU_UNIT_NA);
                     dataItem.setFkUnitUnitsVirtualId(SModSysConsts.ITMU_UNIT_NA);
