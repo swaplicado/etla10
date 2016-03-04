@@ -639,7 +639,7 @@ public abstract class SEtlProcessCatCustomers {
                     //dbCustomersetFirstEtlInsert(...); // set on save
                     //dbCustomersetLastEtlUpdate(...); // set on save
                     dbCustomer.setActive(resultSetAvista.getString("Active").compareTo(SEtlConsts.AVISTA_BOOL_Y) == 0);
-                    dbCustomer.setDeleted(resultSetAvista.getString("DeletedFlag").compareTo(SEtlConsts.AVISTA_BOOL_Y) == 0);
+                    dbCustomer.setDeleted(resultSetAvista.getString("DeletedFlag") == null ? false : resultSetAvista.getString("DeletedFlag").compareTo(SEtlConsts.AVISTA_BOOL_Y) == 0);
                     dbCustomer.setSystem(false);
                     dbCustomer.setFkSrcCustomerCurrencyId_n(dbSysCurrencyCustomer == null ? SLibConsts.UNDEFINED : dbSysCurrencyCustomer.getPkCurrencyId());
                     dbCustomer.setFkSrcCustomerUnitOfMeasureId_n(dbSysUnitOfMeasureCustomer == null ? SLibConsts.UNDEFINED : dbSysUnitOfMeasureCustomer.getPkUnitOfMeasureId());
