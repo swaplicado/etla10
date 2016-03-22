@@ -751,6 +751,7 @@ public class SEtlProcessDocInvoices {
                         //dataDpsEntry.setPkEntryId(...); // set on save
                         dataDpsEntry.setConceptKey(row.getCode());
                         dataDpsEntry.setConcept(SEtlConsts.TXT_MISC_O + ": " + row.getOrderNumber() + "; " + SEtlConsts.TXT_BRD + ": " + row.getName() + "; " + row.getLength() + " X " + row.getWidth() + "; " + SEtlConsts.TXT_MISC_PO_ACR + ": " + row.getCustomerOrder());
+                        dataDpsEntry.setReference("");
                         
                         dataDpsEntry.setQuantity(dEntryQuantity);
                         
