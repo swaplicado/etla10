@@ -148,6 +148,7 @@ public class SEtlProcessCatItems {
                     dataItem.setWeightDelivery(0);
                     dataItem.setUnitAlternativeBaseEquivalence(0);
                     dataItem.setSurplusPercentage(0);
+                    dataItem.setIsReference(false);
                     dataItem.setIsFreePrice(false);
                     dataItem.setIsFreeDiscount(false);
                     dataItem.setIsFreeDiscountUnitary(false);
