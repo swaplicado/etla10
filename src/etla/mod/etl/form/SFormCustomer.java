@@ -357,12 +357,14 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
     @Override
     public void addAllListeners() {
         jbEditDesCustomerId.addActionListener(this);
+        jbEditDesCustomerBranchId.addActionListener(this);
         jbSetUndefined.addActionListener(this);
     }
 
     @Override
     public void removeAllListeners() {
         jbEditDesCustomerId.removeActionListener(this);
+        jbEditDesCustomerBranchId.removeActionListener(this);
         jbSetUndefined.removeActionListener(this);
     }
 
