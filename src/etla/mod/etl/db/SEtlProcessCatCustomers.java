@@ -93,6 +93,7 @@ public abstract class SEtlProcessCatCustomers {
         int nSalesAgentId = 0;
         int nCustomerId = 0;
         int nAvistaCurrencyCustomerFk = 0;
+        String sTaxId = "";
         String sAvistaCountry = "";
         String sAvistaCountryFk = "";
         String sAvistaState = "";
@@ -227,6 +228,14 @@ public abstract class SEtlProcessCatCustomers {
             }
             /****************************************************************/
             
+            // Validate customer's Tax ID:
+            
+            sTaxId = SLibUtils.textToSql(resultSetAvista.getString("TaxId"));
+            
+            if (sTaxId.isEmpty() || (sTaxId.length() != SEtlConsts.RFC_LEN_PER && sTaxId.length() != SEtlConsts.RFC_LEN_ORG)) {
+                throw new Exception(SEtlConsts.MSG_ERR_CUS_TAX_ID + "'" + SLibUtils.textTrim(resultSetAvista.getString("CustomerName")) + "', RFC: '" + resultSetAvista.getString("TaxId") + "'.");
+            }
+            
             // Select customer's country:
 
             sAvistaCountryFk = resultSetAvista.getString("Country");
@@ -303,7 +312,7 @@ public abstract class SEtlProcessCatCustomers {
             
             nBizPartnerAliveId = 0;
             nBizPartnerDeletedId = 0;
-            bIsBizPartnerPerson = SLibUtils.textToSql(resultSetAvista.getString("TaxId")).length() == SEtlConsts.RFC_LEN_PER || resultSetAvista.getString("TaxId").isEmpty();
+            bIsBizPartnerPerson = sTaxId.length() == SEtlConsts.RFC_LEN_PER;
             bIsBizPartnerCustomer = false;
             
             sqlQueries = new String[] {
@@ -313,7 +322,7 @@ public abstract class SEtlProcessCatCustomers {
                     + "ORDER BY id_bp ",
                 "SELECT id_bp, b_cus, b_del " // b) search by Tax ID
                     + "FROM erp.bpsu_bp "
-                    + "WHERE fiscal_id='" + SLibUtils.textToSql(resultSetAvista.getString("TaxId")) + "' "
+                    + "WHERE fiscal_id='" + sTaxId + "' "
                     + "ORDER BY id_bp "
             };
             
@@ -348,7 +357,7 @@ public abstract class SEtlProcessCatCustomers {
                     dataBizPartner.setBizPartnerCommercial(SLibUtils.textToSql(resultSetAvista.getString("ShortName")).replaceAll("'", "''"));
                     dataBizPartner.setLastname(!bIsBizPartnerPerson ? "" : SLibUtils.textToSql(resultSetAvista.getString("CustomerName")).replaceAll("'", "''"));
                     dataBizPartner.setFirstname("");
-                    dataBizPartner.setFiscalId(SLibUtils.textToSql(resultSetAvista.getString("TaxId")));
+                    dataBizPartner.setFiscalId(sTaxId); // keystone for ETL processing!
                     dataBizPartner.setFiscalFrgId("");
                     dataBizPartner.setAlternativeId("");
                     dataBizPartner.setExternalId(resultSetAvista.getString("CustomerId")); // keystone for ETL processing!
@@ -611,7 +620,7 @@ public abstract class SEtlProcessCatCustomers {
                     dbCustomer.setCode(SLibUtils.textTrim(resultSetAvista.getString("CustomerNumber")));
                     dbCustomer.setName(SLibUtils.textToSql(resultSetAvista.getString("CustomerName")).replaceAll("'", "''"));
                     dbCustomer.setNameShort(SLibUtils.textToSql(resultSetAvista.getString("ShortName")).replaceAll("'", "''"));
-                    dbCustomer.setTaxId(SLibUtils.textToSql(resultSetAvista.getString("TaxId")));
+                    dbCustomer.setTaxId(sTaxId);
                     dbCustomer.setStreet(SLibUtils.textToSql(resultSetAvista.getString("Address1")).replaceAll("'", "''"));
                     dbCustomer.setNumberExt(SLibUtils.textToSql(resultSetAvista.getString("Address2")).replaceAll("'", "''"));
                     dbCustomer.setNumberInt(SLibUtils.textToSql(resultSetAvista.getString("AddressInternalNumber")).replaceAll("'", "''"));
