@@ -52,8 +52,8 @@ public class SEtlProcessDocInvoices {
         SDbSalesAgent dbInvoiceSalesAgent = null;
         SDbSysCurrency dbInvoiceCurrencySrc = null;
         SDbSysCurrency dbInvoiceCurrencyReq = null;
-        int nMiscDecsAmount;
-        int nMiscDecsAmountUnitary;
+        int nMiscDecsAmount = 0;
+        int nMiscDecsAmountUnitary = 0;
         int nMiscDefaultSiieUnitId = 0;
         double dMisc1kFeetTo1kMeters = 0;
         double dLinePieces = 0; // pce
@@ -763,13 +763,13 @@ public class SEtlProcessDocInvoices {
                         dataDpsEntry.setDiscountUnitaryPercentageSystem(0);
                         dataDpsEntry.setDiscountEntryPercentage(0);
                         
-                        dEntryPriceUnitOrigCy = row.getFinalPrice();
+                        dEntryPriceUnitOrigCy = SLibUtils.round(row.getFinalPrice(), SEtlConsts.SIIE_PRICE_UNIT_DECS);
                         
                         if (row.getFkSrcOriginalUnitOfMeasureId() == row.getFkSrcFinalUnitOfMeasureId()) {
-                            dEntryPriceUnitCy = dEntryPriceUnitOrigCy;
+                            dEntryPriceUnitCy = SLibUtils.round(dEntryPriceUnitOrigCy, SEtlConsts.SIIE_PRICE_UNIT_DECS);
                         }
                         else {
-                            dEntryPriceUnitCy = SLibUtils.round(row.getFinalAmount() / dataDpsEntry.getQuantity(), nMiscDecsAmountUnitary);
+                            dEntryPriceUnitCy = SLibUtils.round(row.getFinalAmount() / dataDpsEntry.getQuantity(), SEtlConsts.SIIE_PRICE_UNIT_DECS);
                         }
                         
                         dataDpsEntry.setOriginalQuantity(row.getFinalUnits());
@@ -800,10 +800,10 @@ public class SEtlProcessDocInvoices {
                         
                         if (row.getFkSrcOriginalUnitOfMeasureId() == row.getFkSrcFinalUnitOfMeasureId() && 
                                 dbInvoice.getFkSrcOriginalCurrencyId() == dbInvoice.getFkSrcFinalCurrencyId()) {
-                            dEntryPriceUnit = dEntryPriceUnitOrigCy;
+                            dEntryPriceUnit = SLibUtils.round(dEntryPriceUnitOrigCy, SEtlConsts.SIIE_PRICE_UNIT_DECS);
                         }
                         else {
-                            dEntryPriceUnit = SLibUtils.round(dEntrySubtotal / dataDpsEntry.getQuantity(), nMiscDecsAmountUnitary);
+                            dEntryPriceUnit = SLibUtils.round(dEntrySubtotal / dataDpsEntry.getQuantity(), SEtlConsts.SIIE_PRICE_UNIT_DECS);
                         }
                         
                         dataDpsEntry.setPriceUnitary(dEntryPriceUnit);
@@ -925,7 +925,7 @@ public class SEtlProcessDocInvoices {
                 dbInvoice.setDesInvoiceDocumentId(dataDps.getPkDocId());
                 dbInvoice.setFinalSeries(dataDps.getNumberSeries());
                 dbInvoice.setFinalNumber(dataDps.getNumber());
-                dbInvoice.setFinalAmount(SLibUtils.round(dInvoiceAmountReq, nMiscDecsAmountUnitary));
+                dbInvoice.setFinalAmount(SLibUtils.round(dInvoiceAmountReq, nMiscDecsAmount));
                 dbInvoice.save(session);
             }
         }

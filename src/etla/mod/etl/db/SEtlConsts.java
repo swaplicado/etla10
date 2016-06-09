@@ -52,6 +52,7 @@ public abstract class SEtlConsts {
     public static final int SIIE_UNIT_MSF = 109;
     public static final int[] SIIE_TAX = new int[] { 1, 6 }; // IVA 16%
     public static final double SIIE_TAX_RATE = 0.16;
+    public static final int SIIE_PRICE_UNIT_DECS = 3;
     
     public static final HashMap<String, String> AvistaCountriesMap = new HashMap<>();
     public static final HashMap<String, String> AvistaStatesMap = new HashMap<>();
