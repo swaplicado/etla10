@@ -838,6 +838,7 @@ public class SEtlProcessDocInvoices {
                         dataDpsEntry.setTicket("");
                         dataDpsEntry.setUserId(SLibConsts.UNDEFINED);
                         //dataDpsEntry.setSortingPosition(...); // set on save
+                        dataDpsEntry.setIsPrepayment(false);
                         dataDpsEntry.setIsDiscountRetailChain(false);
                         dataDpsEntry.setIsTaxesAutomaticApplying(true);
                         dataDpsEntry.setIsPriceVariable(false);
@@ -852,6 +853,8 @@ public class SEtlProcessDocInvoices {
                         dataDpsEntry.setFkDpsAdjustmentSubtypeId(SDataConstantsSys.TRNS_STP_DPS_ADJ_NA_NA[1]);
                         dataDpsEntry.setFkDpsEntryTypeId(SDataConstantsSys.TRNS_TP_DPS_ETY_ORDY);
                         dataDpsEntry.setFkVehicleTypeId_n(SLibConsts.UNDEFINED);
+                        dataDpsEntry.setFkCashCompanyBranchId_n(SLibConsts.UNDEFINED);
+                        dataDpsEntry.setFkCashAccountId_n(SLibConsts.UNDEFINED);
                         dataDpsEntry.setFkCostCenterId_n(dbConfigAvista.getDesDefaultCostCenterFk());
                         dataDpsEntry.setFkItemRefId_n(SLibConsts.UNDEFINED);
                         dataDpsEntry.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
