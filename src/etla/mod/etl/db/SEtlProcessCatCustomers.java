@@ -635,7 +635,7 @@ public abstract class SEtlProcessCatCustomers {
                     dbCustomer.setZip(SLibUtils.textToSql(resultSetAvista.getString("Zip")));
                     dbCustomer.setPhone(SLibUtils.textToSql(resultSetAvista.getString("Phone")));
                     dbCustomer.setFax(SLibUtils.textToSql(resultSetAvista.getString("Fax")));
-                    dbCustomer.setPayAccount(SEtlConsts.SIIE_PAY_ACC_UNDEF); // user defined, but default value set
+                    dbCustomer.setPayAccount(""); // user defined, but default value set
                     dbCustomer.setCreditDays(SLibUtils.parseInt(resultSetAvista.getString("PayTermCode")));
                     dbCustomer.setCreditLimit(resultSetAvista.getDouble("CreditLimit"));
                     dbCustomer.setCreditStatusCode(SLibUtils.textToSql(resultSetAvista.getString("CreditStatusCode")));
