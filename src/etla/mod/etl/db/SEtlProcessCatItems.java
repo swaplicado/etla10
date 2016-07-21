@@ -172,8 +172,9 @@ public class SEtlProcessCatItems {
                     dataItem.setFkVariety01Id(SDataConstantsSys.ITMU_VAR_NA);
                     dataItem.setFkVariety02Id(SDataConstantsSys.ITMU_VAR_NA);
                     dataItem.setFkVariety03Id(SDataConstantsSys.ITMU_VAR_NA);
-                    dataItem.setFkAdministrativeConceptTypeId(SDataConstantsSys.FINU_TP_ADM_CPT_NA);
-                    dataItem.setFkTaxableConceptTypeId(SDataConstantsSys.FINU_TP_TAX_CPT_NA);
+                    dataItem.setFkAdministrativeConceptTypeId(SDataConstantsSys.NA);
+                    dataItem.setFkTaxableConceptTypeId(SDataConstantsSys.NA);
+                    dataItem.setFkAccountEbitdaTypeId(SDataConstantsSys.NA);
                     dataItem.setFkFiscalAccountIncId(SModSysConsts.FIN_ACC_NA);
                     dataItem.setFkFiscalAccountExpId(SModSysConsts.FIN_ACC_NA);
                     dataItem.setFkItemPackageId_n(SLibConsts.UNDEFINED);
