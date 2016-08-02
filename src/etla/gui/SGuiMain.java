@@ -51,7 +51,7 @@ import sa.lib.gui.bean.SBeanForm;
 import sa.lib.gui.bean.SBeanFormDialog;
 import sa.lib.gui.bean.SBeanFormProcess;
 import sa.lib.gui.bean.SBeanOptionPicker;
-import sa.lib.img.DImgConsts;
+import sa.lib.img.SImgConsts;
 import sa.lib.xml.SXmlUtils;
 
 /*
@@ -67,7 +67,7 @@ import sa.lib.xml.SXmlUtils;
 public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
 
     public static final String APP_NAME = "SIIE ETL Avista 1.0";
-    public static final String APP_RELEASE = "SIIE ETL Avista 1.0 003.04";
+    public static final String APP_RELEASE = "SIIE ETL Avista 1.0 003.05";
     public static final String APP_COPYRIGHT = "© Software Aplicado SA de CV. Todos los derechos reservados.";
     public static final String APP_PROVIDER = "www.swaplicado.com.mx";
     
@@ -779,16 +779,16 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
         ImageIcon imageIcon = null;
 
         switch(icon) {
-            case DImgConsts.ICO_GUI_CLOSE:
+            case SImgConsts.ICO_GUI_CLOSE:
                 imageIcon = moIconCloseActive;
                 break;
-            case DImgConsts.ICO_GUI_CLOSE_INA:
+            case SImgConsts.ICO_GUI_CLOSE_INA:
                 imageIcon = moIconCloseInactive;
                 break;
-            case DImgConsts.ICO_GUI_CLOSE_BRI:
+            case SImgConsts.ICO_GUI_CLOSE_BRI:
                 imageIcon = moIconCloseBright;
                 break;
-            case DImgConsts.ICO_GUI_CLOSE_DAR:
+            case SImgConsts.ICO_GUI_CLOSE_DAR:
                 imageIcon = moIconCloseDark;
                 break;
             default:
