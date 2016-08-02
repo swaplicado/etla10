@@ -64,6 +64,7 @@ public abstract class SEtlProcessCatCustomers {
     
     private static SDataCustomerConfig createCustomerConfig(final SGuiSession session, final SDbSalesAgent salesAgent) throws Exception {
         SDataCustomerConfig dataBizPartnerCustomerConfig = new SDataCustomerConfig();
+        
         //dataBizPartnerCustomerConfig.setPkCustomerId(...); // set by business partner
         dataBizPartnerCustomerConfig.setIsFreeDiscountDoc(false);
         dataBizPartnerCustomerConfig.setIsFreeCommissions(false);
@@ -82,6 +83,24 @@ public abstract class SEtlProcessCatCustomers {
         //dataBizPartnerCustomerConfig.setUserDeleteTs(...);
         
         return dataBizPartnerCustomerConfig;
+    }
+    
+    private static SDataCustomerBranchConfig createCustomerBranchConfig(final SGuiSession session) throws Exception {
+        SDataCustomerBranchConfig dataBizPartnerCustomerBranchConfig = new SDataCustomerBranchConfig();
+        
+        //dataBizPartnerCustomerBranchConfig.setPkCustomerBranchId(...); // set by business-partner branch
+        dataBizPartnerCustomerBranchConfig.setIsDeleted(false);
+        dataBizPartnerCustomerBranchConfig.setFkSalesRouteId(SEtlConsts.SIIE_DEFAULT);
+        dataBizPartnerCustomerBranchConfig.setFkSalesAgentId_n(SLibConsts.UNDEFINED);
+        dataBizPartnerCustomerBranchConfig.setFkSalesSupervisorId_n(SLibConsts.UNDEFINED);
+        dataBizPartnerCustomerBranchConfig.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
+        dataBizPartnerCustomerBranchConfig.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
+        dataBizPartnerCustomerBranchConfig.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);
+        //dataBizPartnerCustomerBranchConfig.setUserNewTs(...);
+        //dataBizPartnerCustomerBranchConfig.setUserEditTs(...);
+        //dataBizPartnerCustomerBranchConfig.setUserDeleteTs(...);
+        
+        return dataBizPartnerCustomerBranchConfig;
     }
     
     public static void computeEtlCustomers(final SGuiSession session, final SEtlPackage etlPackage) throws Exception {
@@ -349,9 +368,10 @@ public abstract class SEtlProcessCatCustomers {
 
                     statementSiie.execute("START TRANSACTION");
 
-                    // Create business partner registry:
+                    // Create business-partner registry:
 
                     dataBizPartner = new SDataBizPartner();
+                    
                     //dataBizPartner.setPkBizPartnerId(...); // set on save
                     dataBizPartner.setBizPartner(SLibUtils.textToSql(resultSetAvista.getString("CustomerName")).replaceAll("'", "''"));
                     dataBizPartner.setBizPartnerCommercial(SLibUtils.textToSql(resultSetAvista.getString("ShortName")).replaceAll("'", "''"));
@@ -387,7 +407,7 @@ public abstract class SEtlProcessCatCustomers {
                     //dataBizPartner.setUserEditTs(...);
                     //dataBizPartner.setUserDeleteTs(...);
 
-                    // Create business partner category registry:
+                    // Create business-partner-category registry:
 
                     dataBizPartnerCategory = createBizPartnerCategory(session, etlPackage, resultSetAvista, nSiieCurrencyFk);
 
@@ -397,15 +417,16 @@ public abstract class SEtlProcessCatCustomers {
                     //dataBizPartner.setDbmsCategorySettingsCdr(...);
                     //dataBizPartner.setDbmsCategorySettingsDbr(...);
 
-                    // Create business partner customer configuration:
+                    // Create business-partner-customer configuration:
 
                     dataBizPartnerCustomerConfig = createCustomerConfig(session, dbSalesAgent);
 
                     dataBizPartner.setDbmsDataCustomerConfig(dataBizPartnerCustomerConfig);
 
-                    // Create business partner branch:
+                    // Create business-partner branch:
 
                     dataBizPartnerBranch = new SDataBizPartnerBranch();
+                    
                     //dataBizPartnerBranch.setPkBizPartnerBranchId(...); // set on save
                     dataBizPartnerBranch.setBizPartnerBranch(SModSysConsts.TXT_HQ);
                     dataBizPartnerBranch.setCode("");
@@ -422,10 +443,11 @@ public abstract class SEtlProcessCatCustomers {
                     //dataBizPartnerBranch.setUserEditTs();
                     //dataBizPartnerBranch.setUserDeleteTs();
 
-                    // Create business partner branch address:
+                    // Create business-partner-branch address:
 
                     dataBizPartnerBranchAddress = new SDataBizPartnerBranchAddress();
-                    //dataBizPartnerBranchAddress.setPkBizPartnerBranchId(...); // set by business partner branch
+                    
+                    //dataBizPartnerBranchAddress.setPkBizPartnerBranchId(...); // set by business-partner branch
                     //dataBizPartnerBranchAddress.setPkAddressId(...); // set on save
                     dataBizPartnerBranchAddress.setAddress(SModSysConsts.TXT_OFFICIAL);
                     dataBizPartnerBranchAddress.setStreet(SLibUtils.textToSql(resultSetAvista.getString("Address1")).replaceAll("'", "''"));
@@ -452,10 +474,11 @@ public abstract class SEtlProcessCatCustomers {
 
                     dataBizPartnerBranch.getDbmsBizPartnerBranchAddresses().add(dataBizPartnerBranchAddress);
 
-                    // Create business partner branch address contact:
+                    // Create business-partner-branch-address contact:
 
                     dataBizPartnerBranchContact = new SDataBizPartnerBranchContact();
-                    //dataBizPartnerBranchContact.setPkBizPartnerBranchId(...); // set by business partner branch
+                    
+                    //dataBizPartnerBranchContact.setPkBizPartnerBranchId(...); // set by business-partner branch
                     //dataBizPartnerBranchContact.setPkContactId(); // set on save
                     dataBizPartnerBranchContact.setContact("");
                     dataBizPartnerBranchContact.setContactPrefix("");
@@ -492,22 +515,13 @@ public abstract class SEtlProcessCatCustomers {
 
                     dataBizPartnerBranch.getDbmsBizPartnerBranchContacts().add(dataBizPartnerBranchContact);
 
-                    // Create business partner branch customer configuration:
+                    // Create-business-partner-branch-customer configuration:
 
-                    dataBizPartnerCustomerBranchConfig = new SDataCustomerBranchConfig();
-                    //dataBizPartnerCustomerBranchConfig.setPkCustomerBranchId(...);
-                    dataBizPartnerCustomerBranchConfig.setIsDeleted(false);
-                    dataBizPartnerCustomerBranchConfig.setFkSalesRouteId(SEtlConsts.SIIE_DEFAULT);
-                    dataBizPartnerCustomerBranchConfig.setFkSalesAgentId_n(SLibConsts.UNDEFINED);
-                    dataBizPartnerCustomerBranchConfig.setFkSalesSupervisorId_n(SLibConsts.UNDEFINED);
-                    dataBizPartnerCustomerBranchConfig.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
-                    dataBizPartnerCustomerBranchConfig.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
-                    dataBizPartnerCustomerBranchConfig.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);
-                    //dataBizPartnerCustomerBranchConfig.setUserNewTs(...);
-                    //dataBizPartnerCustomerBranchConfig.setUserEditTs(...);
-                    //dataBizPartnerCustomerBranchConfig.setUserDeleteTs(...);
+                    dataBizPartnerCustomerBranchConfig = createCustomerBranchConfig(session);
 
                     dataBizPartnerBranch.getDbmsDataCustomerBranchConfig().add(dataBizPartnerCustomerBranchConfig);
+
+                    // Add business-partner branch to business partner:
 
                     dataBizPartner.getDbmsBizPartnerBranches().add(dataBizPartnerBranch);
 
@@ -548,7 +562,7 @@ public abstract class SEtlProcessCatCustomers {
                         //dataBizPartner.setFkUserDeleteId(...);
                         
                         if (dataBizPartner.getDbmsCategorySettingsCus() == null) {
-                            // Create business partner category registry:
+                            // Create business-partner-category registry:
 
                             dataBizPartnerCategory = createBizPartnerCategory(session, etlPackage, resultSetAvista, nSiieCurrencyFk);
 
@@ -558,11 +572,17 @@ public abstract class SEtlProcessCatCustomers {
                             //dataBizPartner.setDbmsCategorySettingsCdr(...);
                             //dataBizPartner.setDbmsCategorySettingsDbr(...);
                             
-                            // Create business partner customer configuration:
+                            // Create business-partner-customer configuration:
 
                             dataBizPartnerCustomerConfig = createCustomerConfig(session, dbSalesAgent);
 
                             dataBizPartner.setDbmsDataCustomerConfig(dataBizPartnerCustomerConfig);
+                            
+                            // Create-business-partner-branch-customer configuration:
+                            
+                            dataBizPartnerCustomerBranchConfig = createCustomerBranchConfig(session);
+
+                            dataBizPartner.getDbmsHqBranch().getDbmsDataCustomerBranchConfig().add(dataBizPartnerCustomerBranchConfig);
                         }
                         
                         if (dataBizPartner.getDbmsCategorySettingsCus().getIsDeleted()) {
