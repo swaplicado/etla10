@@ -625,6 +625,7 @@ public class SEtlProcessDocInvoices {
                     dataDps.setPayments(0);
                     dataDps.setPaymentMethod((String) session.readField(SModConsts.AS_PAY_MET, new int[] { dbInvoice.getFkDesPayMethodId() }, SDbRegistry.FIELD_NAME));
                     dataDps.setPaymentAccount(dbInvoice.getPayAccount());
+                    dataDps.setAutomaticAuthorizationRejection(0);  // N/A
                     dataDps.setIsPublic(false);
                     dataDps.setIsLinked(false);
                     dataDps.setIsClosed(false);
@@ -648,6 +649,7 @@ public class SEtlProcessDocInvoices {
                     dataDps.setFkDpsAuthorizationStatusId(SDataConstantsSys.TRNS_ST_DPS_AUTHORN_NA);
                     dataDps.setFkDpsNatureId(SDataConstantsSys.TRNU_DPS_NAT_DEF);
                     dataDps.setFkCompanyBranchId(dbConfigAvista.getDesCompanyBranchFk());
+                    dataDps.setFkFunctionalAreaId(erp.mod.SModSysConsts.CFGU_FUNC_NON);
                     dataDps.setFkBizPartnerId_r(dbInvoiceCustomer.getDesCustomerId());
                     dataDps.setFkBizPartnerBranchId(dbInvoiceCustomer.getDesCustomerBranchId());
                     dataDps.setFkBizPartnerBranchAddressId(SEtlConsts.SIIE_DEFAULT);
