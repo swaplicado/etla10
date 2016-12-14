@@ -34,14 +34,14 @@ import sa.lib.gui.SGuiSession;
 public class SEtlProcessDocInvoices {
     
     public static void computeEtlInvoices(final SGuiSession session, final SEtlPackage etlPackage) throws Exception {
-        int count = 0;
+        // Avista invoices variables:
         
+        int nInvoicesCount = 0;
         int idInvoice = 0;
-        boolean isInvoiceExported = false;
-        
         int idInvoicePayMethod = 0;
         int idInvoiceCurrencySrc = 0;
         int idInvoiceCurrencyReq = 0;
+        boolean isInvoiceExported = false;
         HashSet<Integer> setLineCurrencySrcIds = new HashSet<>();
         
         double dInvoiceAmountSrc = 0;
@@ -52,19 +52,29 @@ public class SEtlProcessDocInvoices {
         SDbSalesAgent dbInvoiceSalesAgent = null;
         SDbSysCurrency dbInvoiceCurrencySrc = null;
         SDbSysCurrency dbInvoiceCurrencyReq = null;
+        
+        // Miscellaneous variables:
+        
         int nMiscDecsAmount = 0;
-        int nMiscDecsAmountUnitary = 0;
+        int nMiscDecsAmountUnit = 0;
         int nMiscDefaultSiieUnitId = 0;
         double dMisc1kFeetTo1kMeters = 0;
-        double dLinePieces = 0; // pce
-        double dLineArea = 0; // 1k·m²
-        double dLineWeight = 0; // kg
+        
+        // Avista invoice row (line) variables:
+        
+        double dLinePieces = 0;     // pce
+        double dLineArea = 0;       // 1k·m²
+        double dLineWeight = 0;     // kg
         double dLineUnitsSrc = 0;
         double dLineUnitsReq = 0;
         double dLinePriceReq = 0;
         double dLineAmountReq = 0;
-        double dEntryArea = 0; // m²
-        double dEntryWeight = 0; // kg
+        boolean isLineUnitEqual = false;
+        
+        // SIIE & ETL invoice row variables:
+        
+        double dEntryArea = 0;      // m²
+        double dEntryWeight = 0;    // kg
         double dEntryQuantity = 0;
         double dEntryPriceUnitOrigCy = 0;
         double dEntryPriceUnitCy = 0;
@@ -73,7 +83,9 @@ public class SEtlProcessDocInvoices {
         double dEntryTaxCharged = 0;
         double dEntryTaxRetained = 0;
         double dEntrySubtotal = 0;
-        boolean isLineUnitEqual = false;
+        
+        // SIIE & ETL data registries:
+        
         SDbItem dbLineItem = null;
         SDbSysUnitOfMeasure dbLineUnitOfMeasureSrc = null;
         SDbSysUnitOfMeasure dbLineUnitOfMeasureReq = null;
@@ -85,6 +97,9 @@ public class SEtlProcessDocInvoices {
         SDataDpsEntry dataDpsEntry = null;
         SDataDpsEntryTax dataDpsEntryTax = null;
         SDataDpsEntryNotes dataDpsEntryNotes = null;
+        
+        // ETL-process variables:
+        
         String sql = "";
         Statement stEtl = session.getStatement().getConnection().createStatement();
         Statement stSiie = etlPackage.ConnectionSiie.createStatement();
@@ -101,12 +116,15 @@ public class SEtlProcessDocInvoices {
         SDbConfigAvista dbConfigAvista = ((SDbConfig) session.getConfigSystem()).getRegConfigAvista();
         SEtlCatalogs etlCatalogs = null;
         
+        // ETL-process start-up:
+        
         etlPackage.EtlLog.setStep(SEtlConsts.STEP_INV_STA);
         
         etlPackage.EtlLog.setStepAux(SEtlConsts.STEP_AUX_NA);
         etlPackage.EtlLog.save(session);
         
         // Validate issue period is open:
+        
         if (!SEtlUtils.isSiiePeriodOpen(SLibTimeUtils.digestMonth(etlPackage.DateIssue), etlPackage.ConnectionSiie.createStatement())) {
             throw new Exception(SLibConstants.MSG_ERR_GUI_PER_CLOSE);
         }
@@ -120,7 +138,7 @@ public class SEtlProcessDocInvoices {
         }
         
         nMiscDecsAmount = SLibUtils.getDecimalFormatAmount().getMaximumFractionDigits();
-        nMiscDecsAmountUnitary = SLibUtils.getDecimalFormatAmountUnitary().getMaximumFractionDigits();
+        nMiscDecsAmountUnit = SLibUtils.getDecimalFormatAmountUnitary().getMaximumFractionDigits();
         nMiscDefaultSiieUnitId = ((SDbSysUnitOfMeasure) etlCatalogs.getEtlUnitOfMeasure(dbConfigAvista.getFkSrcDefaultUnitOfMeasureId())).getDesUnitOfMeasureId();
         dMisc1kFeetTo1kMeters = ((SDbSysUnitOfMeasure) etlCatalogs.getEtlUnitOfMeasure(SModSysConsts.AS_UOM_MSF)).getConversionFactor();
         
@@ -132,17 +150,18 @@ public class SEtlProcessDocInvoices {
                 + "ci.CurrentStatusKey IN (" + SEtlConsts.AVISTA_INV_STA_APP + ", " + SEtlConsts.AVISTA_INV_STA_ARC + ") AND "
                 + "ci.CustomerInvoiceTypeKey=" + SEtlConsts.AVISTA_INV_TP_INV + " "
                 + (etlPackage.InvoiceBatch == SLibConsts.UNDEFINED ? "" : "AND ci.BatchNumber=" + etlPackage.InvoiceBatch + " ")
+                //+ "AND ci.CustomerId = 500 "  // line used for debugging purposes
                 + "ORDER BY CAST(ci.Created AS DATE), ci.InvoiceNumber, ci.CustomerInvoiceKey ";
         
         rsAvistaInvoiceList = stAvistaInvoiceList.executeQuery(sql);
         while (rsAvistaInvoiceList.next()) {
             /****************************************************************/
             if (SEtlConsts.SHOW_DEBUG_MSGS) {
-                System.out.println(SEtlConsts.TXT_INV + " (" + ++count + "): " + rsAvistaInvoiceList.getInt("CustomerInvoiceKey"));
+                System.out.println(SEtlConsts.TXT_INV + " (" + ++nInvoicesCount + "): " + rsAvistaInvoiceList.getInt("CustomerInvoiceKey"));
             }
             /****************************************************************/
             
-            // From ETL, check if invoice does not exist or has not been exported yet:
+            // On ETL, check if Avista invoice does not exist or has not been exported yet:
             
             etlPackage.EtlLog.setStepAux(SEtlConsts.STEP_AUX_INV_AUX_10);
             etlPackage.EtlLog.save(session);
@@ -153,7 +172,7 @@ public class SEtlProcessDocInvoices {
             sql = "SELECT id_inv, des_inv_yea_id, des_inv_doc_id "
                     + "FROM " + SModConsts.TablesMap.get(SModConsts.A_INV) + " "
                     + "WHERE src_inv_id=" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + " AND b_del=0 "
-                    + "ORDER BY id_inv DESC "; // descendent order, last record appears first!
+                    + "ORDER BY id_inv DESC "; // descendent order, the newest record appears first!
             
             rsEtl = stEtl.executeQuery(sql);
             if (rsEtl.next()) {
@@ -162,7 +181,7 @@ public class SEtlProcessDocInvoices {
             }
             
             if (idInvoice == 0 || !isInvoiceExported) {
-                // Invoice does not exist or has not been exported yet:
+                // Avista invoice does not exist or has not been exported yet into ETL:
             
                 idInvoicePayMethod = 0;
                 idInvoiceCurrencySrc = 0;
@@ -173,7 +192,7 @@ public class SEtlProcessDocInvoices {
                 dInvoiceAmountReq = 0;
                 dInvoiceExchangeRate = 0;
 
-                // Define invoice's customer:
+                // Set invoice's custome registry:
                 
                 dbInvoiceCustomer = SEtlUtils.getEtlCustomer(session, rsAvistaInvoiceList.getString("CustomerId"));
                 if (dbInvoiceCustomer == null) {
@@ -182,7 +201,7 @@ public class SEtlProcessDocInvoices {
                             + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
                 }
                 
-                // Define customer's sales agent:
+                // Set sales agent from customer's registry:
                 
                 dbInvoiceSalesAgent = etlCatalogs.getEtlSalesAgent(etlCatalogs.getEtlIdForSalesAgent(dbInvoiceCustomer.getSrcCustomerSalesAgentFk_n()));
                 if (dbInvoiceSalesAgent != null && dbInvoiceSalesAgent.getDesSalesAgentId() == 0) {
@@ -191,14 +210,14 @@ public class SEtlProcessDocInvoices {
                                                 + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
                 }
                 
-                // Define invoice's pay method:
+                // Set invoice's pay method from customer's registry:
                 
                 idInvoicePayMethod = dbInvoiceCustomer.getFkDesRequiredPayMethodId_n();
                 if (idInvoicePayMethod == 0) {
                     idInvoicePayMethod = dbConfigAvista.getFkDesDefaultPayMethodId();
                 }
                 
-                // Explore invoice currencies, line per line:
+                // Explore invoice items and currencies row by row (i.e.,  line by line):
                 
                 sql = "SELECT cii.ItemNumber, cii.LineAmount, cii.CurrencyKey, cii.ExchangeToLocal, "
                         + "pe.Flute, pe.PlantBoardTypeKey "
@@ -316,19 +335,20 @@ public class SEtlProcessDocInvoices {
                         stEtl.execute("START TRANSACTION");
 
                         dbInvoice = new SDbInvoice();
-                        //invoice.setPkInvoiceId(...); // set on save
+                        
+                        //invoice.setPkInvoiceId(...);  // set when saved
                         dbInvoice.setSrcInvoiceId(rsAvistaInvoiceData.getInt("CustomerInvoiceKey"));
-                        dbInvoice.setDesInvoiceYearId(0); // set when SIIE record saved
-                        dbInvoice.setDesInvoiceDocumentId(0); // set when SIIE record saved
+                        dbInvoice.setDesInvoiceYearId(0);       // set when SIIE registry saved
+                        dbInvoice.setDesInvoiceDocumentId(0);   // set when SIIE registry saved
                         dbInvoice.setOriginalNumber(rsAvistaInvoiceData.getString("InvoiceNumber"));
-                        dbInvoice.setFinalSeries(""); // set when SIIE record saved
-                        dbInvoice.setFinalNumber(""); // set when SIIE record saved
+                        dbInvoice.setFinalSeries("");   // set when SIIE registry saved
+                        dbInvoice.setFinalNumber("");   // set when SIIE registry saved
                         dbInvoice.setOriginalDate(rsAvistaInvoiceData.getDate("InvoiceCreated"));
                         dbInvoice.setFinalDate(etlPackage.DateIssue);
                         dbInvoice.setPayAccount(dbInvoiceCustomer.getPayAccount());
                         dbInvoice.setCreditDays(SLibUtils.parseInt(rsAvistaInvoiceData.getString("PayTermCode")));
                         dbInvoice.setOriginalAmount(dInvoiceAmountSrc);
-                        //dbInvoice.setFinalAmount(...); // set forward on this method
+                        //dbInvoice.setFinalAmount(...);    // set later on this method
                         dbInvoice.setExchangeRate(dInvoiceExchangeRate);
                         dbInvoice.setPaymentConditions(SLibUtils.textToSql(rsAvistaInvoiceData.getString("PayTermDescription").toUpperCase()));
                         dbInvoice.setCustomerOrder(SLibUtils.textToSql(rsAvistaInvoiceData.getString("CustomerPO").toUpperCase()));
@@ -342,8 +362,8 @@ public class SEtlProcessDocInvoices {
                         dbInvoice.setDesOriginalCurrencyFk(dbInvoiceCurrencySrc.getDesCurrencyId());
                         dbInvoice.setDesFinalCurrencyFk(dbInvoiceCurrencyReq.getDesCurrencyId());
                         dbInvoice.setDesPayMethodFk(idInvoicePayMethod);
-                        //dbInvoice.setFirstEtlInsert(...); // set on save
-                        //dbInvoice.setLastEtlUpdate(...); // set on save
+                        //dbInvoice.setFirstEtlInsert(...); // set when saved
+                        //dbInvoice.setLastEtlUpdate(...);  // set when saved
                         dbInvoice.setDeleted(false);
                         dbInvoice.setSystem(false);
                         dbInvoice.setFkSrcCustomerId(dbInvoiceCustomer.getPkCustomerId());
@@ -394,6 +414,9 @@ public class SEtlProcessDocInvoices {
                             }
                             
                             // Compute final price and amount:
+                            
+                            dLineUnitsSrc = 0;
+                            dLineUnitsReq = 0;
                             
                             switch (dbLineUnitOfMeasureSrc.getSrcUnitOfMeasureId()) {
                                 case SEtlConsts.AVISTA_UOM_MSM:
@@ -486,21 +509,22 @@ public class SEtlProcessDocInvoices {
                             }
                             
                             if (isLineUnitEqual) {
-                                // Both line units, source and required, are the same:
+                                // Both line (invoice row) units, source and required, are the same:
                                 
-                                dLinePriceReq = SLibUtils.round(rsAvistaInvoiceData.getDouble("LinePrice") * dFactorCurrency, nMiscDecsAmountUnitary);
+                                dLinePriceReq = SLibUtils.round(rsAvistaInvoiceData.getDouble("LinePrice") * dFactorCurrency, nMiscDecsAmountUnit);
                                 dLineAmountReq = SLibUtils.round(dLineUnitsReq * dLinePriceReq, nMiscDecsAmount);
                             }
                             else {
-                                // Source and required line units are different:
+                                // Source and required line (invoice row) units are different:
                                 
-                                dLineAmountReq = SLibUtils.round(SLibUtils.round(dLineUnitsSrc * rsAvistaInvoiceData.getDouble("LinePrice"), nMiscDecsAmountUnitary) * dFactorCurrency, nMiscDecsAmount);
-                                dLinePriceReq = SLibUtils.round(dLineAmountReq / dLineUnitsReq, nMiscDecsAmountUnitary);
+                                dLineAmountReq = SLibUtils.round(SLibUtils.round(dLineUnitsSrc * rsAvistaInvoiceData.getDouble("LinePrice"), nMiscDecsAmountUnit) * dFactorCurrency, nMiscDecsAmount);
+                                dLinePriceReq = SLibUtils.round(dLineAmountReq / dLineUnitsReq, nMiscDecsAmountUnit);
                             }
                             
                             dbInvoiceRow = new SDbInvoiceRow();
-                            //dbInvoiceRow.setPkInvoiceId(...); // set on save
-                            //dbInvoiceRow.setPkRowId(...); // set on save
+                            
+                            //dbInvoiceRow.setPkInvoiceId(...); // set when saved
+                            //dbInvoiceRow.setPkRowId(...);     // set when saved
                             dbInvoiceRow.setSrcInvoiceId(rsAvistaInvoiceData.getInt("CustomerInvoiceKey"));
                             dbInvoiceRow.setSrcInvoiceRowId(rsAvistaInvoiceData.getInt("ItemNumber"));
                             dbInvoiceRow.setCode(dbLineItem.getCode());
@@ -513,10 +537,10 @@ public class SEtlProcessDocInvoices {
                             dbInvoiceRow.setEstimateDescription(SLibUtils.textToSql(rsAvistaInvoiceData.getString("EstItemDescription")));
                             dbInvoiceRow.setQuantityOrdered(rsAvistaInvoiceData.getInt("QuantityOrdered"));
                             dbInvoiceRow.setQuantity(rsAvistaInvoiceData.getInt("Pieces"));
-                            dbInvoiceRow.setLength(rsAvistaInvoiceData.getDouble("Length")); // mm
-                            dbInvoiceRow.setWidth(rsAvistaInvoiceData.getDouble("Width")); // mm
-                            dbInvoiceRow.setArea(rsAvistaInvoiceData.getDouble("Area")); // mm²
-                            dbInvoiceRow.setWeight(rsAvistaInvoiceData.getDouble("Weight")); // mg
+                            dbInvoiceRow.setLength(rsAvistaInvoiceData.getDouble("Length"));    // mm
+                            dbInvoiceRow.setWidth(rsAvistaInvoiceData.getDouble("Width"));      // mm
+                            dbInvoiceRow.setArea(rsAvistaInvoiceData.getDouble("Area"));        // mm²
+                            dbInvoiceRow.setWeight(rsAvistaInvoiceData.getDouble("Weight"));    // mg
                             
                             dbInvoiceRow.setOriginalPrice(rsAvistaInvoiceData.getDouble("LinePrice"));
                             dbInvoiceRow.setOriginalPricePerUnit(rsAvistaInvoiceData.getString("LinePricePerCode"));
@@ -571,8 +595,7 @@ public class SEtlProcessDocInvoices {
                         throw new Exception(SEtlConsts.MSG_ERR_SIIE_CUS_QRY + "'" + dbInvoiceCustomer.getName() + "'.\n"
                                 + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
                     }
-                    
-                    if (dataBizPartnerCustomer.getIsDeleted() || dataBizPartnerCustomer.getDbmsCategorySettingsCus().getIsDeleted()) {
+                    else if (dataBizPartnerCustomer.getIsDeleted() || dataBizPartnerCustomer.getDbmsCategorySettingsCus().getIsDeleted()) {
                         throw new Exception(SEtlConsts.MSG_ERR_SIIE_CUS_STA + "'" + dbInvoiceCustomer.getName() + "'.\n"
                                 + SEtlConsts.MSG_ERR_REC_STA_DEL + "\n"
                                 + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')"); // business partner record (at least as customer) is deleted
@@ -583,8 +606,9 @@ public class SEtlProcessDocInvoices {
                     // Create business partner registry:
 
                     dataDps = new SDataDps();
+                    
                     dataDps.setPkYearId(SLibTimeUtils.digestYear(dbInvoice.getFinalDate())[0]);
-                    //dataDps.setPkDocId(...); // set on save
+                    //dataDps.setPkDocId(...); // set when saved
                     dataDps.setDate(dbInvoice.getFinalDate());
                     dataDps.setDateDoc(dataDps.getDate());
                     dataDps.setDateStartCredit(dataDps.getDate());
@@ -602,22 +626,22 @@ public class SEtlProcessDocInvoices {
                     dataDps.setIsDiscountDocApplying(false);
                     dataDps.setIsDiscountDocPercentage(false);
                     dataDps.setDiscountDocPercentage(0);
-                    //dataDps.setSubtotalProvisional_r(0); // set forward when DPS calculated
-                    //dataDps.setDiscountDoc_r(0); // set forward when DPS calculated
-                    //dataDps.setSubtotal_r(0); // set forward when DPS calculated
-                    //dataDps.setTaxCharged_r(0); // set forward when DPS calculated
-                    //dataDps.setTaxRetained_r(0); // set forward when DPS calculated
-                    //dataDps.setTotal_r(0); // set forward when DPS calculated
-                    //dataDps.setCommissions_r(0); // set forward when DPS calculated
+                    //dataDps.setSubtotalProvisional_r(0);  // set later when DPS calculated
+                    //dataDps.setDiscountDoc_r(0);  // set later when DPS calculated
+                    //dataDps.setSubtotal_r(0);     // set later when DPS calculated
+                    //dataDps.setTaxCharged_r(0);   // set later when DPS calculated
+                    //dataDps.setTaxRetained_r(0);  // set later when DPS calculated
+                    //dataDps.setTotal_r(0);        // set later when DPS calculated
+                    //dataDps.setCommissions_r(0);  // set later when DPS calculated
                     dataDps.setExchangeRate(dbInvoice.getExchangeRate());
                     dataDps.setExchangeRateSystem(dbInvoice.getExchangeRate());
-                    //dataDps.setSubtotalProvisionalCy_r(0); // set forward when DPS calculated
-                    //dataDps.setDiscountDocCy_r(0); // set forward when DPS calculated
-                    //dataDps.setSubtotalCy_r(0); // set forward when DPS calculated
-                    //dataDps.setTaxChargedCy_r(0); // set forward when DPS calculated
-                    //dataDps.setTaxRetainedCy_r(0); // set forward when DPS calculated
-                    //dataDps.setTotalCy_r(0); // set forward when DPS calculated
-                    //dataDps.setCommissionsCy_r(0); // set forward when DPS calculated
+                    //dataDps.setSubtotalProvisionalCy_r(0); // set later when DPS calculated
+                    //dataDps.setDiscountDocCy_r(0);    // set later when DPS calculated
+                    //dataDps.setSubtotalCy_r(0);       // set later when DPS calculated
+                    //dataDps.setTaxChargedCy_r(0);     // set later when DPS calculated
+                    //dataDps.setTaxRetainedCy_r(0);    // set later when DPS calculated
+                    //dataDps.setTotalCy_r(0);          // set later when DPS calculated
+                    //dataDps.setCommissionsCy_r(0);    // set later when DPS calculated
                     dataDps.setDriver("");
                     dataDps.setPlate("");
                     dataDps.setTicket("");
@@ -663,8 +687,8 @@ public class SEtlProcessDocInvoices {
                     dataDps.setFkTaxIdentityReceptorTypeId(dataBizPartnerCustomer.getFkTaxIdentityId());
                     dataDps.setFkLanguajeId(SEtlConsts.SIIE_DEFAULT);
                     dataDps.setFkCurrencyId(dbInvoice.getDesFinalCurrencyFk());
-                    dataDps.setFkSalesAgentId_n(dbInvoiceSalesAgent == null ? SLibConsts.UNDEFINED : dbInvoiceSalesAgent.getDesSalesAgentId());
-                    dataDps.setFkSalesAgentBizPartnerId_n(dbInvoiceSalesAgent == null ? SLibConsts.UNDEFINED : dbInvoiceSalesAgent.getDesSalesAgentId());
+                    dataDps.setFkSalesAgentId_n(dbInvoice.getDesSalesAgentFk());
+                    dataDps.setFkSalesAgentBizPartnerId_n(dbInvoice.getDesSalesAgentFk());
                     dataDps.setFkSalesSupervisorId_n(SLibConsts.UNDEFINED);
                     dataDps.setFkSalesSupervisorBizPartnerId_n(SLibConsts.UNDEFINED);
                     dataDps.setFkIncotermId(erp.mod.SModSysConsts.LOGS_INC_NA);
@@ -699,9 +723,10 @@ public class SEtlProcessDocInvoices {
                     //dataDps.setUserDeleteTs(...);
                     
                     dataDpsNotes = new SDataDpsNotes();
-                    //dataDpsNotes.setPkYearId(...); // set on save
-                    //dataDpsNotes.setPkDocId(...); // set on save
-                    //dataDpsNotes.setPkNotesId(...); // set on save
+                    
+                    //dataDpsNotes.setPkYearId(...);    // set when saved
+                    //dataDpsNotes.setPkDocId(...);     // set when saved
+                    //dataDpsNotes.setPkNotesId(...);   // set when saved
                     dataDpsNotes.setNotes(dbInvoice.getBillOfLading());
                     dataDpsNotes.setIsAllDocs(true);
                     dataDpsNotes.setIsPrintable(true);
@@ -723,25 +748,24 @@ public class SEtlProcessDocInvoices {
                             throw new Exception(SEtlConsts.MSG_ERR_SIIE_ITM_QRY + "'" + row.getName() + "'.\n"
                                                 + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
                         }
-                        
-                        if (dataItem.getFkUnitId() != nMiscDefaultSiieUnitId) {
+                        else if (dataItem.getFkUnitId() != nMiscDefaultSiieUnitId) {
                             throw new Exception(SEtlConsts.MSG_ERR_UNS_UOM + "\n(" + SEtlConsts.TXT_ITM + "='" + row.getName() + "').\n"
                                                 + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
                         }
                         
                         // Compute entry quantity:
                         
-                        dEntryArea = row.getLength() * row.getWidth() * row.getQuantity() / Math.pow(10, 6); // from mm² to m²
-                        dEntryWeight = row.getWeight() / Math.pow(10, 6); // from mg to kg
+                        dEntryArea = SLibUtils.round(row.getLength() * row.getWidth() * row.getQuantity() / Math.pow(10, 6), nMiscDecsAmountUnit); // from mm² to m²
+                        dEntryWeight = SLibUtils.round(row.getWeight() / Math.pow(10, 6), nMiscDecsAmountUnit);   // from mg to kg
                         
                         switch (dataItem.getFkUnitId()) {
                             case SEtlConsts.SIIE_UNIT_MSM:
                             case erp.mod.SModSysConsts.ITMU_UNIT_PCE:
                             case erp.mod.SModSysConsts.ITMU_UNIT_MT_TON:
-                                dEntryQuantity = (dEntryArea / 1000.0); // from m² to 1k·m²
+                                dEntryQuantity = SLibUtils.round(dEntryArea / 1000.0, nMiscDecsAmountUnit);       // from m² to 1k·m²
                                 break;
                             case SEtlConsts.SIIE_UNIT_MSF:
-                                dEntryQuantity = (dEntryArea / 1000.0) * (1000.0 / dMisc1kFeetTo1kMeters); // from m² to 1k·m², then to 1k·ft²
+                                dEntryQuantity = SLibUtils.round((dEntryArea / 1000.0) * (1000.0 / dMisc1kFeetTo1kMeters), nMiscDecsAmountUnit);  // from m² to 1k·m², then to 1k·ft²
                                 break;
                             default:
                                 throw new Exception(SLibConsts.ERR_MSG_OPTION_UNKNOWN + "\n" + SEtlConsts.MSG_ERR_UNS_UOM + "\n(" + SEtlConsts.TXT_ITM + "='" + row.getName() + "').\n"
@@ -749,9 +773,10 @@ public class SEtlProcessDocInvoices {
                         }
                         
                         dataDpsEntry = new SDataDpsEntry();
-                        //dataDpsEntry.setPkYearId(...); // set on save
-                        //dataDpsEntry.setPkDocId(...); // set on save
-                        //dataDpsEntry.setPkEntryId(...); // set on save
+                        
+                        //dataDpsEntry.setPkYearId(...);    // set when saved
+                        //dataDpsEntry.setPkDocId(...);     // set when saved
+                        //dataDpsEntry.setPkEntryId(...);   // set when saved
                         dataDpsEntry.setConceptKey(row.getCode());
                         dataDpsEntry.setConcept(SEtlConsts.TXT_MISC_O + ": " + row.getOrderNumber() + "; " + SEtlConsts.TXT_BRD + ": " + row.getName() + "; " + row.getLength() + " X " + row.getWidth() + "; " + SEtlConsts.TXT_MISC_PO_ACR + ": " + row.getCustomerOrder());
                         dataDpsEntry.setReference("");
@@ -766,34 +791,34 @@ public class SEtlProcessDocInvoices {
                         dataDpsEntry.setDiscountUnitaryPercentageSystem(0);
                         dataDpsEntry.setDiscountEntryPercentage(0);
                         
-                        dEntryPriceUnitOrigCy = SLibUtils.round(row.getFinalPrice(), SEtlConsts.SIIE_PRICE_UNIT_DECS);
+                        dEntryPriceUnitOrigCy = row.getFinalPrice();
+
+                        dataDpsEntry.setOriginalQuantity(row.getFinalUnits());
+                        dataDpsEntry.setOriginalPriceUnitaryCy(SLibUtils.round(dEntryPriceUnitOrigCy, SEtlConsts.SIIE_PRICE_UNIT_DECS));    // round price to fixed number of decimals
+                        dataDpsEntry.setOriginalPriceUnitarySystemCy(SLibUtils.round(dEntryPriceUnitOrigCy, nMiscDecsAmountUnit));          // preserve price as is
+                        dataDpsEntry.setOriginalDiscountUnitaryCy(0);
+                        dataDpsEntry.setOriginalDiscountUnitarySystemCy(0);
                         
-                        if (row.getFkSrcOriginalUnitOfMeasureId() == row.getFkSrcFinalUnitOfMeasureId()) {
-                            dEntryPriceUnitCy = SLibUtils.round(dEntryPriceUnitOrigCy, SEtlConsts.SIIE_PRICE_UNIT_DECS);
+                        if (dataItem.getFkUnitId() == row.getDesFinalUnitOfMeasureFk()) {
+                            dEntryPriceUnitCy = dEntryPriceUnitOrigCy;
                         }
                         else {
-                            dEntryPriceUnitCy = SLibUtils.round(row.getFinalAmount() / dataDpsEntry.getQuantity(), SEtlConsts.SIIE_PRICE_UNIT_DECS);
+                            dEntryPriceUnitCy = SLibUtils.round((dataDpsEntry.getOriginalPriceUnitaryCy() - dataDpsEntry.getOriginalDiscountUnitaryCy()) * dataDpsEntry.getOriginalQuantity(), nMiscDecsAmount) / dataDpsEntry.getQuantity();
                         }
                         
-                        dataDpsEntry.setOriginalQuantity(row.getFinalUnits());
-                        dataDpsEntry.setOriginalPriceUnitaryCy(dEntryPriceUnitOrigCy);
-                        dataDpsEntry.setOriginalPriceUnitarySystemCy(dataDpsEntry.getOriginalPriceUnitaryCy());
-                        dataDpsEntry.setOriginalDiscountUnitaryCy(0);
-                        dataDpsEntry.setOriginalDiscountUnitarySystemCy(dataDpsEntry.getOriginalDiscountUnitaryCy());
-                        
-                        dataDpsEntry.setPriceUnitaryCy(dEntryPriceUnitCy);
-                        dataDpsEntry.setPriceUnitarySystemCy(dataDpsEntry.getPriceUnitaryCy());
+                        dataDpsEntry.setPriceUnitaryCy(SLibUtils.round(dEntryPriceUnitCy, SEtlConsts.SIIE_PRICE_UNIT_DECS));    // round price to fixed number of decimals
+                        dataDpsEntry.setPriceUnitarySystemCy(SLibUtils.round(dEntryPriceUnitCy, nMiscDecsAmountUnit));          // preserve price as is
                         dataDpsEntry.setDiscountUnitaryCy(0);
-                        dataDpsEntry.setDiscountUnitarySystemCy(dataDpsEntry.getDiscountUnitaryCy());
+                        dataDpsEntry.setDiscountUnitarySystemCy(0);
                         dataDpsEntry.setDiscountEntryCy(0);
-                        dataDpsEntry.setSubtotalProvisionalCy_r(row.getFinalAmount());
+                        dataDpsEntry.setSubtotalProvisionalCy_r(SLibUtils.round(((dataDpsEntry.getPriceUnitaryCy() - dataDpsEntry.getDiscountUnitaryCy()) * dataDpsEntry.getQuantity()) - dataDpsEntry.getDiscountEntryCy(), nMiscDecsAmount));
                         dataDpsEntry.setDiscountDocCy(0);
-                        dataDpsEntry.setSubtotalCy_r(dataDpsEntry.getSubtotalProvisionalCy_r() - dataDpsEntry.getDiscountDocCy());
+                        dataDpsEntry.setSubtotalCy_r(SLibUtils.round(dataDpsEntry.getSubtotalProvisionalCy_r() - dataDpsEntry.getDiscountDocCy(), nMiscDecsAmount));
                         dataDpsEntry.setTaxChargedCy_r(SLibUtils.round(dataDpsEntry.getSubtotalCy_r() * SEtlConsts.SIIE_TAX_RATE, nMiscDecsAmount));
                         dataDpsEntry.setTaxRetainedCy_r(0);
                         dataDpsEntry.setTotalCy_r(SLibUtils.round(dataDpsEntry.getSubtotalCy_r() + dataDpsEntry.getTaxChargedCy_r() - dataDpsEntry.getTaxRetainedCy_r(), nMiscDecsAmount));
                         
-                        dataDpsEntry.setPriceUnitaryRealCy_r(SLibUtils.round(dataDpsEntry.getSubtotalCy_r() / dataDpsEntry.getQuantity(), nMiscDecsAmountUnitary));
+                        dataDpsEntry.setPriceUnitaryRealCy_r(SLibUtils.round(dataDpsEntry.getSubtotalCy_r() / dataDpsEntry.getQuantity(), nMiscDecsAmountUnit));
                         dataDpsEntry.setCommissionsCy_r(0);
                         
                         dEntryTotal = SLibUtils.round(dataDpsEntry.getTotalCy_r() * dataDps.getExchangeRate(), nMiscDecsAmount);
@@ -801,33 +826,32 @@ public class SEtlProcessDocInvoices {
                         dEntryTaxRetained = 0;
                         dEntryTaxCharged = SLibUtils.round(dEntryTotal - dEntrySubtotal, nMiscDecsAmount);
                         
-                        if (row.getFkSrcOriginalUnitOfMeasureId() == row.getFkSrcFinalUnitOfMeasureId() && 
-                                dbInvoice.getFkSrcOriginalCurrencyId() == dbInvoice.getFkSrcFinalCurrencyId()) {
-                            dEntryPriceUnit = SLibUtils.round(dEntryPriceUnitOrigCy, SEtlConsts.SIIE_PRICE_UNIT_DECS);
+                        if (dataItem.getFkUnitId() == row.getDesFinalUnitOfMeasureFk() && dbInvoice.getFkSrcOriginalCurrencyId() == dbInvoice.getFkSrcFinalCurrencyId()) {
+                            dEntryPriceUnit = dEntryPriceUnitCy;
                         }
                         else {
-                            dEntryPriceUnit = SLibUtils.round(dEntrySubtotal / dataDpsEntry.getQuantity(), SEtlConsts.SIIE_PRICE_UNIT_DECS);
+                            dEntryPriceUnit = dEntrySubtotal / dataDpsEntry.getQuantity();
                         }
                         
-                        dataDpsEntry.setPriceUnitary(dEntryPriceUnit);
-                        dataDpsEntry.setPriceUnitarySystem(dataDpsEntry.getPriceUnitary());
+                        dataDpsEntry.setPriceUnitary(SLibUtils.round(dEntryPriceUnit, SEtlConsts.SIIE_PRICE_UNIT_DECS));
+                        dataDpsEntry.setPriceUnitarySystem(SLibUtils.round(dEntryPriceUnit, nMiscDecsAmountUnit));
                         dataDpsEntry.setDiscountUnitary(0);
-                        dataDpsEntry.setDiscountUnitarySystem(dataDpsEntry.getDiscountUnitary());
+                        dataDpsEntry.setDiscountUnitarySystem(0);
                         dataDpsEntry.setDiscountEntry(0);
                         dataDpsEntry.setSubtotalProvisional_r(dEntrySubtotal);
                         dataDpsEntry.setDiscountDoc(0);
-                        dataDpsEntry.setSubtotal_r(dataDpsEntry.getSubtotalProvisional_r() - dataDpsEntry.getDiscountDoc());
+                        dataDpsEntry.setSubtotal_r(dEntrySubtotal);
                         dataDpsEntry.setTaxCharged_r(dEntryTaxCharged);
                         dataDpsEntry.setTaxRetained_r(dEntryTaxRetained);
                         dataDpsEntry.setTotal_r(dEntryTotal);
                         
-                        dataDpsEntry.setPriceUnitaryReal_r(SLibUtils.round(dataDpsEntry.getSubtotal_r() / dataDpsEntry.getQuantity(), nMiscDecsAmountUnitary));
+                        dataDpsEntry.setPriceUnitaryReal_r(SLibUtils.round(dataDpsEntry.getSubtotal_r() / dataDpsEntry.getQuantity(), nMiscDecsAmountUnit));
                         dataDpsEntry.setCommissions_r(0);
                         
                         dataDpsEntry.setLength(0);
-                        dataDpsEntry.setSurface(row.getLength() * row.getWidth() * row.getQuantity() / Math.pow(10, 6)); // from mm² to m²
+                        dataDpsEntry.setSurface(dEntryArea);    // m²
                         dataDpsEntry.setVolume(0);
-                        dataDpsEntry.setMass(row.getWeight() / Math.pow(10, 6)); // from mg to kg
+                        dataDpsEntry.setMass(dEntryWeight);     // kg
                         dataDpsEntry.setWeightGross(0);
                         dataDpsEntry.setWeightDelivery(0);
                         dataDpsEntry.setSurplusPercentage(0);
@@ -836,11 +860,15 @@ public class SEtlProcessDocInvoices {
                         dataDpsEntry.setContractFactor(0);
                         dataDpsEntry.setContractPriceYear(0);
                         dataDpsEntry.setContractPriceMonth(0);
-                        dataDpsEntry.setVehicleNumber("");
-                        dataDpsEntry.setSecuritySeal("");
+                        dataDpsEntry.setSealQuality("");
+                        dataDpsEntry.setSealSecurity("");
+                        dataDpsEntry.setDriver("");
+                        dataDpsEntry.setPlate("");
                         dataDpsEntry.setTicket("");
+                        dataDpsEntry.setContainerTank("");
+                        dataDpsEntry.setVgm("");
                         dataDpsEntry.setUserId(SLibConsts.UNDEFINED);
-                        //dataDpsEntry.setSortingPosition(...); // set on save
+                        //dataDpsEntry.setSortingPosition(...); // set when saved
                         dataDpsEntry.setIsPrepayment(false);
                         dataDpsEntry.setIsDiscountRetailChain(false);
                         dataDpsEntry.setIsTaxesAutomaticApplying(true);
@@ -868,6 +896,7 @@ public class SEtlProcessDocInvoices {
                         //dataDpsEntry.setUserDeleteTs(...);
                         
                         dataDpsEntryNotes = new SDataDpsEntryNotes();
+                        
                         //dataDpsEntryNotes.setPkYearId(...);
                         //dataDpsEntryNotes.setPkDocId(...);
                         //dataDpsEntryNotes.setPkEntryId(...);
@@ -890,9 +919,10 @@ public class SEtlProcessDocInvoices {
                         dataDpsEntry.getDbmsEntryNotes().add(dataDpsEntryNotes);
                         
                         dataDpsEntryTax = new SDataDpsEntryTax();
-                        //dataDpsEntryTax.setPkYearId(...); // set on save
-                        //dataDpsEntryTax.setPkDocId(...); // set on save
-                        //dataDpsEntryTax.setPkEntryId(...); // set on save
+                        
+                        //dataDpsEntryTax.setPkYearId(...);     // set when saved
+                        //dataDpsEntryTax.setPkDocId(...);      // set when saved
+                        //dataDpsEntryTax.setPkEntryId(...);    // set when saved
                         dataDpsEntryTax.setPkTaxBasicId(SEtlConsts.SIIE_TAX[0]);
                         dataDpsEntryTax.setPkTaxId(SEtlConsts.SIIE_TAX[1]);
                         dataDpsEntryTax.setPercentage(SEtlConsts.SIIE_TAX_RATE);
@@ -900,9 +930,9 @@ public class SEtlProcessDocInvoices {
                         dataDpsEntryTax.setValue(0);
                         dataDpsEntryTax.setTax(dataDpsEntry.getTaxCharged_r());
                         dataDpsEntryTax.setTaxCy(dataDpsEntry.getTaxChargedCy_r());
-                        dataDpsEntryTax.setFkTaxTypeId(1); // XXX use constanst insted fixed value! (sflores, 2015-12-02)
-                        dataDpsEntryTax.setFkTaxCalculationTypeId(1); // XXX use constanst insted fixed value! (sflores, 2015-12-02)
-                        dataDpsEntryTax.setFkTaxApplicationTypeId(2); // XXX use constanst insted fixed value! (sflores, 2015-12-02)
+                        dataDpsEntryTax.setFkTaxTypeId(erp.mod.SModSysConsts.FINS_TP_TAX_CHARGED);
+                        dataDpsEntryTax.setFkTaxCalculationTypeId(erp.mod.SModSysConsts.FINS_TP_TAX_CAL_RATE);
+                        dataDpsEntryTax.setFkTaxApplicationTypeId(erp.mod.SModSysConsts.FINS_TP_TAX_APP_CASH);
                         
                         dataDpsEntry.getDbmsEntryTaxes().add(dataDpsEntryTax);
                         
@@ -931,7 +961,8 @@ public class SEtlProcessDocInvoices {
                 dbInvoice.setDesInvoiceDocumentId(dataDps.getPkDocId());
                 dbInvoice.setFinalSeries(dataDps.getNumberSeries());
                 dbInvoice.setFinalNumber(dataDps.getNumber());
-                dbInvoice.setFinalAmount(SLibUtils.round(dInvoiceAmountReq, nMiscDecsAmount));
+                //dbInvoice.setFinalAmount(SLibUtils.round(dInvoiceAmountReq, nMiscDecsAmount));    // variable "dInvoiceAmountReq" should be used, but due to the arbitrary fixed number of decimals on price,
+                dbInvoice.setFinalAmount(dataDps.getSubtotalCy_r());                                // data member "dataDps.getSubtotalCy_r()" suits better
                 dbInvoice.save(session);
             }
         }

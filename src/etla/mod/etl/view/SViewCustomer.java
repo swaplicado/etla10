@@ -116,7 +116,7 @@ public class SViewCustomer extends SGridPaneView {
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_BPR, SDbConsts.FIELD_CODE, SGridConsts.COL_TITLE_CODE));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.src_cus_id", "ID " + SEtlConsts.TXT_SYS_AVISTA));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_INT_RAW, "v.des_cus_id", "ID asoc negocios " + SEtlConsts.TXT_SYS_SIIE));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_INT_RAW, "v.des_cus_bra_id", "ID suc matriz" + SEtlConsts.TXT_SYS_SIIE));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_INT_RAW, "v.des_cus_bra_id", "ID suc matriz " + SEtlConsts.TXT_SYS_SIIE));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "v.tax_id", "RFC"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "f_add1", "Calle y número"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "f_add2", "Colonia"));

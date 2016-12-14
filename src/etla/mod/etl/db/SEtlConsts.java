@@ -24,9 +24,9 @@ public abstract class SEtlConsts {
     public static final int DB_MYSQL = 1;
     public static final int DB_SQL_SERVER = 2;
     
-    public static final int AVISTA_INV_STA_APP = 2; // approved
-    public static final int AVISTA_INV_STA_ARC = 3; // archived
-    public static final int AVISTA_INV_TP_INV = 1; // invoice
+    public static final int AVISTA_INV_STA_APP = 2; // invoice status: approved
+    public static final int AVISTA_INV_STA_ARC = 3; // invoice status: archived
+    public static final int AVISTA_INV_TP_INV = 1; // invoice type: invoice
     
     public static final int AVISTA_CUR_USD = 1;
     public static final int AVISTA_CUR_MXN = 2;
@@ -126,7 +126,7 @@ public abstract class SEtlConsts {
     public static final String MSG_ERR_UNK_CTY = MSG_ERR + " al determinar el país: ";
     public static final String MSG_ERR_UNK_STA = MSG_ERR + " al determinar el estado: ";
     public static final String MSG_ERR_UNK_CUR = MSG_ERR + " al determinar la moneda: ";
-    public static final String MSG_ERR_UNK_CUR_MLT_ETL = MSG_ERR_UNK_CUR + "múltiples monedas de exportación.";
+    public static final String MSG_ERR_UNK_CUR_MLT_ETL = MSG_ERR_UNK_CUR + "múltiples monedas definidas para exportación.";
     public static final String MSG_ERR_UNK_CUR_MLT_SRC = MSG_ERR_UNK_CUR + "múltiples monedas de origen.";
     public static final String MSG_ERR_UNK_UOM = MSG_ERR + " al determinar la unidad de medida: ";
     public static final String MSG_ERR_UNK_SAL_AGT = MSG_ERR + " al determinar el agente de ventas: ";
