@@ -26,25 +26,27 @@ public abstract class SEtlConsts {
     
     public static final int AVISTA_INV_STA_APP = 2; // invoice status: approved
     public static final int AVISTA_INV_STA_ARC = 3; // invoice status: archived
-    public static final int AVISTA_INV_TP_INV = 1; // invoice type: invoice
+    public static final int AVISTA_INV_TP_INV = 1;  // invoice type: invoice
     
     public static final int AVISTA_CUR_USD = 1;
     public static final int AVISTA_CUR_MXN = 2;
     
+    public static final int BILLING_DELAY_DAYS = 2; // days allowed to bill invoices after issue
+    
     public static final String AVISTA_UOM_MSM = "MSM";
     public static final String AVISTA_UOM_MSF = "MSF";
-    public static final String AVISTA_UOM_SQM = "SQM"; // not supported yet
-    public static final String AVISTA_UOM_SQF = "SQF"; // not supported yet
+    public static final String AVISTA_UOM_SQM = "SQM";  // not supported yet
+    public static final String AVISTA_UOM_SQF = "SQF";  // not supported yet
     public static final String AVISTA_UOM_PC = "PC";
-    public static final String AVISTA_UOM_M = "M"; // not supported yet
-    public static final String AVISTA_UOM_KG = "KG"; // not supported yet
+    public static final String AVISTA_UOM_M = "M";      // not supported yet
+    public static final String AVISTA_UOM_KG = "KG";    // not supported yet
     public static final String AVISTA_UOM_TON = "TON";
     
     public static final String AVISTA_PAY_TERM_CNT = "CNT"; // contado
     public static final String AVISTA_BOOL_N = "N"; // no
     public static final String AVISTA_BOOL_Y = "Y"; // yes
-    public static final String AVISTA_LOC_CTY = "MX"; // México
-    public static final String AVISTA_LOC_STA = "MEX"; // Estado de México
+    public static final String AVISTA_LOC_CTY = "MX";   // México
+    public static final String AVISTA_LOC_STA = "MEX";  // Estado de México
     
     public static final int SIIE_DEFAULT = 1;
     public static final String SIIE_PAY_ACC_UNDEF = "NO IDENTIFICADO";

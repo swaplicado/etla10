@@ -588,8 +588,8 @@ public class SDialogEtl extends SBeanFormDialog implements ActionListener, ItemL
                     validation.setMessage(SGuiConsts.ERR_MSG_FIELD_DATE_ + "'" + SGuiUtils.getLabelName(jlDateIssue) + "'" + SGuiConsts.ERR_MSG_FIELD_DATE_LESS_EQUAL + "'" + SLibUtils.DateFormatDate.format(moDatePeriodEnd.getValue()) + "'.");
                     validation.setComponent(moDateIssue.getComponent());
                 }
-                else if (moDateIssue.getValue().before(SLibTimeUtils.addDate(moDatePeriodEnd.getValue(), 0, 0, -1))) {
-                    validation.setMessage(SGuiConsts.ERR_MSG_FIELD_DATE_ + "'" + SGuiUtils.getLabelName(jlDateIssue) + "'" + SGuiConsts.ERR_MSG_FIELD_DATE_GREAT_EQUAL + "'" + SLibUtils.DateFormatDate.format(SLibTimeUtils.addDate(moDatePeriodEnd.getValue(), 0, 0, -1)) + "'.");
+                else if (moDateIssue.getValue().before(SLibTimeUtils.addDate(moDatePeriodEnd.getValue(), 0, 0, -SEtlConsts.BILLING_DELAY_DAYS))) {
+                    validation.setMessage(SGuiConsts.ERR_MSG_FIELD_DATE_ + "'" + SGuiUtils.getLabelName(jlDateIssue) + "'" + SGuiConsts.ERR_MSG_FIELD_DATE_GREAT_EQUAL + "'" + SLibUtils.DateFormatDate.format(SLibTimeUtils.addDate(moDatePeriodEnd.getValue(), 0, 0, -SEtlConsts.BILLING_DELAY_DAYS)) + "'.");
                     validation.setComponent(moDateIssue.getComponent());
                 }
                 else if (moKeyInvoiceBatch.getItemCount() == 0) {
