@@ -179,6 +179,7 @@ public class SEtlProcessCatItems {
                     dataItem.setFkFiscalAccountExpId(SModSysConsts.FIN_ACC_NA);
                     dataItem.setFkItemPackageId_n(SLibConsts.UNDEFINED);
                     dataItem.setFkDefaultItemRefId_n(SLibConsts.UNDEFINED);
+                    dataItem.setFkCfdProdServId_n(SLibConsts.UNDEFINED);
                     dataItem.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
                     dataItem.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
                     dataItem.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);

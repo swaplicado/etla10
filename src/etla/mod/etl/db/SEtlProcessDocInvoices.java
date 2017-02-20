@@ -39,6 +39,7 @@ public class SEtlProcessDocInvoices {
         int nInvoicesCount = 0;
         int idInvoice = 0;
         int idInvoicePayMethod = 0;
+        String sInvoicePayAccount = "";
         int idInvoiceCurrencySrc = 0;
         int idInvoiceCurrencyReq = 0;
         boolean isInvoiceExported = false;
@@ -184,6 +185,7 @@ public class SEtlProcessDocInvoices {
                 // Avista invoice does not exist or has not been exported yet into ETL:
             
                 idInvoicePayMethod = 0;
+                sInvoicePayAccount = "";
                 idInvoiceCurrencySrc = 0;
                 idInvoiceCurrencyReq = 0;
                 setLineCurrencySrcIds.clear();
@@ -192,7 +194,7 @@ public class SEtlProcessDocInvoices {
                 dInvoiceAmountReq = 0;
                 dInvoiceExchangeRate = 0;
 
-                // Set invoice's custome registry:
+                // Set invoice's customer registry:
                 
                 dbInvoiceCustomer = SEtlUtils.getEtlCustomer(session, rsAvistaInvoiceList.getString("CustomerId"));
                 if (dbInvoiceCustomer == null) {
@@ -201,6 +203,19 @@ public class SEtlProcessDocInvoices {
                             + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
                 }
                 
+                // Get business partner of invoice's customer registry (method and account of payment set on SIIE, when set, have priority):
+                
+                dataBizPartnerCustomer = new SDataBizPartner();
+                if (dataBizPartnerCustomer.read(new int[] { dbInvoiceCustomer.getDesCustomerId() }, stSiie) != SLibConstants.DB_ACTION_READ_OK) {
+                    throw new Exception(SEtlConsts.MSG_ERR_SIIE_CUS_QRY + "'" + dbInvoiceCustomer.getName() + "'.\n"
+                            + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                }
+                else if (dataBizPartnerCustomer.getIsDeleted() || dataBizPartnerCustomer.getDbmsCategorySettingsCus().getIsDeleted()) {
+                    throw new Exception(SEtlConsts.MSG_ERR_SIIE_CUS_STA + "'" + dbInvoiceCustomer.getName() + "'.\n"
+                            + SEtlConsts.MSG_ERR_REC_STA_DEL + "\n"
+                            + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')"); // business partner record (at least as customer) is deleted
+                }
+
                 // Set sales agent from customer's registry:
                 
                 dbInvoiceSalesAgent = etlCatalogs.getEtlSalesAgent(etlCatalogs.getEtlIdForSalesAgent(dbInvoiceCustomer.getSrcCustomerSalesAgentFk_n()));
@@ -210,11 +225,19 @@ public class SEtlProcessDocInvoices {
                                                 + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
                 }
                 
-                // Set invoice's pay method from customer's registry:
+                // Set invoice's pay method & account from customer's registries:
                 
-                idInvoicePayMethod = dbInvoiceCustomer.getFkDesRequiredPayMethodId_n();
-                if (idInvoicePayMethod == 0) {
-                    idInvoicePayMethod = dbConfigAvista.getFkDesDefaultPayMethodId();
+                idInvoicePayMethod = dataBizPartnerCustomer.getDbmsCategorySettingsCus().getFkPaymentSystemTypeId_n();  // current SIIE's settings have preference
+                if (idInvoicePayMethod == SLibConsts.UNDEFINED) {
+                    idInvoicePayMethod = dbInvoiceCustomer.getFkDesRequiredPayMethodId_n();
+                    if (idInvoicePayMethod == SLibConsts.UNDEFINED) {
+                        idInvoicePayMethod = dbConfigAvista.getFkDesDefaultPayMethodId();
+                    }
+                }
+                
+                sInvoicePayAccount = dataBizPartnerCustomer.getDbmsCategorySettingsCus().getPaymentAccount();   // current SIIE's settings have preference
+                if (sInvoicePayAccount.isEmpty()) {
+                    sInvoicePayAccount = dbInvoiceCustomer.getPayAccount();
                 }
                 
                 // Explore invoice items and currencies row by row (i.e.,  line by line):
@@ -345,7 +368,7 @@ public class SEtlProcessDocInvoices {
                         dbInvoice.setFinalNumber("");   // set when SIIE registry saved
                         dbInvoice.setOriginalDate(rsAvistaInvoiceData.getDate("InvoiceCreated"));
                         dbInvoice.setFinalDate(etlPackage.DateIssue);
-                        dbInvoice.setPayAccount(dbInvoiceCustomer.getPayAccount());
+                        dbInvoice.setPayAccount(sInvoicePayAccount);
                         dbInvoice.setCreditDays(SLibUtils.parseInt(rsAvistaInvoiceData.getString("PayTermCode")));
                         dbInvoice.setOriginalAmount(dInvoiceAmountSrc);
                         //dbInvoice.setFinalAmount(...);    // set later on this method
@@ -361,7 +384,7 @@ public class SEtlProcessDocInvoices {
                         dbInvoice.setSrcFinalCurrencyFk(dbInvoiceCurrencyReq.getSrcCurrencyId());
                         dbInvoice.setDesOriginalCurrencyFk(dbInvoiceCurrencySrc.getDesCurrencyId());
                         dbInvoice.setDesFinalCurrencyFk(dbInvoiceCurrencyReq.getDesCurrencyId());
-                        dbInvoice.setDesPayMethodFk(idInvoicePayMethod);
+                        dbInvoice.setDesPayMethodFk(idInvoicePayMethod);    // SIIE & SIIE-ETL primary keys of both catalogs are the same
                         //dbInvoice.setFirstEtlInsert(...); // set when saved
                         //dbInvoice.setLastEtlUpdate(...);  // set when saved
                         dbInvoice.setDeleted(false);
@@ -370,7 +393,7 @@ public class SEtlProcessDocInvoices {
                         dbInvoice.setFkSrcSalesAgentId_n(dbInvoiceSalesAgent == null ? SLibConsts.UNDEFINED : dbInvoiceSalesAgent.getPkSalesAgentId());
                         dbInvoice.setFkSrcOriginalCurrencyId(dbInvoiceCurrencySrc.getPkCurrencyId());
                         dbInvoice.setFkSrcFinalCurrencyId(dbInvoiceCurrencyReq.getPkCurrencyId());
-                        dbInvoice.setFkDesPayMethodId(idInvoicePayMethod);
+                        dbInvoice.setFkDesPayMethodId(idInvoicePayMethod);  // SIIE & SIIE-ETL primary keys of both catalogs are the same
                         dbInvoice.setFkLastEtlLogId(etlPackage.EtlLog.getPkEtlLogId());
                         //invoice.setFkUserInsertId(...);
                         //invoice.setFkUserUpdateId(...);
@@ -590,20 +613,9 @@ public class SEtlProcessDocInvoices {
                 try {
                     // DPS is new on SIIE:
 
-                    dataBizPartnerCustomer = new SDataBizPartner();
-                    if (dataBizPartnerCustomer.read(new int[] { dbInvoiceCustomer.getDesCustomerId() }, stSiie) != SLibConstants.DB_ACTION_READ_OK) {
-                        throw new Exception(SEtlConsts.MSG_ERR_SIIE_CUS_QRY + "'" + dbInvoiceCustomer.getName() + "'.\n"
-                                + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
-                    }
-                    else if (dataBizPartnerCustomer.getIsDeleted() || dataBizPartnerCustomer.getDbmsCategorySettingsCus().getIsDeleted()) {
-                        throw new Exception(SEtlConsts.MSG_ERR_SIIE_CUS_STA + "'" + dbInvoiceCustomer.getName() + "'.\n"
-                                + SEtlConsts.MSG_ERR_REC_STA_DEL + "\n"
-                                + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')"); // business partner record (at least as customer) is deleted
-                    }
-                    
                     stSiie.execute("START TRANSACTION");
 
-                    // Create business partner registry:
+                    // Create Document for Purchases & Sales registry:
 
                     dataDps = new SDataDps();
                     
