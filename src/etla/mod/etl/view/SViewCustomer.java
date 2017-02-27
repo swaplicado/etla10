@@ -68,6 +68,7 @@ public class SViewCustomer extends SGridPaneView {
                 + "v.src_req_uom_fk_n, "
                 + "v.fst_etl_ins, "
                 + "v.lst_etl_upd, "
+                + "v.b_etl_ign, "
                 + "v.fk_src_cus_cur_n, "
                 + "v.fk_src_cus_uom_n, "
                 + "v.fk_src_cus_sal_agt_n, "
@@ -131,6 +132,7 @@ public class SViewCustomer extends SGridPaneView {
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "cur.name", "Moneda req " + SEtlConsts.TXT_SYS_AVISTA));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.src_req_uom_fk_n", "ID unidad req " + SEtlConsts.TXT_SYS_AVISTA));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "uom.name", "Unidad req " + SEtlConsts.TXT_SYS_AVISTA));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_BOOL_M, "v.b_etl_ign", "Ignorar exportación SIIE"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_DATE_DATETIME, "v.fst_etl_ins", "Primera exportación"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_DATE_DATETIME, "v.lst_etl_upd", "Última exportación"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_INT_4B, "v.fk_lst_etl_log", "# exportación"));

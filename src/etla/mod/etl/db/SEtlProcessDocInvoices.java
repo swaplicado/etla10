@@ -202,6 +202,9 @@ public class SEtlProcessDocInvoices {
                             + SEtlConsts.TXT_MISC_ID + "='" + rsAvistaInvoiceList.getString("CustomerId") + "'.\n"
                             + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
                 }
+                else if (dbInvoiceCustomer.isEtlIgnore()) {
+                    continue;   // customer is set to be ignored on ETL process
+                }
                 
                 // Get business partner of invoice's customer registry (method and account of payment set on SIIE, when set, have priority):
                 
@@ -632,8 +635,8 @@ public class SEtlProcessDocInvoices {
                     dataDps.setNumber("" + SEtlUtils.getSiieNextDpsNumber(session, stSiie));
                     dataDps.setNumberReference(dbInvoice.getCustomerOrder().length() <= 25 ? dbInvoice.getCustomerOrder() : dbInvoice.getCustomerOrder().substring(0, 25));
                     dataDps.setCommissionsReference("");
-                    dataDps.setApproveYear(dataDps.getPkYearId());
-                    dataDps.setApproveNumber(1);
+                    dataDps.setApprovalYear(dataDps.getPkYearId());
+                    dataDps.setApprovalNumber(1);
                     dataDps.setDaysOfCredit(dbInvoice.getCreditDays());
                     dataDps.setIsDiscountDocApplying(false);
                     dataDps.setIsDiscountDocPercentage(false);

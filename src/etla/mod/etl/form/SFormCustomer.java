@@ -87,12 +87,15 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
         jlPayAccount = new javax.swing.JLabel();
         moTextPayAccount = new sa.lib.gui.bean.SBeanFieldText();
         jbSetUndefined = new javax.swing.JButton();
+        jPanel7 = new javax.swing.JPanel();
+        moBoolEtlIgnore = new sa.lib.gui.bean.SBeanFieldBoolean();
+        jLabel1 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Datos del registro:"));
         jPanel1.setLayout(new java.awt.BorderLayout(0, 5));
 
-        jPanel2.setLayout(new java.awt.GridLayout(9, 1, 0, 5));
+        jPanel2.setLayout(new java.awt.GridLayout(10, 1, 0, 5));
 
         jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
@@ -236,6 +239,19 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
 
         jPanel2.add(jPanel14);
 
+        jPanel7.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
+
+        moBoolEtlIgnore.setText("Ignorar en exportación a SIIE");
+        moBoolEtlIgnore.setPreferredSize(new java.awt.Dimension(175, 23));
+        jPanel7.add(moBoolEtlIgnore);
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/etla/gui/img/icon_info.png"))); // NOI18N
+        jLabel1.setToolTipText("Ignorar este cliente al exportar facturas a SIIE");
+        jLabel1.setPreferredSize(new java.awt.Dimension(23, 23));
+        jPanel7.add(jLabel1);
+
+        jPanel2.add(jPanel7);
+
         jPanel1.add(jPanel2, java.awt.BorderLayout.NORTH);
 
         jPanel5.setLayout(new java.awt.BorderLayout(5, 0));
@@ -245,6 +261,7 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
@@ -257,6 +274,7 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JButton jbEditDesCustomerBranchId;
     private javax.swing.JButton jbEditDesCustomerId;
     private javax.swing.JButton jbSetUndefined;
@@ -276,6 +294,7 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
     private javax.swing.JTextField jtfDefaultPayMethod;
     private javax.swing.JTextField jtfDefaultUnitOfMeasure;
     private javax.swing.JTextField jtfName;
+    private sa.lib.gui.bean.SBeanFieldBoolean moBoolEtlIgnore;
     private sa.lib.gui.bean.SBeanFieldInteger moIntDesCustomerBranchId;
     private sa.lib.gui.bean.SBeanFieldInteger moIntDesCustomerId;
     private sa.lib.gui.bean.SBeanFieldKey moKeyDesRequiredPayMethod;
@@ -301,6 +320,7 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
         moIntDesCustomerBranchId.setIntegerSettings(SGuiUtils.getLabelName(jlDesCustomerBranchId), SGuiConsts.GUI_TYPE_INT_RAW, true);
         moKeyDesRequiredPayMethod.setKeySettings(miClient, SGuiUtils.getLabelName(jlDesRequiredPayMethod), false);
         moTextPayAccount.setTextSettings(SGuiUtils.getLabelName(jlPayAccount), 25);
+        moBoolEtlIgnore.setBooleanSettings(moBoolEtlIgnore.getText(), false);
         
         moFields.addField(moKeySrcRequiredCurrency);
         moFields.addField(moKeySrcRequiredUnitOfMeasure);
@@ -309,6 +329,7 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
         moFields.addField(moIntDesCustomerBranchId);
         moFields.addField(moKeyDesRequiredPayMethod);
         moFields.addField(moTextPayAccount);
+        moFields.addField(moBoolEtlIgnore);
         
         moFields.setFormButton(jbSave);
         
@@ -404,6 +425,7 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
         moIntDesCustomerBranchId.setValue(moRegistry.getDesCustomerBranchId());
         moKeyDesRequiredPayMethod.setValue(new int[] { moRegistry.getFkDesRequiredPayMethodId_n()} );
         moTextPayAccount.setValue(moRegistry.getPayAccount());
+        moBoolEtlIgnore.setValue(moRegistry.isEtlIgnore());
 
         setFormEditable(true);
         
@@ -427,6 +449,7 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
         registry.setDesCustomerId(moIntDesCustomerId.getValue());
         registry.setDesCustomerBranchId(moIntDesCustomerBranchId.getValue());
         registry.setPayAccount(moTextPayAccount.getValue());
+        registry.setEtlIgnore(moBoolEtlIgnore.getValue());
         registry.setSrcCustomerSalesAgentFk_n(moKeySrcCustomerSalesAgent.getSelectedIndex() <= 0 ? SLibConsts.UNDEFINED : (Integer) moKeySrcCustomerSalesAgent.getSelectedItem().getComplement());
         registry.setSrcRequiredCurrencyFk_n(moKeySrcRequiredCurrency.getSelectedIndex() <= 0 ? SLibConsts.UNDEFINED : (Integer) moKeySrcRequiredCurrency.getSelectedItem().getComplement());
         registry.setSrcRequiredUnitOfMeasureFk_n(moKeySrcRequiredUnitOfMeasure.getSelectedIndex() <= 0 ? "" : (String) moKeySrcRequiredUnitOfMeasure.getSelectedItem().getComplement());

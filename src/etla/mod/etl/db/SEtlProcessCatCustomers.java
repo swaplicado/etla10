@@ -675,6 +675,7 @@ public abstract class SEtlProcessCatCustomers {
                     dbCustomer.setSrcRequiredUnitOfMeasureFk_n(dbSysUnitOfMeasureRequired == null ? "" : dbSysUnitOfMeasureRequired.getSrcUnitOfMeasureId()); // user defined, but default value set
                     //dbCustomersetFirstEtlInsert(...); // set on save
                     //dbCustomersetLastEtlUpdate(...); // set on save
+                    dbCustomer.setEtlIgnore(false);
                     dbCustomer.setActive(resultSetAvista.getString("Active").compareTo(SEtlConsts.AVISTA_BOOL_Y) == 0);
                     dbCustomer.setDeleted(resultSetAvista.getString("DeletedFlag") == null ? false : resultSetAvista.getString("DeletedFlag").compareTo(SEtlConsts.AVISTA_BOOL_Y) == 0);
                     dbCustomer.setSystem(false);

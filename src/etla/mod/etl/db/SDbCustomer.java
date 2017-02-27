@@ -55,6 +55,7 @@ public class SDbCustomer extends SDbRegistryUser {
     protected String msSrcRequiredUnitOfMeasureFk_n;
     protected Date mtFirstEtlInsert;
     protected Date mtLastEtlUpdate;
+    protected boolean mbEtlIgnore;
     protected boolean mbActive;
     /*
     protected boolean mbDeleted;
@@ -116,6 +117,7 @@ public class SDbCustomer extends SDbRegistryUser {
     public void setSrcRequiredUnitOfMeasureFk_n(String s) { msSrcRequiredUnitOfMeasureFk_n = s; }
     public void setFirstEtlInsert(Date t) { mtFirstEtlInsert = t; }
     public void setLastEtlUpdate(Date t) { mtLastEtlUpdate = t; }
+    public void setEtlIgnore(boolean b) { mbEtlIgnore = b; }
     public void setActive(boolean b) { mbActive = b; }
     public void setDeleted(boolean b) { mbDeleted = b; }
     public void setSystem(boolean b) { mbSystem = b; }
@@ -165,6 +167,7 @@ public class SDbCustomer extends SDbRegistryUser {
     public String getSrcRequiredUnitOfMeasureFk_n() { return msSrcRequiredUnitOfMeasureFk_n; }
     public Date getFirstEtlInsert() { return mtFirstEtlInsert; }
     public Date getLastEtlUpdate() { return mtLastEtlUpdate; }
+    public boolean isEtlIgnore() { return mbEtlIgnore; }
     public boolean isActive() { return mbActive; }
     public boolean isDeleted() { return mbDeleted; }
     public boolean isSystem() { return mbSystem; }
@@ -232,6 +235,7 @@ public class SDbCustomer extends SDbRegistryUser {
         msSrcRequiredUnitOfMeasureFk_n = "";
         mtFirstEtlInsert = null;
         mtLastEtlUpdate = null;
+        mbEtlIgnore = false;
         mbActive = false;
         mbDeleted = false;
         mbSystem = false;
@@ -325,6 +329,7 @@ public class SDbCustomer extends SDbRegistryUser {
             msSrcRequiredUnitOfMeasureFk_n = resultSet.getString("src_req_uom_fk_n");
             mtFirstEtlInsert = resultSet.getTimestamp("fst_etl_ins");
             mtLastEtlUpdate = resultSet.getTimestamp("lst_etl_upd");
+            mbEtlIgnore = resultSet.getBoolean("b_etl_ign");
             mbActive = resultSet.getBoolean("b_act");
             mbDeleted = resultSet.getBoolean("b_del");
             mbSystem = resultSet.getBoolean("b_sys");
@@ -415,6 +420,7 @@ public class SDbCustomer extends SDbRegistryUser {
                     (msSrcRequiredUnitOfMeasureFk_n.isEmpty() ? "NULL" : "'" + msSrcRequiredUnitOfMeasureFk_n + "'") + ", " + 
                     "NOW()" + ", " + 
                     "NOW()" + ", " + 
+                    (mbEtlIgnore ? 1 : 0) + ", " + 
                     (mbActive ? 1 : 0) + ", " + 
                     (mbDeleted ? 1 : 0) + ", " + 
                     (mbSystem ? 1 : 0) + ", " + 
@@ -467,8 +473,9 @@ public class SDbCustomer extends SDbRegistryUser {
                     "src_cus_sal_agt_fk_n = " + (mnSrcCustomerSalesAgentFk_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnSrcCustomerSalesAgentFk_n) + ", " +
                     "src_req_cur_fk_n = " + (mnSrcRequiredCurrencyFk_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnSrcRequiredCurrencyFk_n) + ", " +
                     "src_req_uom_fk_n = " + (msSrcRequiredUnitOfMeasureFk_n.isEmpty() ? "NULL" : "'" + msSrcRequiredUnitOfMeasureFk_n + "'") + ", " +
-                    "fst_etl_ins = " + "NOW()" + ", " +
+                    //"fst_etl_ins = " + "NOW()" + ", " +
                     "lst_etl_upd = " + "NOW()" + ", " +
+                    "b_etl_ign = " + (mbEtlIgnore ? 1 : 0) + ", " +
                     "b_act = " + (mbActive ? 1 : 0) + ", " +
                     "b_del = " + (mbDeleted ? 1 : 0) + ", " +
                     "b_sys = " + (mbSystem ? 1 : 0) + ", " +
@@ -530,6 +537,7 @@ public class SDbCustomer extends SDbRegistryUser {
         registry.setSrcRequiredUnitOfMeasureFk_n(this.getSrcRequiredUnitOfMeasureFk_n());
         registry.setFirstEtlInsert(this.getFirstEtlInsert());
         registry.setLastEtlUpdate(this.getLastEtlUpdate());
+        registry.setEtlIgnore(this.isEtlIgnore());
         registry.setActive(this.isActive());
         registry.setDeleted(this.isDeleted());
         registry.setSystem(this.isSystem());
