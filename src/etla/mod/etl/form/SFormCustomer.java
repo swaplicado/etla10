@@ -225,7 +225,7 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
 
         jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
-        jlPayAccount.setText("No. cuenta:*");
+        jlPayAccount.setText("No. cuenta:");
         jlPayAccount.setPreferredSize(new java.awt.Dimension(100, 23));
         jPanel14.add(jlPayAccount);
 
@@ -311,7 +311,7 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
     private void initComponentsCustom() {
         SDbConfigAvista configAvista = ((SDbConfig) miClient.getSession().getConfigSystem()).getRegConfigAvista();
         
-        SGuiUtils.setWindowBounds(this, 560, 350);
+        SGuiUtils.setWindowBounds(this, 640, 400);
         
         moKeySrcRequiredCurrency.setKeySettings(miClient, SGuiUtils.getLabelName(jlSrcRequiredCurrency), false);
         moKeySrcRequiredUnitOfMeasure.setKeySettings(miClient, SGuiUtils.getLabelName(jlSrcRequiredUnitOfMeasure), false);
@@ -319,7 +319,7 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
         moIntDesCustomerId.setIntegerSettings(SGuiUtils.getLabelName(jlDesCustomerId), SGuiConsts.GUI_TYPE_INT_RAW, true);
         moIntDesCustomerBranchId.setIntegerSettings(SGuiUtils.getLabelName(jlDesCustomerBranchId), SGuiConsts.GUI_TYPE_INT_RAW, true);
         moKeyDesRequiredPayMethod.setKeySettings(miClient, SGuiUtils.getLabelName(jlDesRequiredPayMethod), false);
-        moTextPayAccount.setTextSettings(SGuiUtils.getLabelName(jlPayAccount), 25);
+        moTextPayAccount.setTextSettings(SGuiUtils.getLabelName(jlPayAccount), 25, 0);
         moBoolEtlIgnore.setBooleanSettings(moBoolEtlIgnore.getText(), false);
         
         moFields.addField(moKeySrcRequiredCurrency);
