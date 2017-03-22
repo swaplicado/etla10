@@ -32,11 +32,15 @@ public abstract class SModSysConsts {
     public static final int AS_UOM_KG = 7;
     public static final int AS_UOM_TON = 8;
     
+    public static final int AS_PAY_MET_NA = 1;
     public static final int AS_PAY_MET_CSH = 11;
     public static final int AS_PAY_MET_CHK = 12;
     public static final int AS_PAY_MET_TRN = 13;
     public static final int AS_PAY_MET_DBT = 21;
     public static final int AS_PAY_MET_CDT = 22;
+    public static final int AS_PAY_MET_E_PUR = 31;
+    public static final int AS_PAY_MET_E_MON = 32;
+    public static final int AS_PAY_MET_FOO = 41;
     public static final int AS_PAY_MET_UND = 98;
     public static final int AS_PAY_MET_OTH = 99;
 }

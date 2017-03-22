@@ -472,6 +472,7 @@ public abstract class SEtlProcessCatCustomers {
                     dataBizPartnerBranchAddress.setIsDeleted(false);
                     dataBizPartnerBranchAddress.setFkAddressTypeId(SModSysConsts.BPSS_TP_ADD_OFF);
                     dataBizPartnerBranchAddress.setFkCountryId_n(SLibConsts.UNDEFINED); // by now, only local country allowed (i.e., MX)
+                    dataBizPartnerBranchAddress.setFkStateId_n(SLibConsts.UNDEFINED);
                     dataBizPartnerBranchAddress.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
                     dataBizPartnerBranchAddress.setFkUserEditId(SDataConstantsSys.USRX_USER_NA);
                     dataBizPartnerBranchAddress.setFkUserDeleteId(SDataConstantsSys.USRX_USER_NA);
