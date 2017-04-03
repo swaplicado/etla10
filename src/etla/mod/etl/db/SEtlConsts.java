@@ -31,7 +31,7 @@ public abstract class SEtlConsts {
     public static final int AVISTA_CUR_USD = 1;
     public static final int AVISTA_CUR_MXN = 2;
     
-    public static final int BILLING_DELAY_DAYS = 2; // days allowed to bill invoices after issue
+    public static final int BILLING_DELAY_DAYS = 3; // days allowed to bill invoices after issue
     
     public static final String AVISTA_UOM_MSM = "MSM";
     public static final String AVISTA_UOM_MSF = "MSF";
