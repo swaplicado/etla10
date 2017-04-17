@@ -38,8 +38,9 @@ public class SEtlProcessDocInvoices {
         
         int nInvoicesCount = 0;
         int idInvoice = 0;
-        int idInvoicePayMethod = 0;
-        String sInvoicePayAccount = "";
+        int idInvoiceSalesAgentDes = 0;
+        int idInvoicePayMethodDes = 0;
+        String sInvoicePayAccountDes = "";
         int idInvoiceCurrencySrc = 0;
         int idInvoiceCurrencyReq = 0;
         boolean isInvoiceExported = false;
@@ -170,6 +171,9 @@ public class SEtlProcessDocInvoices {
             idInvoice = 0;
             isInvoiceExported = false;
             
+            //int idYear = 0;   // used for debugging purposes
+            //int idDoc = 0;    // used for debugging purposes
+            
             sql = "SELECT id_inv, des_inv_yea_id, des_inv_doc_id "
                     + "FROM " + SModConsts.TablesMap.get(SModConsts.A_INV) + " "
                     + "WHERE src_inv_id=" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + " AND b_del=0 "
@@ -179,13 +183,23 @@ public class SEtlProcessDocInvoices {
             if (rsEtl.next()) {
                 idInvoice = rsEtl.getInt("id_inv");
                 isInvoiceExported = rsEtl.getInt("des_inv_yea_id") != 0 && rsEtl.getInt("des_inv_doc_id") != 0;
+                //idYear = rsEtl.getInt("des_inv_yea_id");  // used for debugging purposes
+                //idDoc = rsEtl.getInt("des_inv_doc_id");   // used for debugging purposes
             }
+            
+            /****************************************************************/
+            // used for debugging purposes:
+            //if (SEtlConsts.SHOW_DEBUG_MSGS) {
+            //    System.out.println(SEtlConsts.TXT_INV + " (# " + ++nInvoicesCount + "): Avista Key = <" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + ">; ETL ID = <" + idInvoice + ">; already exported to SIIE? = <" + isInvoiceExported + "> (" + idYear + "-" + idDoc + ")");
+            //}
+            /****************************************************************/
             
             if (idInvoice == 0 || !isInvoiceExported) {
                 // Avista invoice does not exist or has not been exported yet into ETL:
             
-                idInvoicePayMethod = 0;
-                sInvoicePayAccount = "";
+                idInvoiceSalesAgentDes = 0;
+                idInvoicePayMethodDes = 0;
+                sInvoicePayAccountDes = "";
                 idInvoiceCurrencySrc = 0;
                 idInvoiceCurrencyReq = 0;
                 setLineCurrencySrcIds.clear();
@@ -219,28 +233,37 @@ public class SEtlProcessDocInvoices {
                             + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')"); // business partner record (at least as customer) is deleted
                 }
 
-                // Set sales agent from customer's registry:
+                // Set invoice's pay method & account from SIIE customer's registries:
                 
-                dbInvoiceSalesAgent = etlCatalogs.getEtlSalesAgent(etlCatalogs.getEtlIdForSalesAgent(dbInvoiceCustomer.getSrcCustomerSalesAgentFk_n()));
-                if (dbInvoiceSalesAgent != null && dbInvoiceSalesAgent.getDesSalesAgentId() == 0) {
-                    throw new Exception(SEtlConsts.MSG_ERR_UNK_SAL_AGT + "\n"
-                            + "'" + dbInvoiceSalesAgent.getName() + "' (" + SEtlConsts.TXT_CUS + "='" + dbInvoiceCustomer.getName() + "').\n"
-                                                + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
-                }
+                idInvoiceSalesAgentDes = dataBizPartnerCompany.getDbmsDataCustomerConfig().getFkSalesAgentId_n();
                 
-                // Set invoice's pay method & account from customer's registries:
-                
-                idInvoicePayMethod = dataBizPartnerCustomer.getDbmsCategorySettingsCus().getFkPaymentSystemTypeId_n();  // current SIIE's settings have preference
-                if (idInvoicePayMethod == SLibConsts.UNDEFINED) {
-                    idInvoicePayMethod = dbInvoiceCustomer.getFkDesRequiredPayMethodId_n();
-                    if (idInvoicePayMethod == SLibConsts.UNDEFINED) {
-                        idInvoicePayMethod = dbConfigAvista.getFkDesDefaultPayMethodId();
+                if (idInvoiceSalesAgentDes == SLibConsts.UNDEFINED) {
+                    // Set sales agent from ETL customer's registry if SIIE customer does not have a sales agent set:
+
+                    dbInvoiceSalesAgent = etlCatalogs.getEtlSalesAgent(etlCatalogs.getEtlIdForSalesAgent(dbInvoiceCustomer.getSrcCustomerSalesAgentFk_n()));
+                    if (dbInvoiceSalesAgent != null && dbInvoiceSalesAgent.getDesSalesAgentId() == 0) {
+                        throw new Exception(SEtlConsts.MSG_ERR_UNK_SAL_AGT + "\n"
+                                + "'" + dbInvoiceSalesAgent.getName() + "' (" + SEtlConsts.TXT_CUS + "='" + dbInvoiceCustomer.getName() + "').\n"
+                                                    + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                    }
+                    else {
+                        idInvoiceSalesAgentDes = dbInvoiceSalesAgent.getDesSalesAgentId();
                     }
                 }
                 
-                sInvoicePayAccount = dataBizPartnerCustomer.getDbmsCategorySettingsCus().getPaymentAccount();   // current SIIE's settings have preference
-                if (sInvoicePayAccount.isEmpty()) {
-                    sInvoicePayAccount = dbInvoiceCustomer.getPayAccount();
+                // Set invoice's pay method & account from SIIE customer's registries:
+                
+                idInvoicePayMethodDes = dataBizPartnerCustomer.getDbmsCategorySettingsCus().getFkPaymentSystemTypeId_n();  // current SIIE's settings have preference
+                if (idInvoicePayMethodDes == SLibConsts.UNDEFINED) {
+                    idInvoicePayMethodDes = dbInvoiceCustomer.getFkDesRequiredPayMethodId_n();
+                    if (idInvoicePayMethodDes == SLibConsts.UNDEFINED) {
+                        idInvoicePayMethodDes = dbConfigAvista.getFkDesDefaultPayMethodId();
+                    }
+                }
+                
+                sInvoicePayAccountDes = dataBizPartnerCustomer.getDbmsCategorySettingsCus().getPaymentAccount();   // current SIIE's settings have preference
+                if (sInvoicePayAccountDes.isEmpty()) {
+                    sInvoicePayAccountDes = dbInvoiceCustomer.getPayAccount();
                 }
                 
                 // Explore invoice items and currencies row by row (i.e.,  line by line):
@@ -371,7 +394,7 @@ public class SEtlProcessDocInvoices {
                         dbInvoice.setFinalNumber("");   // set when SIIE registry saved
                         dbInvoice.setOriginalDate(rsAvistaInvoiceData.getDate("InvoiceCreated"));
                         dbInvoice.setFinalDate(etlPackage.DateIssue);
-                        dbInvoice.setPayAccount(sInvoicePayAccount);
+                        dbInvoice.setPayAccount(sInvoicePayAccountDes);
                         dbInvoice.setCreditDays(SLibUtils.parseInt(rsAvistaInvoiceData.getString("PayTermCode")));
                         dbInvoice.setOriginalAmount(dInvoiceAmountSrc);
                         //dbInvoice.setFinalAmount(...);    // set later on this method
@@ -382,12 +405,12 @@ public class SEtlProcessDocInvoices {
                         dbInvoice.setSrcCustomerFk(dbInvoiceCustomer.getSrcCustomerId());
                         dbInvoice.setDesCustomerFk(dbInvoiceCustomer.getDesCustomerId());
                         dbInvoice.setSrcSalesAgentFk(dbInvoiceSalesAgent == null ? SLibConsts.UNDEFINED : dbInvoiceSalesAgent.getSrcSalesAgentId());
-                        dbInvoice.setDesSalesAgentFk(dbInvoiceSalesAgent == null ? SLibConsts.UNDEFINED : dbInvoiceSalesAgent.getDesSalesAgentId());
+                        dbInvoice.setDesSalesAgentFk(idInvoiceSalesAgentDes);
                         dbInvoice.setSrcOriginalCurrencyFk(dbInvoiceCurrencySrc.getSrcCurrencyId());
                         dbInvoice.setSrcFinalCurrencyFk(dbInvoiceCurrencyReq.getSrcCurrencyId());
                         dbInvoice.setDesOriginalCurrencyFk(dbInvoiceCurrencySrc.getDesCurrencyId());
                         dbInvoice.setDesFinalCurrencyFk(dbInvoiceCurrencyReq.getDesCurrencyId());
-                        dbInvoice.setDesPayMethodFk(idInvoicePayMethod);    // SIIE & SIIE-ETL primary keys of both catalogs are the same
+                        dbInvoice.setDesPayMethodFk(idInvoicePayMethodDes);    // SIIE & SIIE-ETL primary keys of both catalogs are the same
                         //dbInvoice.setFirstEtlInsert(...); // set when saved
                         //dbInvoice.setLastEtlUpdate(...);  // set when saved
                         dbInvoice.setDeleted(false);
@@ -396,7 +419,7 @@ public class SEtlProcessDocInvoices {
                         dbInvoice.setFkSrcSalesAgentId_n(dbInvoiceSalesAgent == null ? SLibConsts.UNDEFINED : dbInvoiceSalesAgent.getPkSalesAgentId());
                         dbInvoice.setFkSrcOriginalCurrencyId(dbInvoiceCurrencySrc.getPkCurrencyId());
                         dbInvoice.setFkSrcFinalCurrencyId(dbInvoiceCurrencyReq.getPkCurrencyId());
-                        dbInvoice.setFkDesPayMethodId(idInvoicePayMethod);  // SIIE & SIIE-ETL primary keys of both catalogs are the same
+                        dbInvoice.setFkDesPayMethodId(idInvoicePayMethodDes);  // SIIE & SIIE-ETL primary keys of both catalogs are the same
                         dbInvoice.setFkLastEtlLogId(etlPackage.EtlLog.getPkEtlLogId());
                         //invoice.setFkUserInsertId(...);
                         //invoice.setFkUserUpdateId(...);

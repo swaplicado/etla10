@@ -158,7 +158,7 @@ public abstract class SEtlProcessCatCustomers {
         etlPackage.EtlLog.setStepAux(SEtlConsts.STEP_AUX_NA);
         etlPackage.EtlLog.save(session);
         
-        // I. Obtain sales agents list from Avista:
+        // I. Obtain sales agents list from Avista invoices:
         
         sql = "SELECT DISTINCT c.SalesUserKey, u.UserId, u.FullName "
                 + "FROM dbo.CustomerInvoices AS ci "
@@ -177,7 +177,7 @@ public abstract class SEtlProcessCatCustomers {
             }
             /****************************************************************/
             
-            // From Avista obtain sales agent:
+            // From Avista's ID try to obtain sales agent on ETL:
             
             nSalesAgentId = 0;
             
@@ -230,7 +230,7 @@ public abstract class SEtlProcessCatCustomers {
         
         etlCatalogs = new SEtlCatalogs(session, true, false);
         
-        // II. Obtain customers list from Avista:
+        // II. Obtain customers list from Avista invoices:
         
         nCount = 0;
         

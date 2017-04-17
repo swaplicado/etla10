@@ -144,6 +144,7 @@ public class SEtlProcessCatItems {
                     dataItem.setMassUnitary(0);
                     dataItem.setIsMassVariable(true);
                     dataItem.setProductionTime(0);
+                    dataItem.setProductionCost(0);
                     dataItem.setWeightGross(0);
                     dataItem.setWeightDelivery(0);
                     dataItem.setUnitAlternativeBaseEquivalence(0);
