@@ -70,6 +70,8 @@ public class SDbInvoice extends SDbRegistryUser {
     
     protected ArrayList<SDbInvoiceRow> maChildRows;
     
+    protected int mnAuxDesSalesSupervisorFk;
+    
     public SDbInvoice() {
         super(SModConsts.A_INV);
     }
@@ -162,6 +164,10 @@ public class SDbInvoice extends SDbRegistryUser {
 
     public ArrayList<SDbInvoiceRow> getChildRows() { return maChildRows; }
     
+    public void setAuxDesSalesSupervisorFk(int n) { mnAuxDesSalesSupervisorFk = n; }
+    
+    public int getAuxDesSalesSupervisorFk() { return mnAuxDesSalesSupervisorFk; }
+    
     /*
      * Overriden methods
      */
@@ -222,6 +228,8 @@ public class SDbInvoice extends SDbRegistryUser {
         mtTsUserUpdate = null;
         
         maChildRows = new ArrayList<>();
+        
+        mnAuxDesSalesSupervisorFk = 0;
     }
 
     @Override
@@ -496,6 +504,12 @@ public class SDbInvoice extends SDbRegistryUser {
         registry.setTsUserInsert(this.getTsUserInsert());
         registry.setTsUserUpdate(this.getTsUserUpdate());
 
+        for (SDbInvoiceRow child : maChildRows) {
+            registry.getChildRows().add(child.clone());
+        }
+        
+        registry.setAuxDesSalesSupervisorFk(this.getAuxDesSalesSupervisorFk());
+        
         registry.setRegistryNew(this.isRegistryNew());
         return registry;
     }

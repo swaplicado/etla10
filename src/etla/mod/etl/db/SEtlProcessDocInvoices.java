@@ -39,6 +39,7 @@ public class SEtlProcessDocInvoices {
         int nInvoicesCount = 0;
         int idInvoice = 0;
         int idInvoiceSalesAgentDes = 0;
+        int idInvoiceSalesSupervisorDes = 0;
         int idInvoicePayMethodDes = 0;
         String sInvoicePayAccountDes = "";
         int idInvoiceCurrencySrc = 0;
@@ -198,6 +199,7 @@ public class SEtlProcessDocInvoices {
                 // Avista invoice does not exist or has not been exported yet into ETL:
             
                 idInvoiceSalesAgentDes = 0;
+                idInvoiceSalesSupervisorDes = 0;
                 idInvoicePayMethodDes = 0;
                 sInvoicePayAccountDes = "";
                 idInvoiceCurrencySrc = 0;
@@ -236,6 +238,7 @@ public class SEtlProcessDocInvoices {
                 // Set invoice's pay method & account from SIIE customer's registries:
                 
                 idInvoiceSalesAgentDes = dataBizPartnerCompany.getDbmsDataCustomerConfig().getFkSalesAgentId_n();
+                idInvoiceSalesSupervisorDes = dataBizPartnerCompany.getDbmsDataCustomerConfig().getFkSalesSupervisorId_n();
                 
                 if (idInvoiceSalesAgentDes == SLibConsts.UNDEFINED) {
                     // Set sales agent from ETL customer's registry if SIIE customer does not have a sales agent set:
@@ -248,6 +251,7 @@ public class SEtlProcessDocInvoices {
                     }
                     else {
                         idInvoiceSalesAgentDes = dbInvoiceSalesAgent.getDesSalesAgentId();
+                        idInvoiceSalesSupervisorDes = SLibConsts.UNDEFINED;
                     }
                 }
                 
@@ -406,6 +410,7 @@ public class SEtlProcessDocInvoices {
                         dbInvoice.setDesCustomerFk(dbInvoiceCustomer.getDesCustomerId());
                         dbInvoice.setSrcSalesAgentFk(dbInvoiceSalesAgent == null ? SLibConsts.UNDEFINED : dbInvoiceSalesAgent.getSrcSalesAgentId());
                         dbInvoice.setDesSalesAgentFk(idInvoiceSalesAgentDes);
+                        dbInvoice.setAuxDesSalesSupervisorFk(idInvoiceSalesSupervisorDes);  // out of real place as class method, but in logical place
                         dbInvoice.setSrcOriginalCurrencyFk(dbInvoiceCurrencySrc.getSrcCurrencyId());
                         dbInvoice.setSrcFinalCurrencyFk(dbInvoiceCurrencyReq.getSrcCurrencyId());
                         dbInvoice.setDesOriginalCurrencyFk(dbInvoiceCurrencySrc.getDesCurrencyId());
@@ -727,8 +732,8 @@ public class SEtlProcessDocInvoices {
                     dataDps.setFkCurrencyId(dbInvoice.getDesFinalCurrencyFk());
                     dataDps.setFkSalesAgentId_n(dbInvoice.getDesSalesAgentFk());
                     dataDps.setFkSalesAgentBizPartnerId_n(dbInvoice.getDesSalesAgentFk());
-                    dataDps.setFkSalesSupervisorId_n(SLibConsts.UNDEFINED);
-                    dataDps.setFkSalesSupervisorBizPartnerId_n(SLibConsts.UNDEFINED);
+                    dataDps.setFkSalesSupervisorId_n(dbInvoice.getAuxDesSalesSupervisorFk());
+                    dataDps.setFkSalesSupervisorBizPartnerId_n(dbInvoice.getAuxDesSalesSupervisorFk());
                     dataDps.setFkIncotermId(erp.mod.SModSysConsts.LOGS_INC_NA);
                     dataDps.setFkSpotSourceId_n(SLibConsts.UNDEFINED);
                     dataDps.setFkSpotDestinyId_n(SLibConsts.UNDEFINED);
