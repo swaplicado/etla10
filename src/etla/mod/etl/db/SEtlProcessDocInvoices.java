@@ -237,8 +237,8 @@ public class SEtlProcessDocInvoices {
 
                 // Set invoice's pay method & account from SIIE customer's registries:
                 
-                idInvoiceSalesAgentDes = dataBizPartnerCompany.getDbmsDataCustomerConfig().getFkSalesAgentId_n();
-                idInvoiceSalesSupervisorDes = dataBizPartnerCompany.getDbmsDataCustomerConfig().getFkSalesSupervisorId_n();
+                idInvoiceSalesAgentDes = dataBizPartnerCustomer.getDbmsDataCustomerConfig().getFkSalesAgentId_n();
+                idInvoiceSalesSupervisorDes = dataBizPartnerCustomer.getDbmsDataCustomerConfig().getFkSalesSupervisorId_n();
                 
                 if (idInvoiceSalesAgentDes == SLibConsts.UNDEFINED) {
                     // Set sales agent from ETL customer's registry if SIIE customer does not have a sales agent set:
