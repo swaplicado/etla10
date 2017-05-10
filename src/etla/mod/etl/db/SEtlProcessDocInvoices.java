@@ -399,7 +399,8 @@ public class SEtlProcessDocInvoices {
                         dbInvoice.setOriginalDate(rsAvistaInvoiceData.getDate("InvoiceCreated"));
                         dbInvoice.setFinalDate(etlPackage.DateIssue);
                         dbInvoice.setPayAccount(sInvoicePayAccountDes);
-                        dbInvoice.setCreditDays(SLibUtils.parseInt(rsAvistaInvoiceData.getString("PayTermCode")));
+                        //dbInvoice.setCreditDays(SLibUtils.parseInt(rsAvistaInvoiceData.getString("PayTermCode")));        // formerlly, until may 2017, credit days taken from Avista's customer invoice
+                        dbInvoice.setCreditDays(dataBizPartnerCustomer.getDbmsCategorySettingsCus().getDaysOfCredit());     // since may 2017, credit days taken from SIIE's business partner customer settings
                         dbInvoice.setOriginalAmount(dInvoiceAmountSrc);
                         //dbInvoice.setFinalAmount(...);    // set later on this method
                         dbInvoice.setExchangeRate(dInvoiceExchangeRate);
