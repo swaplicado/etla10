@@ -703,6 +703,7 @@ public class SEtlProcessDocInvoices {
                     dataDps.setIsClosed(false);
                     dataDps.setIsClosedCommissions(false);
                     dataDps.setIsShipped(false);
+                    dataDps.setIsDpsDeliveryAck(false);
                     dataDps.setIsRebill(false);
                     dataDps.setIsAudited(false);
                     dataDps.setIsAuthorized(false);
@@ -755,6 +756,7 @@ public class SEtlProcessDocInvoices {
                     dataDps.setFkUserClosedId(SDataConstantsSys.USRX_USER_NA);
                     dataDps.setFkUserClosedCommissionsId(SDataConstantsSys.USRX_USER_NA);
                     dataDps.setFkUserShippedId(SDataConstantsSys.USRX_USER_NA);
+                    dataDps.setFkUserDpsDeliveryAckId(SDataConstantsSys.USRX_USER_NA);
                     dataDps.setFkUserAuditedId(SDataConstantsSys.USRX_USER_NA);
                     dataDps.setFkUserAuthorizedId(SDataConstantsSys.USRX_USER_NA);
                     dataDps.setFkUserNewId(((SDbUser) session.getUser()).getDesUserId());
@@ -764,6 +766,7 @@ public class SEtlProcessDocInvoices {
                     //dataDps.setUserClosedTs(...);
                     //dataDps.setUserClosedCommissionsTs(...);
                     //dataDps.setUserShippedTs(...);
+                    //dataDps.setUserDpsDeliveryAckTs(...);
                     //dataDps.setUserAuditedTs(...);
                     //dataDps.setUserAuthorizedTs(...);
                     //dataDps.setUserNewTs(...);
