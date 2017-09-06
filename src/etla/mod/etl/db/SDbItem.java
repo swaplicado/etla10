@@ -293,7 +293,7 @@ public class SDbItem extends SDbRegistryUser {
                     "src_cus_fk_n = " + (msSrcCustomerFk_n.isEmpty() ? "NULL" : "'" + msSrcCustomerFk_n + "'") + ", " +
                     "src_req_cur_fk_n = " + (mnSrcRequiredCurrencyFk_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnSrcRequiredCurrencyFk_n) + ", " +
                     "src_req_uom_fk_n = " + (msSrcRequiredUnitOfMeasureFk_n.isEmpty() ? "NULL" : "'" + msSrcRequiredUnitOfMeasureFk_n + "'") + ", " +
-                    "fst_etl_ins = " + "NOW()" + ", " +
+                    //"fst_etl_ins = " + "NOW()" + ", " +
                     "lst_etl_upd = " + "NOW()" + ", " +
                     "b_del = " + (mbDeleted ? 1 : 0) + ", " +
                     "b_sys = " + (mbSystem ? 1 : 0) + ", " +

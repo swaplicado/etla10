@@ -37,6 +37,9 @@ public class SDbConfigAvista extends SDbRegistryUser {
     protected String msDesDefaultCostCenterFk;
     protected int mnDesDefaultItemGenericFk;
     protected String msDesItemCodePrefix;
+    protected String msDesCfdiZipIssue;
+    protected String msDesCfdiTaxRegime;
+    protected String msDesCfdiCfdiUsage;
     protected String msSrcLocalCountryFk;
     protected String msSrcLocalStateFk;
     protected int mnSrcLocalCurrencyFk;
@@ -82,6 +85,9 @@ public class SDbConfigAvista extends SDbRegistryUser {
     public void setDesDefaultCostCenterFk(String s) { msDesDefaultCostCenterFk = s; }
     public void setDesDefaultItemGenericFk(int n) { mnDesDefaultItemGenericFk = n; }
     public void setDesItemCodePrefix(String s) { msDesItemCodePrefix = s; }
+    public void setDesCfdiZipIssue(String s) { msDesCfdiZipIssue = s; }
+    public void setDesCfdiTaxRegime(String s) { msDesCfdiTaxRegime = s; }
+    public void setDesCfdiCfdiUsage(String s) { msDesCfdiCfdiUsage = s; }
     public void setSrcLocalCountryFk(String s) { msSrcLocalCountryFk = s; }
     public void setSrcLocalStateFk(String s) { msSrcLocalStateFk = s; }
     public void setSrcLocalCurrencyFk(int n) { mnSrcLocalCurrencyFk = n; }
@@ -115,6 +121,9 @@ public class SDbConfigAvista extends SDbRegistryUser {
     public String getDesDefaultCostCenterFk() { return msDesDefaultCostCenterFk; }
     public int getDesDefaultItemGenericFk() { return mnDesDefaultItemGenericFk; }
     public String getDesItemCodePrefix() { return msDesItemCodePrefix; }
+    public String getDesCfdiZipIssue() { return msDesCfdiZipIssue; }
+    public String getDesCfdiTaxRegime() { return msDesCfdiTaxRegime; }
+    public String getDesCfdiCfdiUsage() { return msDesCfdiCfdiUsage; }
     public String getSrcLocalCountryFk() { return msSrcLocalCountryFk; }
     public String getSrcLocalStateFk() { return msSrcLocalStateFk; }
     public int getSrcLocalCurrencyFk() { return mnSrcLocalCurrencyFk; }
@@ -166,6 +175,9 @@ public class SDbConfigAvista extends SDbRegistryUser {
         msDesDefaultCostCenterFk = "";
         mnDesDefaultItemGenericFk = 0;
         msDesItemCodePrefix = "";
+        msDesCfdiZipIssue = "";
+        msDesCfdiTaxRegime = "";
+        msDesCfdiCfdiUsage = "";
         msSrcLocalCountryFk = "";
         msSrcLocalStateFk = "";
         mnSrcLocalCurrencyFk = 0;
@@ -242,6 +254,9 @@ public class SDbConfigAvista extends SDbRegistryUser {
             msDesDefaultCostCenterFk = resultSet.getString("des_def_cc_fk");
             mnDesDefaultItemGenericFk = resultSet.getInt("des_def_itm_gen_fk");
             msDesItemCodePrefix = resultSet.getString("des_itm_code_pfx");
+            msDesCfdiZipIssue = resultSet.getString("des_cfdi_zip_iss");
+            msDesCfdiTaxRegime = resultSet.getString("des_cfdi_tax_reg");
+            msDesCfdiCfdiUsage = resultSet.getString("des_cfdi_cfd_use");
             msSrcLocalCountryFk = resultSet.getString("src_loc_cty_fk");
             msSrcLocalStateFk = resultSet.getString("src_loc_sta_fk");
             mnSrcLocalCurrencyFk = resultSet.getInt("src_loc_cur_fk");
@@ -298,6 +313,9 @@ public class SDbConfigAvista extends SDbRegistryUser {
                     "'" + msDesDefaultCostCenterFk + "', " + 
                     mnDesDefaultItemGenericFk + ", " + 
                     "'" + msDesItemCodePrefix + "', " + 
+                    "'" + msDesCfdiZipIssue + "', " + 
+                    "'" + msDesCfdiTaxRegime + "', " + 
+                    "'" + msDesCfdiCfdiUsage + "', " + 
                     "'" + msSrcLocalCountryFk + "', " + 
                     "'" + msSrcLocalStateFk + "', " + 
                     mnSrcLocalCurrencyFk + ", " + 
@@ -336,6 +354,9 @@ public class SDbConfigAvista extends SDbRegistryUser {
                     "des_def_cc_fk = '" + msDesDefaultCostCenterFk + "', " +
                     "des_def_itm_gen_fk = " + mnDesDefaultItemGenericFk + ", " +
                     "des_itm_code_pfx = '" + msDesItemCodePrefix + "', " +
+                    "des_cfdi_zip_iss = '" + msDesCfdiZipIssue + "', " +
+                    "des_cfdi_tax_reg = '" + msDesCfdiTaxRegime + "', " +
+                    "des_cfdi_cfd_use = '" + msDesCfdiCfdiUsage + "', " +
                     "src_loc_cty_fk = '" + msSrcLocalCountryFk + "', " +
                     "src_loc_sta_fk = '" + msSrcLocalStateFk + "', " +
                     "src_loc_cur_fk = " + mnSrcLocalCurrencyFk + ", " +
@@ -381,6 +402,9 @@ public class SDbConfigAvista extends SDbRegistryUser {
         registry.setDesDefaultCostCenterFk(this.getDesDefaultCostCenterFk());
         registry.setDesDefaultItemGenericFk(this.getDesDefaultItemGenericFk());
         registry.setDesItemCodePrefix(this.getDesItemCodePrefix());
+        registry.setDesCfdiZipIssue(this.getDesCfdiZipIssue());
+        registry.setDesCfdiTaxRegime(this.getDesCfdiTaxRegime());
+        registry.setDesCfdiCfdiUsage(this.getDesCfdiCfdiUsage());
         registry.setSrcLocalCountryFk(this.getSrcLocalCountryFk());
         registry.setSrcLocalStateFk(this.getSrcLocalStateFk());
         registry.setSrcLocalCurrencyFk(this.getSrcLocalCurrencyFk());

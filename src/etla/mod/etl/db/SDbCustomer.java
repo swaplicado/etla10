@@ -53,6 +53,8 @@ public class SDbCustomer extends SDbRegistryUser {
     protected int mnSrcCustomerSalesAgentFk_n;
     protected int mnSrcRequiredCurrencyFk_n;
     protected String msSrcRequiredUnitOfMeasureFk_n;
+    protected String msDesCfdiPaymentWay;
+    protected String msDesCfdiCfdiUsage;
     protected Date mtFirstEtlInsert;
     protected Date mtLastEtlUpdate;
     protected boolean mbEtlIgnore;
@@ -115,6 +117,8 @@ public class SDbCustomer extends SDbRegistryUser {
     public void setSrcCustomerSalesAgentFk_n(int n) { mnSrcCustomerSalesAgentFk_n = n; }
     public void setSrcRequiredCurrencyFk_n(int n) { mnSrcRequiredCurrencyFk_n = n; }
     public void setSrcRequiredUnitOfMeasureFk_n(String s) { msSrcRequiredUnitOfMeasureFk_n = s; }
+    public void setDesCfdiPaymentWay(String s) { msDesCfdiPaymentWay = s; }
+    public void setDesCfdiCfdiUsage(String s) { msDesCfdiCfdiUsage = s; }
     public void setFirstEtlInsert(Date t) { mtFirstEtlInsert = t; }
     public void setLastEtlUpdate(Date t) { mtLastEtlUpdate = t; }
     public void setEtlIgnore(boolean b) { mbEtlIgnore = b; }
@@ -165,6 +169,8 @@ public class SDbCustomer extends SDbRegistryUser {
     public int getSrcCustomerSalesAgentFk_n() { return mnSrcCustomerSalesAgentFk_n; }
     public int getSrcRequiredCurrencyFk_n() { return mnSrcRequiredCurrencyFk_n; }
     public String getSrcRequiredUnitOfMeasureFk_n() { return msSrcRequiredUnitOfMeasureFk_n; }
+    public String getDesCfdiPaymentWay() { return msDesCfdiPaymentWay; }
+    public String getDesCfdiCfdiUsage() { return msDesCfdiCfdiUsage; }
     public Date getFirstEtlInsert() { return mtFirstEtlInsert; }
     public Date getLastEtlUpdate() { return mtLastEtlUpdate; }
     public boolean isEtlIgnore() { return mbEtlIgnore; }
@@ -233,6 +239,8 @@ public class SDbCustomer extends SDbRegistryUser {
         mnSrcCustomerSalesAgentFk_n = 0;
         mnSrcRequiredCurrencyFk_n = 0;
         msSrcRequiredUnitOfMeasureFk_n = "";
+        msDesCfdiPaymentWay = "";
+        msDesCfdiCfdiUsage = "";
         mtFirstEtlInsert = null;
         mtLastEtlUpdate = null;
         mbEtlIgnore = false;
@@ -327,6 +335,8 @@ public class SDbCustomer extends SDbRegistryUser {
             mnSrcCustomerSalesAgentFk_n = resultSet.getInt("src_cus_sal_agt_fk_n");
             mnSrcRequiredCurrencyFk_n = resultSet.getInt("src_req_cur_fk_n");
             msSrcRequiredUnitOfMeasureFk_n = resultSet.getString("src_req_uom_fk_n");
+            msDesCfdiPaymentWay = resultSet.getString("des_cfdi_pay_way");
+            msDesCfdiCfdiUsage = resultSet.getString("des_cfdi_cfd_use");
             mtFirstEtlInsert = resultSet.getTimestamp("fst_etl_ins");
             mtLastEtlUpdate = resultSet.getTimestamp("lst_etl_upd");
             mbEtlIgnore = resultSet.getBoolean("b_etl_ign");
@@ -418,6 +428,8 @@ public class SDbCustomer extends SDbRegistryUser {
                     (mnSrcCustomerSalesAgentFk_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnSrcCustomerSalesAgentFk_n) + ", " + 
                     (mnSrcRequiredCurrencyFk_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnSrcRequiredCurrencyFk_n) + ", " + 
                     (msSrcRequiredUnitOfMeasureFk_n.isEmpty() ? "NULL" : "'" + msSrcRequiredUnitOfMeasureFk_n + "'") + ", " + 
+                    "'" + msDesCfdiPaymentWay + "', " + 
+                    "'" + msDesCfdiCfdiUsage + "', " + 
                     "NOW()" + ", " + 
                     "NOW()" + ", " + 
                     (mbEtlIgnore ? 1 : 0) + ", " + 
@@ -473,6 +485,8 @@ public class SDbCustomer extends SDbRegistryUser {
                     "src_cus_sal_agt_fk_n = " + (mnSrcCustomerSalesAgentFk_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnSrcCustomerSalesAgentFk_n) + ", " +
                     "src_req_cur_fk_n = " + (mnSrcRequiredCurrencyFk_n == SLibConsts.UNDEFINED ? "NULL" : "" + mnSrcRequiredCurrencyFk_n) + ", " +
                     "src_req_uom_fk_n = " + (msSrcRequiredUnitOfMeasureFk_n.isEmpty() ? "NULL" : "'" + msSrcRequiredUnitOfMeasureFk_n + "'") + ", " +
+                    "des_cfdi_pay_way = '" + msDesCfdiPaymentWay + "', " +
+                    "des_cfdi_cfd_use = '" + msDesCfdiCfdiUsage + "', " +
                     //"fst_etl_ins = " + "NOW()" + ", " +
                     "lst_etl_upd = " + "NOW()" + ", " +
                     "b_etl_ign = " + (mbEtlIgnore ? 1 : 0) + ", " +
@@ -535,6 +549,8 @@ public class SDbCustomer extends SDbRegistryUser {
         registry.setSrcCustomerSalesAgentFk_n(this.getSrcCustomerSalesAgentFk_n());
         registry.setSrcRequiredCurrencyFk_n(this.getSrcRequiredCurrencyFk_n());
         registry.setSrcRequiredUnitOfMeasureFk_n(this.getSrcRequiredUnitOfMeasureFk_n());
+        registry.setDesCfdiPaymentWay(this.getDesCfdiPaymentWay());
+        registry.setDesCfdiCfdiUsage(this.getDesCfdiCfdiUsage());
         registry.setFirstEtlInsert(this.getFirstEtlInsert());
         registry.setLastEtlUpdate(this.getLastEtlUpdate());
         registry.setEtlIgnore(this.isEtlIgnore());

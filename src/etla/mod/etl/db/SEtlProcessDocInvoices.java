@@ -5,11 +5,14 @@
  */
 package etla.mod.etl.db;
 
+import cfd.DCfdConsts;
+import cfd.ver33.DCfdi33Consts;
 import erp.data.SDataConstantsSys;
 import erp.lib.SLibConstants;
 import erp.mbps.data.SDataBizPartner;
 import erp.mitm.data.SDataItem;
 import erp.mtrn.data.SDataDps;
+import erp.mtrn.data.SDataDpsCfd;
 import erp.mtrn.data.SDataDpsEntry;
 import erp.mtrn.data.SDataDpsEntryNotes;
 import erp.mtrn.data.SDataDpsEntryTax;
@@ -24,7 +27,6 @@ import java.util.HashSet;
 import sa.lib.SLibConsts;
 import sa.lib.SLibTimeUtils;
 import sa.lib.SLibUtils;
-import sa.lib.db.SDbRegistry;
 import sa.lib.gui.SGuiSession;
 
 /**
@@ -96,6 +98,7 @@ public class SEtlProcessDocInvoices {
         SDataBizPartner dataBizPartnerCustomer = null;
         SDataItem dataItem = null;
         SDataDps dataDps = null;
+        SDataDpsCfd dataDpsCfd = null;
         SDataDpsNotes dataDpsNotes = null;
         SDataDpsEntry dataDpsEntry = null;
         SDataDpsEntryTax dataDpsEntryTax = null;
@@ -421,6 +424,10 @@ public class SEtlProcessDocInvoices {
                         dbInvoice.setDesOriginalCurrencyFk(dbInvoiceCurrencySrc.getDesCurrencyId());
                         dbInvoice.setDesFinalCurrencyFk(dbInvoiceCurrencyReq.getDesCurrencyId());
                         dbInvoice.setDesPayMethodFk(idInvoicePayMethodDes);    // SIIE & SIIE-ETL primary keys of both catalogs are the same
+                        dbInvoice.setDesCfdiZipIssue(dbConfigAvista.getDesCfdiZipIssue());
+                        dbInvoice.setDesCfdiTaxRegime(dbConfigAvista.getDesCfdiTaxRegime());
+                        dbInvoice.setDesCfdiPaymentWay(dbInvoice.getCreditDays() == 0 ? SDataConstantsSys.TRNS_CFD_CAT_PAY_WAY_99 : dataBizPartnerCustomer.getDbmsCategorySettingsCus().getCfdiPaymentWay());
+                        dbInvoice.setDesCfdiCfdiUsage(!dataBizPartnerCustomer.getDbmsCategorySettingsCus().getCfdiCfdiUsage().isEmpty() ? dataBizPartnerCustomer.getDbmsCategorySettingsCus().getCfdiCfdiUsage() : dbConfigAvista.getDesCfdiCfdiUsage());
                         //dbInvoice.setFirstEtlInsert(...); // set when saved
                         //dbInvoice.setLastEtlUpdate(...);  // set when saved
                         dbInvoice.setDeleted(false);
@@ -695,8 +702,10 @@ public class SEtlProcessDocInvoices {
                     dataDps.setTicket("");
                     dataDps.setShipments(0);
                     dataDps.setPayments(0);
-                    dataDps.setPaymentMethod((String) session.readField(SModConsts.AS_PAY_MET, new int[] { dbInvoice.getFkDesPayMethodId() }, SDbRegistry.FIELD_NAME));
-                    dataDps.setPaymentAccount(dbInvoice.getPayAccount());
+                    //dataDps.setPaymentMethod((String) session.readField(SModConsts.AS_PAY_MET, new int[] { dbInvoice.getFkDesPayMethodId() }, SDbRegistry.FIELD_NAME));   // deprecated since CFDI 3.3
+                    dataDps.setPaymentMethod("");
+                    //dataDps.setPaymentAccount(dbInvoice.getPayAccount()); // deprecated since CFDI 3.3
+                    dataDps.setPaymentAccount("");
                     dataDps.setAutomaticAuthorizationRejection(0);  // N/A
                     dataDps.setIsPublic(false);
                     dataDps.setIsLinked(false);
@@ -716,7 +725,8 @@ public class SEtlProcessDocInvoices {
                     dataDps.setFkDpsClassId(erp.mod.SModSysConsts.TRNU_TP_DPS_SAL_INV[1]);
                     dataDps.setFkDpsTypeId(erp.mod.SModSysConsts.TRNU_TP_DPS_SAL_INV[2]);
                     dataDps.setFkPaymentTypeId(dataDps.getDaysOfCredit() == 0 ? SDataConstantsSys.TRNS_TP_PAY_CASH : SDataConstantsSys.TRNS_TP_PAY_CREDIT);
-                    dataDps.setFkPaymentSystemTypeId(dbInvoice.getFkDesPayMethodId());
+                    //dataDps.setFkPaymentSystemTypeId(dbInvoice.getFkDesPayMethodId());    // deprecated since CFDI 3.3
+                    dataDps.setFkPaymentSystemTypeId(SDataConstantsSys.TRNU_TP_PAY_SYS_NA);
                     dataDps.setFkDpsStatusId(SDataConstantsSys.TRNS_ST_DPS_EMITED);
                     dataDps.setFkDpsValidityStatusId(SDataConstantsSys.TRNS_ST_DPS_VAL_EFF);
                     dataDps.setFkDpsAuthorizationStatusId(SDataConstantsSys.TRNS_ST_DPS_AUTHORN_NA);
@@ -772,6 +782,22 @@ public class SEtlProcessDocInvoices {
                     //dataDps.setUserNewTs(...);
                     //dataDps.setUserEditTs(...);
                     //dataDps.setUserDeleteTs(...);
+                    
+                    dataDpsCfd = new SDataDpsCfd();
+                    
+                    //dataDpsCfd.setPkYearId(...);
+                    //dataDpsCfd.setPkDocId(...);
+                    dataDpsCfd.setVersion("" + DCfdConsts.CFDI_VER_33);
+                    dataDpsCfd.setCfdiType(DCfdi33Consts.CFD_TP_I);
+                    dataDpsCfd.setPaymentWay(dbInvoice.getDesCfdiPaymentWay());
+                    dataDpsCfd.setPaymentMethod(dataDps.getFkPaymentTypeId() == SDataConstantsSys.TRNS_TP_PAY_CASH ? SDataConstantsSys.TRNS_CFD_CAT_PAY_MET_PUE : SDataConstantsSys.TRNS_CFD_CAT_PAY_MET_PPD);
+                    dataDpsCfd.setPaymentConditions(dataDps.getFkPaymentTypeId() == SDataConstantsSys.TRNS_TP_PAY_CASH ? "CONTADO" : "CRÉDITO " + dataDps.getDaysOfCredit() + " DÍAS"); // XXX: implement method!
+                    dataDpsCfd.setZipIssue(dbInvoice.getDesCfdiZipIssue());
+                    //dataDpsCfd.setConfirmation(...);
+                    dataDpsCfd.setTaxRegime(dbInvoice.getDesCfdiTaxRegime());
+                    dataDpsCfd.setCfdiUsage(dbInvoice.getDesCfdiCfdiUsage());
+                    
+                    dataDps.setDbmsDataDpsCfd(dataDpsCfd);
                     
                     dataDpsNotes = new SDataDpsNotes();
                     

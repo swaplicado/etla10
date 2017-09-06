@@ -49,6 +49,10 @@ public class SDbInvoice extends SDbRegistryUser {
     protected int mnDesOriginalCurrencyFk;
     protected int mnDesFinalCurrencyFk;
     protected int mnDesPayMethodFk;
+    protected String msDesCfdiZipIssue;
+    protected String msDesCfdiTaxRegime;
+    protected String msDesCfdiPaymentWay;
+    protected String msDesCfdiCfdiUsage;
     protected Date mtFirstEtlInsert;
     protected Date mtLastEtlUpdate;
     /*
@@ -106,6 +110,10 @@ public class SDbInvoice extends SDbRegistryUser {
     public void setDesOriginalCurrencyFk(int n) { mnDesOriginalCurrencyFk = n; }
     public void setDesFinalCurrencyFk(int n) { mnDesFinalCurrencyFk = n; }
     public void setDesPayMethodFk(int n) { mnDesPayMethodFk = n; }
+    public void setDesCfdiZipIssue(String s) { msDesCfdiZipIssue = s; }
+    public void setDesCfdiTaxRegime(String s) { msDesCfdiTaxRegime = s; }
+    public void setDesCfdiPaymentWay(String s) { msDesCfdiPaymentWay = s; }
+    public void setDesCfdiCfdiUsage(String s) { msDesCfdiCfdiUsage = s; }
     public void setFirstEtlInsert(Date t) { mtFirstEtlInsert = t; }
     public void setLastEtlUpdate(Date t) { mtLastEtlUpdate = t; }
     public void setDeleted(boolean b) { mbDeleted = b; }
@@ -147,6 +155,10 @@ public class SDbInvoice extends SDbRegistryUser {
     public int getDesOriginalCurrencyFk() { return mnDesOriginalCurrencyFk; }
     public int getDesFinalCurrencyFk() { return mnDesFinalCurrencyFk; }
     public int getDesPayMethodFk() { return mnDesPayMethodFk; }
+    public String getDesCfdiZipIssue() { return msDesCfdiZipIssue; }
+    public String getDesCfdiTaxRegime() { return msDesCfdiTaxRegime; }
+    public String getDesCfdiPaymentWay() { return msDesCfdiPaymentWay; }
+    public String getDesCfdiCfdiUsage() { return msDesCfdiCfdiUsage; }
     public Date getFirstEtlInsert() { return mtFirstEtlInsert; }
     public Date getLastEtlUpdate() { return mtLastEtlUpdate; }
     public boolean isDeleted() { return mbDeleted; }
@@ -212,6 +224,10 @@ public class SDbInvoice extends SDbRegistryUser {
         mnDesOriginalCurrencyFk = 0;
         mnDesFinalCurrencyFk = 0;
         mnDesPayMethodFk = 0;
+        msDesCfdiZipIssue = "";
+        msDesCfdiTaxRegime = "";
+        msDesCfdiPaymentWay = "";
+        msDesCfdiCfdiUsage = "";
         mtFirstEtlInsert = null;
         mtLastEtlUpdate = null;
         mbDeleted = false;
@@ -301,6 +317,10 @@ public class SDbInvoice extends SDbRegistryUser {
             mnDesOriginalCurrencyFk = resultSet.getInt("des_ori_cur_fk");
             mnDesFinalCurrencyFk = resultSet.getInt("des_fin_cur_fk");
             mnDesPayMethodFk = resultSet.getInt("des_pay_met_fk");
+            msDesCfdiZipIssue = resultSet.getString("des_cfdi_zip_iss");
+            msDesCfdiTaxRegime = resultSet.getString("des_cfdi_tax_reg");
+            msDesCfdiPaymentWay = resultSet.getString("des_cfdi_pay_way");
+            msDesCfdiCfdiUsage = resultSet.getString("des_cfdi_cfd_use");
             mtFirstEtlInsert = resultSet.getTimestamp("fst_etl_ins");
             mtLastEtlUpdate = resultSet.getTimestamp("lst_etl_upd");
             mbDeleted = resultSet.getBoolean("b_del");
@@ -376,6 +396,10 @@ public class SDbInvoice extends SDbRegistryUser {
                     mnDesOriginalCurrencyFk + ", " + 
                     mnDesFinalCurrencyFk + ", " + 
                     mnDesPayMethodFk + ", " + 
+                    "'" + msDesCfdiZipIssue + "', " + 
+                    "'" + msDesCfdiTaxRegime + "', " + 
+                    "'" + msDesCfdiPaymentWay + "', " + 
+                    "'" + msDesCfdiCfdiUsage + "', " + 
                     "NOW()" + ", " + 
                     "NOW()" + ", " + 
                     (mbDeleted ? 1 : 0) + ", " + 
@@ -422,7 +446,11 @@ public class SDbInvoice extends SDbRegistryUser {
                     "des_ori_cur_fk = " + mnDesOriginalCurrencyFk + ", " +
                     "des_fin_cur_fk = " + mnDesFinalCurrencyFk + ", " +
                     "des_pay_met_fk = " + mnDesPayMethodFk + ", " +
-                    "fst_etl_ins = " + "NOW()" + ", " +
+                    "des_cfdi_zip_iss = '" + msDesCfdiZipIssue + "', " +
+                    "des_cfdi_tax_reg = '" + msDesCfdiTaxRegime + "', " +
+                    "des_cfdi_pay_way = '" + msDesCfdiPaymentWay + "', " +
+                    "des_cfdi_cfd_use = '" + msDesCfdiCfdiUsage + "', " +
+                    //"fst_etl_ins = " + "NOW()" + ", " +
                     "lst_etl_upd = " + "NOW()" + ", " +
                     "b_del = " + (mbDeleted ? 1 : 0) + ", " +
                     "b_sys = " + (mbSystem ? 1 : 0) + ", " +
@@ -489,6 +517,10 @@ public class SDbInvoice extends SDbRegistryUser {
         registry.setDesOriginalCurrencyFk(this.getDesOriginalCurrencyFk());
         registry.setDesFinalCurrencyFk(this.getDesFinalCurrencyFk());
         registry.setDesPayMethodFk(this.getDesPayMethodFk());
+        registry.setDesCfdiZipIssue(this.getDesCfdiZipIssue());
+        registry.setDesCfdiTaxRegime(this.getDesCfdiTaxRegime());
+        registry.setDesCfdiPaymentWay(this.getDesCfdiPaymentWay());
+        registry.setDesCfdiCfdiUsage(this.getDesCfdiCfdiUsage());
         registry.setFirstEtlInsert(this.getFirstEtlInsert());
         registry.setLastEtlUpdate(this.getLastEtlUpdate());
         registry.setDeleted(this.isDeleted());

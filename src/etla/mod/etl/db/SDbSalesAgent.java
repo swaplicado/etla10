@@ -211,7 +211,7 @@ public class SDbSalesAgent extends SDbRegistryUser {
                     "des_sal_agt_id = " + mnDesSalesAgentId + ", " +
                     "code = '" + msCode + "', " +
                     "name = '" + msName + "', " +
-                    "fst_etl_ins = " + "NOW()" + ", " +
+                    //"fst_etl_ins = " + "NOW()" + ", " +
                     "lst_etl_upd = " + "NOW()" + ", " +
                     "b_del = " + (mbDeleted ? 1 : 0) + ", " +
                     "b_sys = " + (mbSystem ? 1 : 0) + ", " +
