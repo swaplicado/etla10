@@ -37,6 +37,7 @@ public class SDbInvoice extends SDbRegistryUser {
     protected double mdOriginalAmount;
     protected double mdFinalAmount;
     protected double mdExchangeRate;
+    protected int mnBatch;
     protected String msPaymentConditions;
     protected String msCustomerOrder;
     protected String msBillOfLading;
@@ -98,6 +99,7 @@ public class SDbInvoice extends SDbRegistryUser {
     public void setOriginalAmount(double d) { mdOriginalAmount = d; }
     public void setFinalAmount(double d) { mdFinalAmount = d; }
     public void setExchangeRate(double d) { mdExchangeRate = d; }
+    public void setBatch(int n) { mnBatch = n; }
     public void setPaymentConditions(String s) { msPaymentConditions = s; }
     public void setCustomerOrder(String s) { msCustomerOrder = s; }
     public void setBillOfLading(String s) { msBillOfLading = s; }
@@ -143,6 +145,7 @@ public class SDbInvoice extends SDbRegistryUser {
     public double getOriginalAmount() { return mdOriginalAmount; }
     public double getFinalAmount() { return mdFinalAmount; }
     public double getExchangeRate() { return mdExchangeRate; }
+    public int getBatch() { return mnBatch; }
     public String getPaymentConditions() { return msPaymentConditions; }
     public String getCustomerOrder() { return msCustomerOrder; }
     public String getBillOfLading() { return msBillOfLading; }
@@ -212,6 +215,7 @@ public class SDbInvoice extends SDbRegistryUser {
         mdOriginalAmount = 0;
         mdFinalAmount = 0;
         mdExchangeRate = 0;
+        mnBatch = 0;
         msPaymentConditions = "";
         msCustomerOrder = "";
         msBillOfLading = "";
@@ -305,6 +309,7 @@ public class SDbInvoice extends SDbRegistryUser {
             mdOriginalAmount = resultSet.getDouble("ori_amt");
             mdFinalAmount = resultSet.getDouble("fin_amt");
             mdExchangeRate = resultSet.getDouble("exr");
+            mnBatch = resultSet.getInt("batch");
             msPaymentConditions = resultSet.getString("pay_cnd");
             msCustomerOrder = resultSet.getString("cus_ord");
             msBillOfLading = resultSet.getString("bol");
@@ -384,6 +389,7 @@ public class SDbInvoice extends SDbRegistryUser {
                     mdOriginalAmount + ", " + 
                     mdFinalAmount + ", " + 
                     mdExchangeRate + ", " + 
+                    mnBatch + ", " + 
                     "'" + msPaymentConditions + "', " + 
                     "'" + msCustomerOrder + "', " + 
                     "'" + msBillOfLading + "', " + 
@@ -434,6 +440,7 @@ public class SDbInvoice extends SDbRegistryUser {
                     "ori_amt = " + mdOriginalAmount + ", " +
                     "fin_amt = " + mdFinalAmount + ", " +
                     "exr = " + mdExchangeRate + ", " +
+                    "batch = " + mnBatch + ", " +
                     "pay_cnd = '" + msPaymentConditions + "', " +
                     "cus_ord = '" + msCustomerOrder + "', " +
                     "bol = '" + msBillOfLading + "', " +
@@ -505,6 +512,7 @@ public class SDbInvoice extends SDbRegistryUser {
         registry.setOriginalAmount(this.getOriginalAmount());
         registry.setFinalAmount(this.getFinalAmount());
         registry.setExchangeRate(this.getExchangeRate());
+        registry.setBatch(this.getBatch());
         registry.setPaymentConditions(this.getPaymentConditions());
         registry.setCustomerOrder(this.getCustomerOrder());
         registry.setBillOfLading(this.getBillOfLading());

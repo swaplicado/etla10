@@ -76,6 +76,7 @@ public class SViewInvoice extends SGridPaneView {
                 + "v.ori_amt, "
                 + "v.fin_amt, "
                 + "v.exr, "
+                + "v.batch, "
                 + "v.pay_cnd, "
                 + "v.cus_ord, "
                 + "v.bol, "
@@ -123,6 +124,7 @@ public class SViewInvoice extends SGridPaneView {
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.fin_ser", "Serie " + SEtlConsts.TXT_SYS_SIIE));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.fin_num", "Folio " + SEtlConsts.TXT_SYS_SIIE));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.ori_num", "Folio " + SEtlConsts.TXT_SYS_AVISTA));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_INT_1B, "v.batch", "Batch"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_DATE, "v.ori_dat", "Fecha original"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_DATE, "v.fin_dat", "Fecha final"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "v.src_inv_id", "ID " + SEtlConsts.TXT_SYS_AVISTA));

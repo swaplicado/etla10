@@ -377,7 +377,7 @@ public class SEtlProcessDocInvoices {
                 // Process ETL for current invoice:
                 
                 try {
-                    sql = "SELECT ci.CustomerInvoiceKey, ci.InvoiceNumber, ci.Created AS InvoiceCreated, ci.CustomerId, ci.Description AS InvoiceDescription, ci.CurrentStatusKey, "
+                    sql = "SELECT ci.CustomerInvoiceKey, ci.InvoiceNumber, ci.BatchNumber, ci.Created AS InvoiceCreated, ci.CustomerId, ci.Description AS InvoiceDescription, ci.CurrentStatusKey, "
                             + "cii.ItemNumber, cii.LineAmount, cii.UnitPrice AS LinePrice, cii.PricePer AS LinePricePerCode, cii.Units, cii.Pieces, cii.Area, cii.Weight, cii.ProductDescription, cii.CurrencyKey, cii.ExchangeToLocal, "
                             + "co.OrderNumber, COALESCE(co.CustomerPO, '') as CustomerPO, co.QuantityOrdered, co.ItemDescription AS OrderItemDescription, co.Price AS OrderPrice, co.PricePerCode AS OrderPricePerCode, "
                             + "pe.EstNo, pe.ItemDescription AS EstItemDescription, pe.Width, pe.Length, pe.Flute, pe.Price AS EstPrice, pe.PricePerCode AS EstPricePerCode, pe.PlantBoardTypeKey, pbt.ShortDesc, "
@@ -411,6 +411,7 @@ public class SEtlProcessDocInvoices {
                         dbInvoice.setOriginalAmount(dInvoiceAmountSrc);
                         //dbInvoice.setFinalAmount(...);    // set later on this method
                         dbInvoice.setExchangeRate(dInvoiceExchangeRate);
+                        dbInvoice.setBatch(rsAvistaInvoiceData.getInt("BatchNumber"));
                         dbInvoice.setPaymentConditions(SLibUtils.textToSql(rsAvistaInvoiceData.getString("PayTermDescription").toUpperCase()));
                         dbInvoice.setCustomerOrder(SLibUtils.textToSql(rsAvistaInvoiceData.getString("CustomerPO").toUpperCase()));
                         dbInvoice.setBillOfLading(SLibUtils.textToSql(rsAvistaInvoiceData.getString("InvoiceDescription")));
