@@ -6,7 +6,7 @@
 package etla.mod.etl.db;
 
 import cfd.DCfdConsts;
-import cfd.ver33.DCfdi33Consts;
+import cfd.ver33.DCfdi33Catalogs;
 import erp.data.SDataConstantsSys;
 import erp.lib.SLibConstants;
 import erp.mbps.data.SDataBizPartner;
@@ -789,7 +789,7 @@ public class SEtlProcessDocInvoices {
                     //dataDpsCfd.setPkYearId(...);
                     //dataDpsCfd.setPkDocId(...);
                     dataDpsCfd.setVersion("" + DCfdConsts.CFDI_VER_33);
-                    dataDpsCfd.setCfdiType(DCfdi33Consts.CFD_TP_I);
+                    dataDpsCfd.setCfdiType(DCfdi33Catalogs.CFD_TP_I);
                     dataDpsCfd.setPaymentWay(dbInvoice.getDesCfdiPaymentWay());
                     dataDpsCfd.setPaymentMethod(dataDps.getFkPaymentTypeId() == SDataConstantsSys.TRNS_TP_PAY_CASH ? SDataConstantsSys.TRNS_CFD_CAT_PAY_MET_PUE : SDataConstantsSys.TRNS_CFD_CAT_PAY_MET_PPD);
                     dataDpsCfd.setPaymentConditions(dataDps.getFkPaymentTypeId() == SDataConstantsSys.TRNS_TP_PAY_CASH ? "CONTADO" : "CRÉDITO " + dataDps.getDaysOfCredit() + " DÍAS"); // XXX: implement method!
