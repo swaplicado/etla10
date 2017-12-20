@@ -35,11 +35,13 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
     protected int mnDesUserId;
     protected String msName;
     protected String msPassword;
+    protected boolean mbWeb;
     /*
     protected boolean mbDeleted;
     protected boolean mbSystem;
     */
     protected int mnFkUserTypeId;
+    protected int mnFkWebRoleId;
     /*
     protected int mnFkUserInsertId;
     protected int mnFkUserUpdateId;
@@ -55,9 +57,11 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
     public void setDesUserId(int n) { mnDesUserId = n; }
     public void setName(String s) { msName = s; }
     public void setPassword(String s) { msPassword = s; }
+    public void setWeb(boolean b) { mbWeb = b; }
     public void setDeleted(boolean b) { mbDeleted = b; }
     public void setSystem(boolean b) { mbSystem = b; }
     public void setFkUserTypeId(int n) { mnFkUserTypeId = n; }
+    public void setFkWebRoleId(int n) { mnFkWebRoleId = n; }
     public void setFkUserInsertId(int n) { mnFkUserInsertId = n; }
     public void setFkUserUpdateId(int n) { mnFkUserUpdateId = n; }
     public void setTsUserInsert(Date t) { mtTsUserInsert = t; }
@@ -67,9 +71,11 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
     public int getDesUserId() { return mnDesUserId; }
     public String getName() { return msName; }
     public String getPassword() { return msPassword; }
+    public boolean isWeb() { return mbWeb; }
     public boolean isDeleted() { return mbDeleted; }
     public boolean isSystem() { return mbSystem; }
     public int getFkUserTypeId() { return mnFkUserTypeId; }
+    public int getFkWebRoleId() { return mnFkWebRoleId; }
     public int getFkUserInsertId() { return mnFkUserInsertId; }
     public int getFkUserUpdateId() { return mnFkUserUpdateId; }
     public Date getTsUserInsert() { return mtTsUserInsert; }
@@ -183,9 +189,11 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
         mnDesUserId = 0;
         msName = "";
         msPassword = "";
+        mbWeb = false;
         mbDeleted = false;
         mbSystem = false;
         mnFkUserTypeId = 0;
+        mnFkWebRoleId = 0;
         mnFkUserInsertId = 0;
         mnFkUserUpdateId = 0;
         mtTsUserInsert = null;
@@ -238,9 +246,11 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
             mnDesUserId = resultSet.getInt("des_usr_id");
             msName = resultSet.getString("name");
             //msPassword = resultSet.getString("pswd");     // stored value is a string digestion, so it is useless
+            mbWeb = resultSet.getBoolean("b_web");
             mbDeleted = resultSet.getBoolean("b_del");
             mbSystem = resultSet.getBoolean("b_sys");
             mnFkUserTypeId = resultSet.getInt("fk_usr_tp");
+            mnFkWebRoleId = resultSet.getInt("fk_web_role");
             mnFkUserInsertId = resultSet.getInt("fk_usr_ins");
             mnFkUserUpdateId = resultSet.getInt("fk_usr_upd");
             mtTsUserInsert = resultSet.getTimestamp("ts_usr_ins");
@@ -273,9 +283,11 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
                     mnDesUserId + ", " + 
                     "'" + msName + "', " +
                     "PASSWORD('" + msPassword + "'), " +
+                    (mbWeb ? 1 : 0) + ", " + 
                     (mbDeleted ? 1 : 0) + ", " +
                     (mbSystem ? 1 : 0) + ", " +
                     mnFkUserTypeId + ", " +
+                    mnFkWebRoleId + ", " + 
                     mnFkUserInsertId + ", " +
                     mnFkUserUpdateId + ", " +
                     "NOW()" + ", " +
@@ -290,9 +302,11 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
                     "des_usr_id = " + mnDesUserId + ", " +
                     "name = '" + msName + "', " +
                     (msPassword.isEmpty() ? "" : "pswd = PASSWORD('" + msPassword + "'), ") +
+                    "b_web = " + (mbWeb ? 1 : 0) + ", " +
                     "b_del = " + (mbDeleted ? 1 : 0) + ", " +
                     "b_sys = " + (mbSystem ? 1 : 0) + ", " +
                     "fk_usr_tp = " + mnFkUserTypeId + ", " +
+                    "fk_web_role = " + mnFkWebRoleId + ", " +
                     //"fk_usr_ins = " + mnFkUserInsertId + ", " +
                     "fk_usr_upd = " + mnFkUserUpdateId + ", " +
                     //"ts_usr_ins = " + "NOW()" + ", " +
@@ -313,9 +327,11 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
         registry.setDesUserId(this.getDesUserId());
         registry.setName(this.getName());
         registry.setPassword(this.getPassword());
+        registry.setWeb(this.isWeb());
         registry.setDeleted(this.isDeleted());
         registry.setSystem(this.isSystem());
         registry.setFkUserTypeId(this.getFkUserTypeId());
+        registry.setFkWebRoleId(this.getFkWebRoleId());
         registry.setFkUserInsertId(this.getFkUserInsertId());
         registry.setFkUserUpdateId(this.getFkUserUpdateId());
         registry.setTsUserInsert(this.getTsUserInsert());

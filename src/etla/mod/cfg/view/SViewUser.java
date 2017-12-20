@@ -44,8 +44,10 @@ public class SViewUser extends SGridPaneView {
 
         filter = ((SGridFilterValue) moFiltersMap.get(SGridConsts.FILTER_DELETED)).getValue();
         if ((Boolean) filter) {
-            sql += (sql.isEmpty() ? "" : "AND ") + "v.b_del = 0 ";
+            sql += (sql.isEmpty() ? "" : "AND ") + "NOT v.b_del ";
         }
+        
+        sql += (sql.isEmpty() ? "" : "AND ") + "NOT v.b_web ";  // exclude web users
 
         msSql = "SELECT "
                 + "v.id_usr AS " + SDbConsts.FIELD_ID + "1, "

@@ -288,9 +288,11 @@ public class SFormUser extends SBeanForm implements ActionListener {
         registry.setDesUserId(moIntDesUserId.getValue());
         registry.setName(moTextName.getValue());
         registry.setPassword(new String(moPswdPassword.getPassword()));
+        registry.setWeb(false);
         //registry.setDeleted(this.isDeleted());
         //registry.setSystem(this.isSystem());
         registry.setFkUserTypeId(moKeyType.getValue()[0]);
+        registry.setFkWebRoleId(SModSysConsts.SS_WEB_ROLE_NA);
 
         return registry;
     }
