@@ -78,12 +78,12 @@ public class SModModuleCfg extends SGuiModule {
             case SModConsts.CS_USR_TP:
                 settings = new SGuiCatalogueSettings("Tipo usuario", 1);
                 sql = "SELECT id_usr_tp AS " + SDbConsts.FIELD_ID + "1, name AS " + SDbConsts.FIELD_ITEM + " "
-                        + "FROM " + SModConsts.TablesMap.get(type) + " WHERE b_del = 0 ORDER BY sort ";
+                        + "FROM " + SModConsts.TablesMap.get(type) + " WHERE NOT b_del ORDER BY sort ";
                 break;
             case SModConsts.CU_USR:
                 settings = new SGuiCatalogueSettings("Usuario", 1);
                 sql = "SELECT id_usr AS " + SDbConsts.FIELD_ID + "1, name AS " + SDbConsts.FIELD_ITEM + " "
-                        + "FROM " + SModConsts.TablesMap.get(type) + " WHERE b_del = 0 ORDER BY name, id_usr ";
+                        + "FROM " + SModConsts.TablesMap.get(type) + " WHERE NOT b_del AND NOT b_web ORDER BY name, id_usr ";
                 break;
             case SModConsts.C_CFG:
             case SModConsts.C_USR_GUI:

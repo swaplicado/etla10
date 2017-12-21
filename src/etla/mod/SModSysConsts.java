@@ -43,4 +43,18 @@ public abstract class SModSysConsts {
     public static final int AS_PAY_MET_FOO = 41;
     public static final int AS_PAY_MET_UND = 98;
     public static final int AS_PAY_MET_OTH = 99;
+
+    public static final int SS_SHIPT_ST_REL_TO = 1;
+    public static final int SS_SHIPT_ST_REL = 2;
+    public static final int SS_SHIPT_ST_ACC_TO = 11;
+    public static final int SS_SHIPT_ST_ACC = 12;
+    
+    public static final int SS_WEB_ROLE_NA = 1;
+    public static final int SS_WEB_ROLE_ADMIN = 11;
+    public static final int SS_WEB_ROLE_CREDIT = 21;
+    public static final int SS_WEB_ROLE_SHIPPER = 31;
+    
+    public static final int SU_SHIPPER_NA = 1;
+    
+    public static final int SU_DESTIN_NA = 1;
 }
