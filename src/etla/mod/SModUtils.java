@@ -24,8 +24,11 @@ public class SModUtils implements SGuiModuleUtils {
         if (type >= SModConsts.MOD_CFG && type < SModConsts.MOD_ETL) {
             module = SModConsts.MOD_CFG;
         }
-        else if (type >= SModConsts.MOD_ETL) {
+        else if (type >= SModConsts.MOD_ETL && type < SModConsts.MOD_SMS) {
             module = SModConsts.MOD_ETL;
+        }
+        else if (type >= SModConsts.MOD_SMS) {
+            module = SModConsts.MOD_SMS;
         }
 
         return module;
