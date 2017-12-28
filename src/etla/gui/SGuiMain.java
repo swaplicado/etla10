@@ -3,6 +3,7 @@ package etla.gui;
 import etla.mod.SModConsts;
 import etla.mod.SModModuleCfg;
 import etla.mod.SModModuleEtl;
+import etla.mod.SModModuleSms;
 import etla.mod.SModUtils;
 import etla.mod.cfg.db.SDbConfig;
 import etla.mod.cfg.db.SDbUser;
@@ -143,6 +144,10 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
         jmiEtlItem = new javax.swing.JMenuItem();
         jmiEtlCustomer = new javax.swing.JMenuItem();
         jmiEtlSalesAgent = new javax.swing.JMenuItem();
+        jmSmsShipments = new javax.swing.JMenu();
+        jmiSmsShipments = new javax.swing.JMenuItem();
+        jsFile4 = new javax.swing.JPopupMenu.Separator();
+        jmiSmsShipper = new javax.swing.JMenuItem();
         jmHelp = new javax.swing.JMenu();
         jmiHelpHelp = new javax.swing.JMenuItem();
         jsHelp1 = new javax.swing.JPopupMenu.Separator();
@@ -285,6 +290,17 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
 
         jMenuBar.add(jmEtl);
 
+        jmSmsShipments.setText("Embarques");
+
+        jmiSmsShipments.setText("Embarques");
+        jmSmsShipments.add(jmiSmsShipments);
+        jmSmsShipments.add(jsFile4);
+
+        jmiSmsShipper.setText("Transportistas");
+        jmSmsShipments.add(jmiSmsShipper);
+
+        jMenuBar.add(jmSmsShipments);
+
         jmHelp.setText("Ayuda");
 
         jmiHelpHelp.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
@@ -382,6 +398,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
     private javax.swing.JMenu jmEtl;
     private javax.swing.JMenu jmFile;
     private javax.swing.JMenu jmHelp;
+    private javax.swing.JMenu jmSmsShipments;
     private javax.swing.JMenuItem jmiCfgUser;
     private javax.swing.JMenuItem jmiEtlCustomer;
     private javax.swing.JMenuItem jmiEtlEtl;
@@ -397,11 +414,14 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
     private javax.swing.JMenuItem jmiFileWorkingDate;
     private javax.swing.JMenuItem jmiHelpAbout;
     private javax.swing.JMenuItem jmiHelpHelp;
+    private javax.swing.JMenuItem jmiSmsShipments;
+    private javax.swing.JMenuItem jmiSmsShipper;
     private javax.swing.JPopupMenu.Separator jsEtl1;
     private javax.swing.JPopupMenu.Separator jsEtl2;
     private javax.swing.JPopupMenu.Separator jsFile1;
     private javax.swing.JPopupMenu.Separator jsFile2;
     private javax.swing.JPopupMenu.Separator jsFile3;
+    private javax.swing.JPopupMenu.Separator jsFile4;
     private javax.swing.JPopupMenu.Separator jsHelp1;
     private javax.swing.JTextField jtfSystemDate;
     private javax.swing.JTextField jtfUser;
@@ -493,6 +513,9 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
         jmiEtlItem.addActionListener(this);
         jmiEtlCustomer.addActionListener(this);
         jmiEtlSalesAgent.addActionListener(this);
+        
+        jmiSmsShipments.addActionListener(this);
+        jmiSmsShipper.addActionListener(this);
         
         jmiHelpHelp.addActionListener(this);
         jmiHelpAbout.addActionListener(this);
@@ -595,6 +618,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
                 moSession.setModuleUtils(new SModUtils());
                 moSession.getModules().add(new SModModuleCfg(this));
                 moSession.getModules().add(new SModModuleEtl(this));
+                moSession.getModules().add(new SModModuleSms(this));
 
                 //user.computeAccess(moSession);    // not implemented yet!
                 moSession.setSessionCustom(user.createSessionCustom(this, mnTerminal));
@@ -974,6 +998,12 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
             }
             else if (menuItem == jmiEtlSalesAgent) {
                 moSession.showView(SModConsts.AU_SAL_AGT, SLibConsts.UNDEFINED, null);
+            }
+            else if (menuItem == jmiSmsShipments) {
+                moSession.showView(SModConsts.S_SHIPT, SLibConsts.UNDEFINED, null);
+            }
+            else if( menuItem == jmiSmsShipper) {
+                moSession.showView(SModConsts.SU_SHIPPER, SLibConsts.UNDEFINED, null);
             }
             else if (menuItem == jmiHelpHelp) {
                 actionHelpHelp();
