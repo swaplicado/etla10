@@ -91,6 +91,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
     private ImageIcon moIconCloseInactive;
     private ImageIcon moIconCloseBright;
     private ImageIcon moIconCloseDark;
+    private ImageIcon moIconCmdStdPrint;
     
     /**
      * Creates new form SMainForm
@@ -464,6 +465,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
             moIconCloseInactive = new ImageIcon(getClass().getResource("/sa/lib/img/gui_close_ina.png"));
             moIconCloseBright = new ImageIcon(getClass().getResource("/sa/lib/img/gui_close_bri.png"));
             moIconCloseDark = new ImageIcon(getClass().getResource("/sa/lib/img/gui_close_dar.png"));
+            moIconCmdStdPrint = new ImageIcon(getClass().getResource("/sba/lib/img/cmd_std_print.gif"));
 
             setIconImage(moIcon.getImage());
             jlAppRelease.setText(APP_RELEASE);
@@ -790,6 +792,9 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
                 break;
             case SImgConsts.ICO_GUI_CLOSE_DAR:
                 imageIcon = moIconCloseDark;
+                break;
+            case SImgConsts.CMD_STD_PRINT:
+                imageIcon = moIconCmdStdPrint;
                 break;
             default:
                 showMsgBoxError(SLibConsts.ERR_MSG_OPTION_UNKNOWN);
