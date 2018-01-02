@@ -219,9 +219,10 @@ public class SModModuleSms extends SGuiModule {
         
         switch (type){
             case SModConsts.SR_SHIPT:
-                report = new SGuiReport("reps/shipt_order.jasper", "Orden de embarque"); //Cambiar primer parámetro por el nombre real del .jasper
+                report = new SGuiReport("reps/ord_shipt.jasper", "Orden de embarque");
+                break;
         }
-        
+            
         return report;
     }
 }
