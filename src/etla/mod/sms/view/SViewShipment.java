@@ -7,9 +7,18 @@ package etla.mod.sms.view;
 
 import erp.lib.SLibConstants;
 import etla.mod.SModConsts;
+import etla.mod.sms.db.SDbShipment;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import sa.gui.util.SUtilConsts;
 import sa.lib.SLibConsts;
@@ -24,10 +33,11 @@ import sa.lib.grid.SGridRowView;
 import sa.lib.grid.SGridUtils;
 import sa.lib.gui.SGuiClient;
 import sa.lib.gui.SGuiConsts;
+import sa.lib.gui.SGuiSession;
 
 /**
  *
- * @author Daniel López
+ * @author Daniel López, Claudio Peña
  */
 public class SViewShipment extends SGridPaneView implements ActionListener{
     
@@ -45,7 +55,9 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
         setRowButtonsEnabled(true, true, true, false, true);
     }
     
-    private void actionPerformedPrint() {
+    private void actionPerformedPrint() throws Exception {
+        Map<String, Object> map = null;
+        
         if (mjPrint.isEnabled()) {
             if (jtTable.getSelectedRowCount() != 1) {
                 miClient.showMsgBoxInformation(SGridConsts.MSG_SELECT_ROW);
@@ -57,8 +69,38 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
                     miClient.showMsgBoxWarning(SGridConsts.ERR_MSG_ROW_TYPE_DATA);
                 }
                 else {
-                    try {
-                        miClient.getSession().printReport(SModConsts.SR_SHIPT, SLibConsts.UNDEFINED, null, null); // El último parámetro es el hashmap
+                    
+                    SDbShipment obj = new SDbShipment();
+                    obj.read((SGuiSession) miClient.getSession(), getSelectedGridRow().getRowPrimaryKey());
+
+                    try {                     
+                        map = miClient.createReportParams();
+                        map.put("id_Shipt", obj.getPkShipmentId());
+
+                        String sql = "";
+                        String web_key = "";
+                        ResultSet resultIdSet = null;
+                        Statement statement = null;
+                        //Obtain web key for order
+                        sql = "SELECT web_key "
+                              + "FROM s_shipt "
+                              + "WHERE number = " + obj.getNumber();
+
+                        statement = miClient.getSession().getDatabase().getConnection().createStatement();
+                        resultIdSet = statement.executeQuery(sql);
+                         if (resultIdSet.next()) {
+                            web_key = resultIdSet.getString(1);
+                        }
+                        //Create QR for shipment order and server address
+                        BufferedImage biQrCode = null;
+                        biQrCode = sa.lib.img.SImgUtils.createQrCodeBufferedImageCfdi33("192.168.1.104/sms/url.php?key=" + (web_key), 400, 400);
+
+                        if (biQrCode != null) {
+                            map.put("sImageQr", biQrCode.getScaledInstance(biQrCode.getWidth(), biQrCode.getHeight(), Image.SCALE_DEFAULT));
+                        }
+
+                        miClient.getSession().printReport(SModConsts.SR_SHIPT, SLibConsts.UNDEFINED, null, (HashMap<String, Object>) map);
+
                     }
                     catch (Exception e) {
                         SLibUtils.showException(this, e);
@@ -146,7 +188,11 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
             JButton button = (JButton) e.getSource();
             
             if (button == mjPrint) {
-                actionPerformedPrint();
+                try {
+                    actionPerformedPrint();
+                } catch (Exception ex) {
+                    Logger.getLogger(SViewShipment.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }
