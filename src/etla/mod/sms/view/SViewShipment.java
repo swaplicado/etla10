@@ -18,8 +18,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import sa.gui.util.SUtilConsts;
@@ -91,6 +89,44 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
         getPanelCommandsSys(SGuiConsts.PANEL_CENTER).add(mjSendNext);
     }
     
+    private int getNewStatus() {
+        int newStatus = SLibConsts.UNDEFINED;
+        
+        switch (subType) {
+            case SModSysConsts.SS_SHIPT_ST_REL_TO:
+                newStatus = SModSysConsts.SS_SHIPT_ST_REL;
+                break;
+            case SModSysConsts.SS_SHIPT_ST_REL:
+                newStatus = SModSysConsts.SS_SHIPT_ST_REL_TO;
+                break;
+            default:
+        }
+        
+        return newStatus;
+    }
+    
+    private void changeStatus() {
+        if (jtTable.getSelectedRowCount() != 1) {
+            miClient.showMsgBoxInformation(SGridConsts.MSG_SELECT_ROW);
+        }
+        else {
+            SGridRowView gridRow = (SGridRowView) getSelectedGridRow();
+
+            if (gridRow.getRowType() != SGridConsts.ROW_TYPE_DATA) {
+                miClient.showMsgBoxWarning(SGridConsts.ERR_MSG_ROW_TYPE_DATA);
+            }
+            else {
+                try {
+                    SShippingUtils.changeStatus(miClient.getSession(), gridRow.getRowPrimaryKey(), getNewStatus());
+                    miClient.getSession().notifySuscriptors(SModConsts.S_SHIPT);
+                }
+                catch (Exception e) {
+                    SLibUtils.showException(this, e);
+                }
+            }
+        }
+    }
+    
     private void actionPerformedPrint() throws Exception {
         Map<String, Object> map = null;
         
@@ -148,35 +184,13 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
     
     private void actionPerformedSendNext() {
         if (mjSendNext.isEnabled()) {
-            changeStaus();
+            changeStatus();
         }
     }
     
     private void actionPerformedSendBack () {
         if (mjSendBack.isEnabled()) {
-            changeStaus();
-        }
-    }
-    
-    private void changeStaus() {
-        if (jtTable.getSelectedRowCount() != 1) {
-            miClient.showMsgBoxInformation(SGridConsts.MSG_SELECT_ROW);
-        }
-        else {
-            SGridRowView gridRow = (SGridRowView) getSelectedGridRow();
-
-            if (gridRow.getRowType() != SGridConsts.ROW_TYPE_DATA) {
-                miClient.showMsgBoxWarning(SGridConsts.ERR_MSG_ROW_TYPE_DATA);
-            }
-            else {
-                try {
-                    SShippingUtils.changeStatus(miClient.getSession(), gridRow.getRowPrimaryKey(), subType);
-                    miClient.getSession().notifySuscriptors(SModConsts.S_SHIPT);
-                }
-                catch (Exception e) {
-                    SLibUtils.showException(this, e);
-                }
-            }
+            changeStatus();
         }
     }
 
@@ -292,7 +306,7 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
                 try {
                     actionPerformedPrint();
                 } catch (Exception ex) {
-                    Logger.getLogger(SViewShipment.class.getName()).log(Level.SEVERE, null, ex);
+                    SLibUtils.showException(this, ex);
                 }
             }
             else if (button == mjSendNext) {

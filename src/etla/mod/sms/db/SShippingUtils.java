@@ -107,8 +107,7 @@ public abstract class SShippingUtils {
         SDbInvoice invoice = null;
         
         String sql = "SELECT id_inv FROM " + SModConsts.TablesMap.get(SModConsts.A_INV) + " WHERE src_inv_id = " + invoiceKey + " ";
-        Statement statement = session.getStatement().getConnection().createStatement();
-        ResultSet resultSet = statement.executeQuery(sql);
+        ResultSet resultSet = session.getStatement().executeQuery(sql);
         if (resultSet.next()) {
             invoice = (SDbInvoice) session.readRegistry(SModConsts.A_INV, new int[] { resultSet.getInt(1) });
         }
@@ -168,15 +167,27 @@ public abstract class SShippingUtils {
      * @throws Exception 
      */
     public static void changeStatus(final SGuiSession session, final int[] shipmentOrderId, final int status) throws SQLException, Exception {
-        SDbShipment registry = (SDbShipment) session.readRegistry(SModConsts.S_SHIPT, shipmentOrderId);
-        if (registry != null) {
-            if (!registry.isDeleted()) {
-                if (!registry.isAnnulled()) {
-                    if ( (registry.getFkShipmentStatusId() == SModSysConsts.SS_SHIPT_ST_REL_TO && status == SModSysConsts.SS_SHIPT_ST_REL) || // From 'To be released' to 'released'
-                         (registry.getFkShipmentStatusId() == SModSysConsts.SS_SHIPT_ST_REL && status == SModSysConsts.SS_SHIPT_ST_REL_TO)) { // From 'Released' to 'To be released'
-                        registry.setFkShipmentStatusId(status);
-                        registry.save(session);
+        SDbShipment shipment = (SDbShipment) session.readRegistry(SModConsts.S_SHIPT, shipmentOrderId);
+        if (shipment != null) {
+            if (!shipment.isDeleted()) {
+                if (!shipment.isAnnulled()) {
+                    switch (status) {
+                        case SModSysConsts.SS_SHIPT_ST_REL:
+                            if (shipment.getFkShipmentStatusId() != SModSysConsts.SS_SHIPT_ST_REL_TO) {
+                                throw new Exception("El estatus del embarque no es el apropiado.");
+                            }
+                            break;
+                        case SModSysConsts.SS_SHIPT_ST_REL_TO:
+                            if (shipment.getFkShipmentStatusId() != SModSysConsts.SS_SHIPT_ST_REL) {
+                                throw new Exception("El estatus del embarque no es el apropiado.");
+                            }
+                            break;
+                        default:
+                            throw new Exception(SLibConsts.ERR_MSG_OPTION_UNKNOWN);
                     }
+                    
+                    shipment.setFkShipmentStatusId(status);
+                    shipment.save(session);
                 }
                 else {
                     throw new Exception("El embarque está anulado.");
