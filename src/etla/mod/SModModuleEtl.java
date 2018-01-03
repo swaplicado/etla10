@@ -5,8 +5,11 @@
  */
 package etla.mod;
 
+import etla.mod.etl.db.SDbConfigAvista;
 import etla.mod.etl.db.SDbCustomer;
 import etla.mod.etl.db.SDbExchangeRate;
+import etla.mod.etl.db.SDbInvoice;
+import etla.mod.etl.db.SDbInvoiceRow;
 import etla.mod.etl.db.SDbItem;
 import etla.mod.etl.db.SDbSalesAgent;
 import etla.mod.etl.db.SDbSysCurrency;
@@ -82,10 +85,13 @@ public class SModModuleEtl extends SGuiModule {
                 registry = new SDbItem();
                 break;
             case SModConsts.A_CFG:
+                registry = new SDbConfigAvista();
                 break;
             case SModConsts.A_INV:
+                registry = new SDbInvoice();
                 break;
             case SModConsts.A_INV_ROW:
+                registry = new SDbInvoiceRow();
                 break;
             case SModConsts.A_EXR:
                 registry = new SDbExchangeRate();

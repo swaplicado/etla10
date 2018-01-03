@@ -107,9 +107,10 @@ public abstract class SShippingUtils {
         SDbInvoice invoice = null;
         
         String sql = "SELECT id_inv FROM " + SModConsts.TablesMap.get(SModConsts.A_INV) + " WHERE src_inv_id = " + invoiceKey + " ";
-        ResultSet resultSet = session.getStatement().executeQuery(sql);
+        Statement statement = session.getStatement().getConnection().createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
         if (resultSet.next()) {
-            invoice = (SDbInvoice) session.readRegistry(SModConsts.A_INV, new int [] { resultSet.getInt(1) });
+            invoice = (SDbInvoice) session.readRegistry(SModConsts.A_INV, new int[] { resultSet.getInt(1) });
         }
         
         return invoice;

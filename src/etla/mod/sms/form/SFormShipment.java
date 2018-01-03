@@ -493,6 +493,7 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         moTextDriverName.setTextSettings(SGuiUtils.getLabelName(jlDriverName), 50);
         moTextDriverPhone.setTextSettings(SGuiUtils.getLabelName(jlDriverPhone), 50);
         moDateRows.setDateSettings(miClient, SGuiUtils.getLabelName(jlDateRows), false);
+        moDateRows.setNextButton(jbShowRows);
         moKeyComment.setKeySettings(miClient, SGuiUtils.getLabelName(moKeyComment.getToolTipText()), false);
         
         moFields.addField(moDateDate);
