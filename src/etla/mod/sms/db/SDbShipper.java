@@ -6,10 +6,13 @@
 package etla.mod.sms.db;
 
 import etla.mod.SModConsts;
+import etla.mod.SModSysConsts;
+import etla.mod.cfg.db.SDbUser;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import sa.gui.util.SUtilConsts;
+import sa.lib.SLibConsts;
 import sa.lib.db.SDbConsts;
 import sa.lib.db.SDbRegistryUser;
 import sa.lib.gui.SGuiSession;
@@ -26,10 +29,13 @@ public class SDbShipper extends SDbRegistryUser{
     protected String msMail;
     protected boolean mbDeleted;
     protected boolean mbSystem;
+    protected int mnFkUserId;
     protected int mnFkUserInsertId;
     protected int mnFkUserUpdateId;
     protected Date mtTsUserInsert;
     protected Date mtTsUserUpdate;
+    
+    protected SDbUser moDbUser;
     
     public SDbShipper () {
         super(SModConsts.SU_SHIPPER);
@@ -45,6 +51,7 @@ public class SDbShipper extends SDbRegistryUser{
     public void setMail(String s) { msMail = s; }
     public void setDeleted(boolean b) { mbDeleted = b; }
     public void setSystem(boolean b) { mbSystem = b; }
+    public void setFkUserId(int n) { mnFkUserId = n; }
     public void setFkUserInsertId(int n) { mnFkUserInsertId = n; }
     public void setFkUserUpdateId(int n) { mnFkUserUpdateId = n; }
     public void setTsUserInsert(Date t) { mtTsUserInsert = t; }
@@ -56,10 +63,15 @@ public class SDbShipper extends SDbRegistryUser{
     public String getMail() { return msMail; }
     public boolean isDeleted() { return mbDeleted; }
     public boolean isSystem() { return mbSystem; }
+    public int getFkUserId() { return mnFkUserId; }
     public int getFkUserInsertId() { return mnFkUserInsertId; }
     public int getFkUserUpdateId() { return mnFkUserUpdateId; }
     public Date getTsUserInsert() { return mtTsUserInsert; }
     public Date getTsUserUpdate() { return mtTsUserUpdate; }
+    
+    public void setDbUser(SDbUser user) { moDbUser = user; }
+    
+    public SDbUser getDbUser() { return moDbUser; }
     
      /*
      * Overriden methods
@@ -87,10 +99,13 @@ public class SDbShipper extends SDbRegistryUser{
         msMail = "";
         mbDeleted = false;
         mbSystem = false;
+        mnFkUserId = 0;
         mnFkUserInsertId = 0;
         mnFkUserUpdateId = 0;
         mtTsUserInsert = null;
         mtTsUserUpdate = null;
+        
+        moDbUser = null;
     }
 
     @Override
@@ -141,6 +156,7 @@ public class SDbShipper extends SDbRegistryUser{
             msMail = resultSet.getString("mail");
             mbDeleted = resultSet.getBoolean("b_del");
             mbSystem = resultSet.getBoolean("b_sys");
+            mnFkUserId = resultSet.getInt("fk_usr");
             mnFkUserInsertId = resultSet.getInt("fk_usr_ins");
             mnFkUserUpdateId = resultSet.getInt("fk_usr_upd");
             mtTsUserInsert = resultSet.getTimestamp("ts_usr_ins");
@@ -148,6 +164,8 @@ public class SDbShipper extends SDbRegistryUser{
             
             mbRegistryNew = false;
         }
+        
+        moDbUser = (SDbUser) session.readRegistry(SModConsts.CU_USR, new int[] { mnFkUserId });
         
         mnQueryResultId = SDbConsts.READ_OK;
     }
@@ -158,9 +176,30 @@ public class SDbShipper extends SDbRegistryUser{
         mnQueryResultId = SDbConsts.READ_ERROR;
         
         if (mbRegistryNew) {
+            moDbUser = new SDbUser();
+
+            //moDbUser.setPkUserId(...);
+            moDbUser.setDesUserId(SLibConsts.UNDEFINED);
+            moDbUser.setName(msMail);
+            moDbUser.setPassword(msMail);
+            moDbUser.setWeb(true);
+            //moDbUser.setDeleted(...);
+            //moDbUser.setSystem(...);
+            moDbUser.setFkUserTypeId(SModSysConsts.CS_USR_TP_USR);
+            moDbUser.setFkWebRoleId(SModSysConsts.SS_WEB_ROLE_SHIPPER);
+            //moDbUser.setFkUserInsertId(...);
+            //moDbUser.setFkUserUpdateId(...);
+            //moDbUser.setTsUserInsert(...);
+            //moDbUser.setTsUserUpdate(...);
+        }
+        
+        moDbUser.save(session);
+        
+        if (mbRegistryNew) {
             computePrimaryKey(session);
             mbDeleted = false;
             mbSystem = false;
+            mnFkUserId = moDbUser.getPkUserId();
             mnFkUserInsertId = session.getUser().getPkUserId();
             mnFkUserUpdateId = SUtilConsts.USR_NA_ID;
             
@@ -170,7 +209,8 @@ public class SDbShipper extends SDbRegistryUser{
                 "'" + msName + "', " + 
                 "'" + msMail + "', " + 
                 (mbDeleted ? 1 : 0) + ", " + 
-                (mbSystem ? 1 : 0) + ", " + 
+                (mbSystem ? 1 : 0) + ", " +
+                mnFkUserId + ", " + 
                 mnFkUserInsertId + ", " + 
                 mnFkUserUpdateId + ", " + 
                 "NOW()" + ", " + 
@@ -181,12 +221,13 @@ public class SDbShipper extends SDbRegistryUser{
             mnFkUserUpdateId = session.getUser().getPkUserId();
             
             msSql = "UPDATE " + getSqlTable() + " SET " +
-                "id_shipper = " + mnPkShipperId + ", " +
+                //"id_shipper = " + mnPkShipperId + ", " +
                 "code = '" + msCode + "', " +
                 "name = '" + msName + "', " +
                 "mail = '" + msMail + "', " +
                 "b_del = " + (mbDeleted ? 1 : 0) + ", " +
                 "b_sys = " + (mbSystem ? 1 : 0) + ", " +
+                "fk_usr = " + mnFkUserId + ", " +
                 "fk_usr_ins = " + mnFkUserInsertId + ", " +
                 "fk_usr_upd = " + mnFkUserUpdateId + ", " +
                 "ts_usr_ins = " + "NOW()" + ", " +
@@ -210,13 +251,15 @@ public class SDbShipper extends SDbRegistryUser{
         registry.setMail(this.getMail());
         registry.setDeleted(this.isDeleted());
         registry.setSystem(this.isSystem());
+        registry.setFkUserId(this.getFkUserId());
         registry.setFkUserInsertId(this.getFkUserInsertId());
         registry.setFkUserUpdateId(this.getFkUserUpdateId());
         registry.setTsUserInsert(this.getTsUserInsert());
         registry.setTsUserUpdate(this.getTsUserUpdate());
         
+        registry.setDbUser(this.getDbUser() == null ? null : this.getDbUser().clone());
+        
         registry.setRegistryNew(this.isRegistryNew());
         return registry;
     }
-
 }

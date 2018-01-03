@@ -4,6 +4,7 @@ import etla.mod.SModConsts;
 import etla.mod.SModModuleCfg;
 import etla.mod.SModModuleEtl;
 import etla.mod.SModModuleSms;
+import etla.mod.SModSysConsts;
 import etla.mod.SModUtils;
 import etla.mod.cfg.db.SDbConfig;
 import etla.mod.cfg.db.SDbUser;
@@ -146,6 +147,8 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
         jmiEtlSalesAgent = new javax.swing.JMenuItem();
         jmSmsShipments = new javax.swing.JMenu();
         jmiSmsShipments = new javax.swing.JMenuItem();
+        jmiSmsShipmentsToRel = new javax.swing.JMenuItem();
+        jmiSmsShipmentsRel = new javax.swing.JMenuItem();
         jsFile4 = new javax.swing.JPopupMenu.Separator();
         jmiSmsShipper = new javax.swing.JMenuItem();
         jmHelp = new javax.swing.JMenu();
@@ -293,7 +296,14 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
         jmSmsShipments.setText("Embarques");
 
         jmiSmsShipments.setText("Embarques");
+        jmiSmsShipments.setActionCommand("Embarques");
         jmSmsShipments.add(jmiSmsShipments);
+
+        jmiSmsShipmentsToRel.setText("Embarques por liberar");
+        jmSmsShipments.add(jmiSmsShipmentsToRel);
+
+        jmiSmsShipmentsRel.setText("Embarques liberados");
+        jmSmsShipments.add(jmiSmsShipmentsRel);
         jmSmsShipments.add(jsFile4);
 
         jmiSmsShipper.setText("Transportistas");
@@ -415,6 +425,8 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
     private javax.swing.JMenuItem jmiHelpAbout;
     private javax.swing.JMenuItem jmiHelpHelp;
     private javax.swing.JMenuItem jmiSmsShipments;
+    private javax.swing.JMenuItem jmiSmsShipmentsRel;
+    private javax.swing.JMenuItem jmiSmsShipmentsToRel;
     private javax.swing.JMenuItem jmiSmsShipper;
     private javax.swing.JPopupMenu.Separator jsEtl1;
     private javax.swing.JPopupMenu.Separator jsEtl2;
@@ -485,7 +497,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
             moIconCloseInactive = new ImageIcon(getClass().getResource("/sa/lib/img/gui_close_ina.png"));
             moIconCloseBright = new ImageIcon(getClass().getResource("/sa/lib/img/gui_close_bri.png"));
             moIconCloseDark = new ImageIcon(getClass().getResource("/sa/lib/img/gui_close_dar.png"));
-            moIconCmdStdPrint = new ImageIcon(getClass().getResource("/sba/lib/img/cmd_std_print.gif"));
+            moIconCmdStdPrint = new ImageIcon(getClass().getResource("/sa/lib/img/cmd_std_print.gif"));
 
             setIconImage(moIcon.getImage());
             jlAppRelease.setText(APP_RELEASE);
@@ -515,6 +527,8 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
         jmiEtlSalesAgent.addActionListener(this);
         
         jmiSmsShipments.addActionListener(this);
+        jmiSmsShipmentsToRel.addActionListener(this);
+        jmiSmsShipmentsRel.addActionListener(this);
         jmiSmsShipper.addActionListener(this);
         
         jmiHelpHelp.addActionListener(this);
@@ -1001,6 +1015,12 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
             }
             else if (menuItem == jmiSmsShipments) {
                 moSession.showView(SModConsts.S_SHIPT, SLibConsts.UNDEFINED, null);
+            }
+            else if (menuItem == jmiSmsShipmentsToRel) {
+                moSession.showView(SModConsts.S_SHIPT, SModSysConsts.SS_SHIPT_ST_REL_TO, null);
+            }
+            else if (menuItem == jmiSmsShipmentsRel) {
+                moSession.showView(SModConsts.S_SHIPT, SModSysConsts.SS_SHIPT_ST_REL, null);
             }
             else if( menuItem == jmiSmsShipper) {
                 moSession.showView(SModConsts.SU_SHIPPER, SLibConsts.UNDEFINED, null);

@@ -5,9 +5,10 @@
  */
 package etla.mod.sms.view;
 
-import erp.lib.SLibConstants;
 import etla.mod.SModConsts;
+import etla.mod.SModSysConsts;
 import etla.mod.sms.db.SDbShipment;
+import etla.mod.sms.db.SShippingUtils;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import sa.gui.util.SUtilConsts;
 import sa.lib.SLibConsts;
@@ -26,6 +28,7 @@ import sa.lib.SLibUtils;
 import sa.lib.db.SDbConsts;
 import sa.lib.grid.SGridColumnView;
 import sa.lib.grid.SGridConsts;
+import sa.lib.grid.SGridFilterDatePeriod;
 import sa.lib.grid.SGridFilterValue;
 import sa.lib.grid.SGridPaneSettings;
 import sa.lib.grid.SGridPaneView;
@@ -33,7 +36,9 @@ import sa.lib.grid.SGridRowView;
 import sa.lib.grid.SGridUtils;
 import sa.lib.gui.SGuiClient;
 import sa.lib.gui.SGuiConsts;
+import sa.lib.gui.SGuiDate;
 import sa.lib.gui.SGuiSession;
+import sa.lib.img.SImgConsts;
 
 /**
  *
@@ -42,17 +47,48 @@ import sa.lib.gui.SGuiSession;
 public class SViewShipment extends SGridPaneView implements ActionListener{
     
     private JButton mjPrint;
+    private JButton mjSendBack;
+    private JButton mjSendNext;
+    private SGridFilterDatePeriod moFilterDatePeriod;
+    private final int subType;
     
-    public SViewShipment (SGuiClient client, String title) {
-        super(client, SGridConsts.GRID_PANE_VIEW, SModConsts.S_SHIPT, SLibConsts.UNDEFINED, title);
-        initComponentsCustom();
-        
-        mjPrint = SGridUtils.createButton(miClient.getImageIcon(SLibConstants.ICON_PRINT), SUtilConsts.TXT_PRINT, this);
+    public SViewShipment (SGuiClient client, int subtype ,String title) {
+        super(client, SGridConsts.GRID_PANE_VIEW, SModConsts.S_SHIPT, subtype, title);
+        subType = subtype;        
+        mjPrint = SGridUtils.createButton(miClient.getImageIcon(SImgConsts.CMD_STD_PRINT), SUtilConsts.TXT_PRINT, this);
         getPanelCommandsSys(SGuiConsts.PANEL_CENTER).add(mjPrint);
+        moFilterDatePeriod = new SGridFilterDatePeriod(miClient, this, SGuiConsts.DATE_PICKER_DATE_PERIOD);
+        moFilterDatePeriod.initFilter(new SGuiDate(SGuiConsts.GUI_DATE_MONTH, miClient.getSession().getCurrentDate().getTime()));
+        initComponentsCustom();
     }
     
     private void initComponentsCustom() {
-        setRowButtonsEnabled(true, true, true, false, true);
+        mjSendBack = SGridUtils.createButton(new ImageIcon(getClass().getResource("/etla/gui/img/icon_std_move_left.gif")), "Regresar", this);
+        mjSendNext = SGridUtils.createButton(new ImageIcon(getClass().getResource("/etla/gui/img/icon_std_move_right.gif")), "Adelantar", this);
+        
+        switch (subType) {
+            case SLibConsts.UNDEFINED:  // for new shipments
+                setRowButtonsEnabled(true, true, true, false, true);
+                getPanelCommandsSys(SGuiConsts.PANEL_CENTER).add(moFilterDatePeriod);
+                mjSendBack.setEnabled(false);
+                mjSendNext.setEnabled(false);
+                break;
+            case SModSysConsts.SS_SHIPT_ST_REL_TO:  // for release of shipments
+                setRowButtonsEnabled(false, false, false, false, false);
+                mjSendBack.setEnabled(false);
+                mjSendNext.setEnabled(true);
+                break;
+            case SModSysConsts.SS_SHIPT_ST_REL:     // for released shipments
+                setRowButtonsEnabled(false, false, false, false, false);
+                getPanelCommandsSys(SGuiConsts.PANEL_CENTER).add(moFilterDatePeriod);
+                mjSendBack.setEnabled(true);
+                mjSendNext.setEnabled(false);
+                break;
+            default:
+                break;
+        }
+        getPanelCommandsSys(SGuiConsts.PANEL_CENTER).add(mjSendBack);
+        getPanelCommandsSys(SGuiConsts.PANEL_CENTER).add(mjSendNext);
     }
     
     private void actionPerformedPrint() throws Exception {
@@ -109,6 +145,40 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
             }
         }
     }
+    
+    private void actionPerformedSendNext() {
+        if (mjSendNext.isEnabled()) {
+            changeStaus();
+        }
+    }
+    
+    private void actionPerformedSendBack () {
+        if (mjSendBack.isEnabled()) {
+            changeStaus();
+        }
+    }
+    
+    private void changeStaus() {
+        if (jtTable.getSelectedRowCount() != 1) {
+            miClient.showMsgBoxInformation(SGridConsts.MSG_SELECT_ROW);
+        }
+        else {
+            SGridRowView gridRow = (SGridRowView) getSelectedGridRow();
+
+            if (gridRow.getRowType() != SGridConsts.ROW_TYPE_DATA) {
+                miClient.showMsgBoxWarning(SGridConsts.ERR_MSG_ROW_TYPE_DATA);
+            }
+            else {
+                try {
+                    SShippingUtils.changeStatus(miClient.getSession(), gridRow.getRowPrimaryKey(), subType);
+                    miClient.getSession().notifySuscriptors(SModConsts.S_SHIPT);
+                }
+                catch (Exception e) {
+                    SLibUtils.showException(this, e);
+                }
+            }
+        }
+    }
 
     @Override
     public void prepareSqlQuery() {
@@ -126,7 +196,25 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
             sql += (sql.isEmpty() ? "" : "AND ") + "sh.b_del = 0 ";
         }
         
+        if (subType == SLibConsts.UNDEFINED) {
+            filter = (SGuiDate) moFiltersMap.get(SGridConsts.FILTER_DATE_PERIOD).getValue();
+            sql += (sql.isEmpty() ? "" : "AND ") + SGridUtils.getSqlFilterDate("sh.shipt_date", (SGuiDate) filter);
+        }
+        else if (subType == SModSysConsts.SS_SHIPT_ST_REL_TO) {
+            sql += (sql.isEmpty() ? "" : "AND ") + "sh.fk_shipt_st = " + SModSysConsts.SS_SHIPT_ST_REL_TO + " ";
+        }
+        else if (subType == SModSysConsts.SS_SHIPT_ST_REL) {
+            filter = (SGuiDate) moFiltersMap.get(SGridConsts.FILTER_DATE_PERIOD).getValue();
+            sql += (sql.isEmpty() ? "" : "AND ") + SGridUtils.getSqlFilterDate("sh.shipt_date", (SGuiDate) filter);
+            sql += (sql.isEmpty() ? "" : "AND ") + "sh.fk_shipt_st = " + SModSysConsts.SS_SHIPT_ST_REL + " ";
+        }
+        
         msSql = "SELECT st.name AS " + SDbConsts.FIELD_NAME + ", "
+                + "cus.name, "
+                + "sp.name, "
+                + "vh.name, "
+                + "sh.vehic_plate, "
+                + "sh.driver_name, "
                 + "sh.id_shipt AS " + SDbConsts.FIELD_ID + "1, "
                 + "sh.number AS " + SDbConsts.FIELD_CODE + ", "
                 + "sh.shipt_date AS " + SDbConsts.FIELD_DATE + ", "
@@ -143,6 +231,14 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
                 + "uu.name AS " + SDbConsts.FIELD_USER_UPD_NAME + ", "
                 + "ur.name "
                 + "FROM " + SModConsts.TablesMap.get(SModConsts.S_SHIPT) + " AS sh "
+                + "INNER JOIN " + SModConsts.TablesMap.get(SModConsts.S_SHIPT_ROW) + " AS sr ON "
+                + "sh.id_shipt = sr.id_shipt "
+                + "INNER JOIN " + SModConsts.TablesMap.get(SModConsts.AU_CUS) + " AS cus ON "
+                + "sr.fk_customer = cus.id_cus "
+                + "INNER JOIN " + SModConsts.TablesMap.get(SModConsts.SU_SHIPPER) + " AS sp ON "
+                + "sp.id_shipper = sh.fk_shipper "
+                + "INNER JOIN " + SModConsts.TablesMap.get(SModConsts.SU_VEHIC_TP) + " AS vh ON "
+                + "vh.id_vehic_tp = sh.fk_vehic_tp "
                 + "INNER JOIN " + SModConsts.TablesMap.get(SModConsts.CU_USR) + " AS ui ON "
                 + "sh.fk_usr_ins = ui.id_usr "
                 + "INNER JOIN " + SModConsts.TablesMap.get(SModConsts.CU_USR) + " AS uu ON "
@@ -152,6 +248,7 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
                 + "INNER JOIN " + SModConsts.TablesMap.get(SModConsts.SS_SHIPT_ST) + " AS st ON "
                 + "sh.fk_shipt_st = st.id_shipt_st "
                 + (sql.isEmpty() ? "" : "WHERE " + sql)
+                + "GROUP BY sh.number, sh.id_shipt "
                 + "ORDER BY sh.number, sh.id_shipt ";
     }
     
@@ -159,7 +256,11 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
     public ArrayList<SGridColumnView> createGridColumns() {
         ArrayList<SGridColumnView> columns = new ArrayList<SGridColumnView>();
 
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_ITM, SDbConsts.FIELD_CODE, SGridConsts.COL_TITLE_CODE));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_ITM, SDbConsts.FIELD_CODE, "Número"));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "sp.name", "Transportista"));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "vh.name", "Vehículo"));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_ITM, "sh.vehic_plate", "Placas vehículo"));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_M, "sh.driver_name", "Chofer"));        
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_DATE, SDbConsts.FIELD_DATE, SGridConsts.COL_TITLE_DATE));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_ITM, SDbConsts.FIELD_NAME, "Estatus"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_BOOL_S, "sh.b_ann", "Anulado"));
@@ -178,8 +279,8 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
     @Override
     public void defineSuscriptions() {
         moSuscriptionsSet.add(mnGridType);
-        moSuscriptionsSet.add(SModConsts.AX_ETL);
         moSuscriptionsSet.add(SModConsts.CU_USR);
+        moSuscriptionsSet.add(SModConsts.S_SHIPT);
     }
 
     @Override
@@ -193,6 +294,12 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
                 } catch (Exception ex) {
                     Logger.getLogger(SViewShipment.class.getName()).log(Level.SEVERE, null, ex);
                 }
+            }
+            else if (button == mjSendNext) {
+                actionPerformedSendNext();
+            }
+            else if (button == mjSendBack) {
+                actionPerformedSendBack();
             }
         }
     }

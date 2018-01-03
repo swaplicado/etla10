@@ -118,6 +118,17 @@ public abstract class SEtlProcess {
         etlLog.save(session);
     }
     
+    /**
+     * Creates connection to external system's database.
+     * @param type Database type, constants defined in SEtlConsts.DB_...
+     * @param host Database host.
+     * @param port Database port.
+     * @param name Database name.
+     * @param user User name.
+     * @param pswd User's password.
+     * @return Database connection.
+     * @throws Exception 
+     */
     public static Connection createConnection(final int type, final String host, final int port, final String name, final String user, final String pswd) throws Exception {
         Connection connection = null;
         

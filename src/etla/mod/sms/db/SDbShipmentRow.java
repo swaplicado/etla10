@@ -8,31 +8,43 @@ package etla.mod.sms.db;
 import etla.mod.SModConsts;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import sa.gui.util.SUtilConsts;
+import sa.lib.SLibConsts;
+import sa.lib.SLibUtils;
 import sa.lib.db.SDbConsts;
+import sa.lib.db.SDbRegistry;
 import sa.lib.db.SDbRegistryUser;
 import sa.lib.gui.SGuiSession;
 
 /**
  *
- * @author Daniel López
+ * @author Daniel López, Sergio Flores
  */
 public class SDbShipmentRow extends SDbRegistryUser{
     
-        protected int mnPkShipmentId;
-        protected int mnPkRowId;
-        protected int mnDeliveryId;
-        protected int mnDeliveryNumber;
-        protected int mnInvoiceIdYear;
-        protected int mnInvoiceIdDoc;
-        protected String msInvoiceSeries;
-        protected String msInvoiceNumber;
-        protected int mnOrders;
-        protected int mnBales;
-        protected double mdm2;
-        protected int mnFkCustomerId;
-        protected int mnFkDestinationId;
-
+    protected int mnPkShipmentId;
+    protected int mnPkRowId;
+    protected String msDeliveryId;
+    protected int mnDeliveryNumber;
+    protected Date mtDeliveryDate;
+    protected int mnBolId;
+    protected int mnInvoiceIdYear;
+    protected int mnInvoiceIdDoc;
+    protected String msInvoiceSeries;
+    protected String msInvoiceNumber;
+    protected int mnOrders;
+    protected int mnBales;
+    protected double mdMeters2;
+    protected double mdKilograms;
+    protected int mnFkCustomerId;
+    protected int mnFkDestinationId;
+    
+    protected String msDbmsCustomer;
+    protected String msDbmsDestination;
+    
+    protected int mnAuxSiteLocationId;
+    protected boolean mbAuxDestinationCreated;
     
     public SDbShipmentRow () {
         super(SModConsts.S_SHIPT_ROW);
@@ -44,67 +56,91 @@ public class SDbShipmentRow extends SDbRegistryUser{
     
     public void setPkShipmentId(int n) { mnPkShipmentId = n; }
     public void setPkRowId(int n) { mnPkRowId = n; }
-    public void setDeliveryId(int n) { mnDeliveryId = n; }
+    public void setDeliveryId(String s) { msDeliveryId = s; }
     public void setDeliveryNumber(int n) { mnDeliveryNumber = n; }
+    public void setDeliveryDate(Date t) { mtDeliveryDate = t; }
+    public void setBolId(int n) { mnBolId = n; }
     public void setInvoiceIdYear(int n) { mnInvoiceIdYear = n; }
     public void setInvoiceIdDoc(int n) { mnInvoiceIdDoc = n; }
     public void setInvoiceSeries(String s) { msInvoiceSeries = s; }
     public void setInvoiceNumber(String s) { msInvoiceNumber = s; }
     public void setOrders(int n) { mnOrders = n; }
     public void setBales(int n) { mnBales = n; }
-    public void setm2(double d) { mdm2 = d; }
+    public void setMeters2(double d) { mdMeters2 = d; }
+    public void setKilograms(double d) { mdKilograms = d; }
     public void setFkCustomerId(int n) { mnFkCustomerId = n; }
     public void setFkDestinationId(int n) { mnFkDestinationId = n; }
 
     public int getPkShipmentId() { return mnPkShipmentId; }
     public int getPkRowId() { return mnPkRowId; }
-    public int getDeliveryId() { return mnDeliveryId; }
+    public String getDeliveryId() { return msDeliveryId; }
     public int getDeliveryNumber() { return mnDeliveryNumber; }
+    public Date getDeliveryDate() { return mtDeliveryDate; }
+    public int getBolId() { return mnBolId; }
     public int getInvoiceIdYear() { return mnInvoiceIdYear; }
     public int getInvoiceIdDoc() { return mnInvoiceIdDoc; }
     public String getInvoiceSeries() { return msInvoiceSeries; }
     public String getInvoiceNumber() { return msInvoiceNumber; }
     public int getOrders() { return mnOrders; }
     public int getBales() { return mnBales; }
-    public double getm2() { return mdm2; }
+    public double getMeters2() { return mdMeters2; }
+    public double getKilograms() { return mdKilograms; }
     public int getFkCustomerId() { return mnFkCustomerId; }
     public int getFkDestinationId() { return mnFkDestinationId; }
-
     
-     /*
+    public void setDbmsCustomer(String s) { msDbmsCustomer = s; }
+    public void setDbmsDestination(String s) { msDbmsDestination = s; }
+    
+    public String getDbmsCustomer() { return msDbmsCustomer; }
+    public String getDbmsDestination() { return msDbmsDestination; }
+    
+    public void setAuxSiteLocationId(int n) { mnAuxSiteLocationId = n; }
+    public void setAuxDestinationCreated(boolean b) { mbAuxDestinationCreated = b; }
+    
+    public int getAuxSiteLocationId() { return mnAuxSiteLocationId; }
+    public boolean isAuxDestinationCreated() { return mbAuxDestinationCreated; }
+    
+    /*
      * Overriden methods
      */
-
 
     @Override
     public void setPrimaryKey(int[] pk) {
         mnPkShipmentId = pk[0];
+        mnPkRowId = pk[1];
     }
 
     @Override
     public int[] getPrimaryKey() {
-        return new int[] { mnPkShipmentId };
+        return new int[] { mnPkShipmentId, mnPkRowId };
     }
 
     @Override
     public void initRegistry() {
-        
         initBaseRegistry();
         
         mnPkShipmentId = 0;
         mnPkRowId = 0;
-        mnDeliveryId = 0;
+        msDeliveryId = "";
         mnDeliveryNumber = 0;
+        mtDeliveryDate = null;
+        mnBolId = 0;
         mnInvoiceIdYear = 0;
         mnInvoiceIdDoc = 0;
         msInvoiceSeries = "";
         msInvoiceNumber = "";
         mnOrders = 0;
         mnBales = 0;
-        mdm2 = 0;
+        mdMeters2 = 0;
+        mdKilograms = 0;
         mnFkCustomerId = 0;
         mnFkDestinationId = 0;
-
+        
+        msDbmsCustomer = "";
+        msDbmsDestination = "";
+        
+        mnAuxSiteLocationId = 0;
+        mbAuxDestinationCreated = false;
     }
 
     @Override
@@ -114,24 +150,26 @@ public class SDbShipmentRow extends SDbRegistryUser{
 
     @Override
     public String getSqlWhere() {
-        return "WHERE id_shipt = " + mnPkShipmentId + " ";
+        return "WHERE id_shipt = " + mnPkShipmentId + " AND "
+                + "id_row = " + mnPkRowId + " ";
     }
 
     @Override
     public String getSqlWhere(int[] pk) {
-        return "WHERE id_shipt = " + pk[0] + " ";
+        return "WHERE id_shipt = " + pk[0] + " AND "
+                + "id_row = " + pk[1] + " ";
     }
 
     @Override
     public void computePrimaryKey(SGuiSession session) throws SQLException, Exception {
         ResultSet resultSet = null;
 
-        mnPkShipmentId = 0;
+        mnPkRowId = 0;
 
-        msSql = "SELECT COALESCE(MAX(id_shipt), 0) + 1 FROM " + getSqlTable() + " ";
+        msSql = "SELECT COALESCE(MAX(id_row), 0) + 1 FROM " + getSqlTable() + " WHERE id_shipt = " + mnPkShipmentId + " ";
         resultSet = session.getStatement().executeQuery(msSql);
         if (resultSet.next()) {
-            mnPkShipmentId = resultSet.getInt(1);
+            mnPkRowId = resultSet.getInt(1);
         }
     }
 
@@ -151,18 +189,23 @@ public class SDbShipmentRow extends SDbRegistryUser{
         else {
             mnPkShipmentId = resultSet.getInt("id_shipt");
             mnPkRowId = resultSet.getInt("id_row");
-            mnDeliveryId = resultSet.getInt("delivery_id");
+            msDeliveryId = resultSet.getString("delivery_id");
             mnDeliveryNumber = resultSet.getInt("delivery_number");
+            mtDeliveryDate = resultSet.getDate("delivery_date");
+            mnBolId = resultSet.getInt("bol_id");
             mnInvoiceIdYear = resultSet.getInt("invoice_id_year");
             mnInvoiceIdDoc = resultSet.getInt("invoice_id_doc");
             msInvoiceSeries = resultSet.getString("invoice_series");
             msInvoiceNumber = resultSet.getString("invoice_number");
             mnOrders = resultSet.getInt("orders");
             mnBales = resultSet.getInt("bales");
-            mdm2 = resultSet.getDouble("m2");
+            mdMeters2 = resultSet.getDouble("m2");
+            mdKilograms = resultSet.getDouble("kg");
             mnFkCustomerId = resultSet.getInt("fk_customer");
             mnFkDestinationId = resultSet.getInt("fk_destin");
-
+            
+            msDbmsCustomer = (String) session.readField(SModConsts.AU_CUS, new int[] { mnFkCustomerId }, SDbRegistry.FIELD_NAME);
+            msDbmsDestination = (String) session.readField(SModConsts.SU_DESTIN, new int[] { mnFkDestinationId}, SDbRegistry.FIELD_NAME);
             
             mbRegistryNew = false;
         }
@@ -175,6 +218,39 @@ public class SDbShipmentRow extends SDbRegistryUser{
         initQueryMembers();
         mnQueryResultId = SDbConsts.READ_ERROR;
         
+        // check if current destination should be created or updated:
+        
+        SDbDestination destination;
+        
+        if (mnFkDestinationId != SLibConsts.UNDEFINED) {
+            // update destination if necessary:
+            destination = (SDbDestination) session.readRegistry(SModConsts.SU_DESTIN, new int[] { mnFkDestinationId });
+            if (destination.getName().compareToIgnoreCase(msDbmsDestination) != 0) {
+                destination.setName(msDbmsDestination);
+                destination.save(session);
+            }
+        }
+        else {
+            // create destination:
+            destination = new SDbDestination();
+            //destination.setPkDestinationId(...);
+            destination.setSiteLocationId(mnAuxSiteLocationId);
+            destination.setCode("");
+            destination.setName(msDbmsDestination);
+            //destination.setDeleted(...);
+            //destination.setSystem(...);
+            //destination.setFkUserInsertId(...);
+            //destination.setFkUserUpdateId(...);
+            //destination.setTsUserInsert(...);
+            //destination.setTsUserUpdate(...);
+            destination.save(session);
+            
+            mnFkDestinationId = destination.getPkDestinationId();
+            mbAuxDestinationCreated = true;
+        }
+        
+        // save shipment row registry:
+        
         if (mbRegistryNew) {
             computePrimaryKey(session);
             mbDeleted = false;
@@ -183,39 +259,45 @@ public class SDbShipmentRow extends SDbRegistryUser{
             mnFkUserUpdateId = SUtilConsts.USR_NA_ID;
             
             msSql = "INSERT INTO " + getSqlTable() + " VALUES (" +
-               mnPkShipmentId + ", " + 
-               mnPkRowId + ", " + 
-               mnDeliveryId + ", " + 
-               mnDeliveryNumber + ", " + 
-               mnInvoiceIdYear + ", " + 
-               mnInvoiceIdDoc + ", " + 
-               "'" + msInvoiceSeries + "', " + 
-               "'" + msInvoiceNumber + "', " + 
-               mnOrders + ", " + 
-               mnBales + ", " + 
-               mdm2 + ", " + 
-               mnFkCustomerId + ", " + 
-               mnFkDestinationId + " " +
-               ")";
+                mnPkShipmentId + ", " + 
+                mnPkRowId + ", " + 
+                "'" + msDeliveryId + "', " + 
+                mnDeliveryNumber + ", " +
+                "'" + SLibUtils.DbmsDateFormatDate.format(mtDeliveryDate) + "', " + 
+                mnBolId + ", " + 
+                mnInvoiceIdYear + ", " + 
+                mnInvoiceIdDoc + ", " + 
+                "'" + msInvoiceSeries + "', " + 
+                "'" + msInvoiceNumber + "', " + 
+                mnOrders + ", " + 
+                mnBales + ", " + 
+                mdMeters2 + ", " + 
+                mdKilograms + ", " + 
+                mnFkCustomerId + ", " + 
+                mnFkDestinationId + " " +
+                ")";
         }
         else {
             mnFkUserUpdateId = session.getUser().getPkUserId();
             
             msSql = "UPDATE " + getSqlTable() + " SET " +
-                "id_shipt = " + mnPkShipmentId + ", " +
-                "id_row = " + mnPkRowId + ", " +
-                "delivery_id = " + mnDeliveryId + ", " +
+                //"id_shipt = " + mnPkShipmentId + ", " +
+                //"id_row = " + mnPkRowId + ", " +
+                "delivery_id = '" + msDeliveryId + "', " +
                 "delivery_number = " + mnDeliveryNumber + ", " +
+                "delivery_date = '" + SLibUtils.DbmsDateFormatDate.format(mtDeliveryDate) + "', " +
+                "bol_id = " + mnBolId + ", " +
                 "invoice_id_year = " + mnInvoiceIdYear + ", " +
                 "invoice_id_doc = " + mnInvoiceIdDoc + ", " +
                 "invoice_series = '" + msInvoiceSeries + "', " +
                 "invoice_number = '" + msInvoiceNumber + "', " +
                 "orders = " + mnOrders + ", " +
                 "bales = " + mnBales + ", " +
-                "m2 = " + mdm2 + ", " +
+                "m2 = " + mdMeters2 + ", " +
+                "kg = " + mdKilograms + ", " +
                 "fk_customer = " + mnFkCustomerId + ", " +
                 "fk_destin = " + mnFkDestinationId + " " +
-                 getSqlWhere();
+                getSqlWhere();
         }
         
         session.getStatement().execute(msSql);
@@ -226,24 +308,31 @@ public class SDbShipmentRow extends SDbRegistryUser{
 
     @Override
     public SDbShipmentRow clone() throws CloneNotSupportedException {
-        SDbShipmentRow  registry = new SDbShipmentRow();
+        SDbShipmentRow registry = new SDbShipmentRow();
         
         registry.setPkShipmentId(this.getPkShipmentId());
         registry.setPkRowId(this.getPkRowId());
         registry.setDeliveryId(this.getDeliveryId());
         registry.setDeliveryNumber(this.getDeliveryNumber());
+        registry.setDeliveryDate(this.getDeliveryDate());
+        registry.setBolId(this.getBolId());
         registry.setInvoiceIdYear(this.getInvoiceIdYear());
         registry.setInvoiceIdDoc(this.getInvoiceIdDoc());
         registry.setInvoiceSeries(this.getInvoiceSeries());
         registry.setInvoiceNumber(this.getInvoiceNumber());
         registry.setOrders(this.getOrders());
         registry.setBales(this.getBales());
-        registry.setm2(this.getm2());
+        registry.setMeters2(this.getMeters2());
+        registry.setKilograms(this.getKilograms());
         registry.setFkCustomerId(this.getFkCustomerId());
         registry.setFkDestinationId(this.getFkDestinationId());
+        
+        registry.setDbmsCustomer(this.getDbmsCustomer());
+        registry.setDbmsDestination(this.getDbmsDestination());
+        registry.setAuxSiteLocationId(this.getAuxSiteLocationId());
+        registry.setAuxDestinationCreated(this.isAuxDestinationCreated());
         
         registry.setRegistryNew(this.isRegistryNew());
         return registry;
     }
-
 }

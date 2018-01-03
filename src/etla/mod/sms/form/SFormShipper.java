@@ -7,9 +7,6 @@ package etla.mod.sms.form;
 
 import etla.mod.SModConsts;
 import etla.mod.sms.db.SDbShipper;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JButton;
 import sa.lib.SLibConsts;
 import sa.lib.SLibUtils;
 import sa.lib.db.SDbRegistry;
@@ -21,9 +18,9 @@ import sa.lib.gui.bean.SBeanForm;
 
 /**
  *
- * @author Sergio Flores
+ * @author Daniel López
  */
-public class SFormShipper extends SBeanForm implements ActionListener {
+public class SFormShipper extends SBeanForm {
     
     private SDbShipper moRegistry;
     
@@ -55,12 +52,15 @@ public class SFormShipper extends SBeanForm implements ActionListener {
         jPanel4 = new javax.swing.JPanel();
         jlName = new javax.swing.JLabel();
         moTextName = new sa.lib.gui.bean.SBeanFieldText();
+        jPanel6 = new javax.swing.JPanel();
+        jlMail = new javax.swing.JLabel();
+        moTextMail = new sa.lib.gui.bean.SBeanFieldText();
         jPanel5 = new javax.swing.JPanel();
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Datos del registro:"));
         jPanel1.setLayout(new java.awt.BorderLayout(0, 5));
 
-        jPanel2.setLayout(new java.awt.GridLayout(2, 1, 0, 5));
+        jPanel2.setLayout(new java.awt.GridLayout(3, 1, 0, 5));
 
         jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
@@ -84,6 +84,17 @@ public class SFormShipper extends SBeanForm implements ActionListener {
 
         jPanel2.add(jPanel4);
 
+        jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
+
+        jlMail.setText("Mail:*");
+        jlMail.setPreferredSize(new java.awt.Dimension(100, 23));
+        jPanel6.add(jlMail);
+
+        moTextMail.setPreferredSize(new java.awt.Dimension(200, 23));
+        jPanel6.add(moTextMail);
+
+        jPanel2.add(jPanel6);
+
         jPanel1.add(jPanel2, java.awt.BorderLayout.NORTH);
 
         jPanel5.setLayout(new java.awt.BorderLayout(5, 0));
@@ -98,9 +109,12 @@ public class SFormShipper extends SBeanForm implements ActionListener {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JLabel jlCode;
+    private javax.swing.JLabel jlMail;
     private javax.swing.JLabel jlName;
     private sa.lib.gui.bean.SBeanFieldText moTextCode;
+    private sa.lib.gui.bean.SBeanFieldText moTextMail;
     private sa.lib.gui.bean.SBeanFieldText moTextName;
     // End of variables declaration//GEN-END:variables
 
@@ -111,11 +125,13 @@ public class SFormShipper extends SBeanForm implements ActionListener {
     private void initComponentsCustom() {              
         SGuiUtils.setWindowBounds(this, 560, 350);
         
-        moTextCode.setTextSettings(SGuiUtils.getLabelName(jlCode), 50);
+        moTextCode.setTextSettings(SGuiUtils.getLabelName(jlCode), 10);
         moTextName.setTextSettings(SGuiUtils.getLabelName(jlName), 100);
+        moTextMail.setTextSettings(SGuiUtils.getLabelName(jlMail), 100);
         
         moFields.addField(moTextCode);
         moFields.addField(moTextName);
+        moFields.addField(moTextMail);
         
         moFields.setFormButton(jbSave);
     }    
@@ -161,6 +177,7 @@ public class SFormShipper extends SBeanForm implements ActionListener {
 
         moTextCode.setText(moRegistry.getCode());
         moTextName.setText(moRegistry.getName());
+        moTextMail.setText(moRegistry.getMail());
        
         setFormEditable(true);
         
@@ -178,16 +195,16 @@ public class SFormShipper extends SBeanForm implements ActionListener {
 
         if (registry.isRegistryNew()) {}
 
-//        registry.setPkShipperId();
+        //registry.setPkShipperId(...);
         registry.setCode(moTextCode.getValue());
         registry.setName(moTextName.getValue());
-//        registry.setDeleted(this.isDeleted());
-//        registry.setSystem(this.isSystem());
-//        registry.setFkUserInsertId(this.getFkUserInsertId());
-//        registry.setFkUserUpdateId(this.getFkUserUpdateId());
-//        registry.setTsUserInsert(this.getTsUserInsert());
-//        registry.setTsUserUpdate(this.getTsUserUpdate());
-
+        registry.setMail(moTextMail.getValue());
+        //registry.setDeleted(...);
+        //registry.setSystem(...);
+        //registry.setFkUserInsertId(...);
+        //registry.setFkUserUpdateId(...);
+        //registry.setTsUserInsert(...);
+        //registry.setTsUserUpdate(...);
 
         return registry;
     }
@@ -197,14 +214,5 @@ public class SFormShipper extends SBeanForm implements ActionListener {
         SGuiValidation validation = moFields.validateFields();
         
         return validation;
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() instanceof JButton) {
-            JButton button = (JButton) e.getSource();
-            
-            
-        }
     }
 }

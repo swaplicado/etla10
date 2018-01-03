@@ -50,6 +50,7 @@ public class SViewShipper extends SGridPaneView {
         msSql = "SELECT sh.id_shipper AS " + SDbConsts.FIELD_ID + "1, "
                 + "sh.code AS " + SDbConsts.FIELD_CODE + ", "
                 + "sh.name AS " + SDbConsts.FIELD_NAME + ", "
+                + "sh.mail, "
                 + "sh.b_del AS " + SDbConsts.FIELD_IS_DEL + ", "
                 + "sh.b_sys AS " + SDbConsts.FIELD_IS_SYS + ", "
                 + "sh.fk_usr_ins AS " + SDbConsts.FIELD_USER_INS_ID + ", "
@@ -72,7 +73,8 @@ public class SViewShipper extends SGridPaneView {
         ArrayList<SGridColumnView> columns = new ArrayList<SGridColumnView>();
 
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_M, SDbConsts.FIELD_NAME, SGridConsts.COL_TITLE_NAME));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_ITM, SDbConsts.FIELD_CODE, SGridConsts.COL_TITLE_CODE));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_CAT, SDbConsts.FIELD_CODE, SGridConsts.COL_TITLE_CODE));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_L, "sh.mail", "Mail"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_BOOL_S, SDbConsts.FIELD_IS_DEL, SGridConsts.COL_TITLE_IS_DEL));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_BOOL_S, SDbConsts.FIELD_IS_SYS, SGridConsts.COL_TITLE_IS_SYS));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_USR, SDbConsts.FIELD_USER_INS_NAME, SGridConsts.COL_TITLE_USER_INS_NAME));
@@ -86,7 +88,6 @@ public class SViewShipper extends SGridPaneView {
     @Override
     public void defineSuscriptions() {
         moSuscriptionsSet.add(mnGridType);
-        moSuscriptionsSet.add(SModConsts.AX_ETL);
         moSuscriptionsSet.add(SModConsts.CU_USR);
     }
 }

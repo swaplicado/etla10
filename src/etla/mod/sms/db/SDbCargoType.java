@@ -179,7 +179,7 @@ public class SDbCargoType extends SDbRegistryUser{
             mnFkUserUpdateId = session.getUser().getPkUserId();
             
             msSql = "UPDATE " + getSqlTable() + " SET " +
-                "id_cargo_tp = " + mnPkCargoTypeId + ", " +
+                //"id_cargo_tp = " + mnPkCargoTypeId + ", " +
                 "code = '" + msCode + "', " +
                 "name = '" + msName + "', " +
                 "b_del = " + (mbDeleted ? 1 : 0) + ", " +

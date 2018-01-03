@@ -9,8 +9,11 @@ import etla.mod.SModConsts;
 import etla.mod.SModSysConsts;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
 import sa.gui.util.SUtilConsts;
+import sa.lib.SLibConsts;
 import sa.lib.SLibUtils;
 import sa.lib.db.SDbConsts;
 import sa.lib.db.SDbRegistryUser;
@@ -18,7 +21,7 @@ import sa.lib.gui.SGuiSession;
 
 /**
  *
- * @author Daniel López
+ * @author Daniel López, Sergio Flores
  */
 public class SDbShipment extends SDbRegistryUser{
     
@@ -32,6 +35,7 @@ public class SDbShipment extends SDbRegistryUser{
     protected String msVehiclePlate;
     protected String msWebKey;
     protected double mdMeters2;
+    protected double mdKilograms;
     protected String msComments;
     protected boolean mbAnnulled;
     protected boolean mbDeleted;
@@ -53,6 +57,8 @@ public class SDbShipment extends SDbRegistryUser{
     protected Date mtTsUserInsert;
     protected Date mtTsUserUpdate;
     
+    protected ArrayList<SDbShipmentRow> maChildRows;
+    
     public SDbShipment () {
         super(SModConsts.S_SHIPT);
     }
@@ -65,7 +71,7 @@ public class SDbShipment extends SDbRegistryUser{
         msWebKey = SLibUtils.generateRandomKey(WEB_KEY_LENGTH);
     }
     
-        public void computeNextNumber(SGuiSession session) throws SQLException, Exception{
+    public void computeNextNumber(SGuiSession session) throws SQLException, Exception {
         ResultSet resultSet = null;
         mnNumber = 0;
 
@@ -74,7 +80,16 @@ public class SDbShipment extends SDbRegistryUser{
         if (resultSet.next()) {
             mnNumber = resultSet.getInt(1);
         }
+    }
+    
+    public void computeTotals() {
+        mdMeters2 = 0;
+        mdKilograms = 0;
         
+        for (SDbShipmentRow child : maChildRows) {
+            mdMeters2 += child.getMeters2();
+            mdKilograms += child.getKilograms();
+        }
     }
         
     /*
@@ -89,6 +104,7 @@ public class SDbShipment extends SDbRegistryUser{
     public void setVehiclePlate(String s) { msVehiclePlate = s; }
     public void setWebKey(String s) { msWebKey = s; }
     public void setMeters2(double d) { mdMeters2 = d; }
+    public void setKilograms(double d) { mdKilograms = d; }
     public void setComments(String s) { msComments = s; }
     public void setAnnulled(boolean b) { mbAnnulled = b; }
     public void setDeleted(boolean b) { mbDeleted = b; }
@@ -118,6 +134,7 @@ public class SDbShipment extends SDbRegistryUser{
     public String getVehiclePlate() { return msVehiclePlate; }
     public String getWebKey() { return msWebKey; }
     public double getMeters2() { return mdMeters2; }
+    public double getKilograms() { return mdKilograms; }
     public String getComments() { return msComments; }
     public boolean isAnnulled() { return mbAnnulled; }
     public boolean isDeleted() { return mbDeleted; }
@@ -139,10 +156,11 @@ public class SDbShipment extends SDbRegistryUser{
     public Date getTsUserInsert() { return mtTsUserInsert; }
     public Date getTsUserUpdate() { return mtTsUserUpdate; }
     
+    public ArrayList<SDbShipmentRow> getChildRows() { return maChildRows; }
+    
      /*
      * Overriden methods
      */
-
 
     @Override
     public void setPrimaryKey(int[] pk) {
@@ -167,6 +185,7 @@ public class SDbShipment extends SDbRegistryUser{
         msVehiclePlate = "";
         msWebKey = "";
         mdMeters2 = 0;
+        mdKilograms = 0;
         msComments = "";
         mbAnnulled = false;
         mbDeleted = false;
@@ -187,6 +206,8 @@ public class SDbShipment extends SDbRegistryUser{
         mtTsUserAnnul = null;
         mtTsUserInsert = null;
         mtTsUserUpdate = null;
+        
+        maChildRows = new ArrayList<>();
     }
 
     @Override
@@ -219,7 +240,8 @@ public class SDbShipment extends SDbRegistryUser{
 
     @Override
     public void read(SGuiSession session, int[] pk) throws SQLException, Exception {
-        ResultSet resultSet = null;
+        Statement statement;
+        ResultSet resultSet;
 
         initRegistry();
         initQueryMembers();
@@ -239,6 +261,7 @@ public class SDbShipment extends SDbRegistryUser{
             msVehiclePlate = resultSet.getString("vehic_plate");
             msWebKey = resultSet.getString("web_key");
             mdMeters2 = resultSet.getDouble("m2");
+            mdKilograms = resultSet.getDouble("kg");
             msComments = resultSet.getString("comments");
             mbAnnulled = resultSet.getBoolean("b_ann");
             mbDeleted = resultSet.getBoolean("b_del");
@@ -259,6 +282,14 @@ public class SDbShipment extends SDbRegistryUser{
             mtTsUserAnnul = resultSet.getTimestamp("ts_usr_ann");
             mtTsUserInsert = resultSet.getTimestamp("ts_usr_ins");
             mtTsUserUpdate = resultSet.getTimestamp("ts_usr_upd");
+            
+            statement = session.getStatement().getConnection().createStatement();
+            
+            msSql = "SELECT id_row FROM " + SModConsts.TablesMap.get(SModConsts.S_SHIPT_ROW) + " " + getSqlWhere();
+            resultSet = statement.executeQuery(msSql);
+            while (resultSet.next()) {
+                maChildRows.add((SDbShipmentRow) session.readRegistry(SModConsts.S_SHIPT_ROW, new int[] { mnPkShipmentId, resultSet.getInt(1) }));
+            }
 
             mbRegistryNew = false;
         }
@@ -271,15 +302,42 @@ public class SDbShipment extends SDbRegistryUser{
         initQueryMembers();
         mnQueryResultId = SDbConsts.READ_ERROR;
         
+        computeTotals();
+        
+        switch (mnFkShipmentStatusId) {
+            case SModSysConsts.SS_SHIPT_ST_REL_TO:
+                break;
+            case SModSysConsts.SS_SHIPT_ST_REL:
+                mnFkUserReleaseId = session.getUser().getPkUserId();
+                break;
+            case SModSysConsts.SS_SHIPT_ST_ACC_TO:
+                break;
+            case SModSysConsts.SS_SHIPT_ST_ACC:
+                mnFkUserAcceptId = session.getUser().getPkUserId();
+                break;
+            default:
+        }
+        
+        if (mbAnnulled) {
+            mnFkUserAnnulId = session.getUser().getPkUserId();
+        }
+        
+        if (mnFkUserReleaseId == SLibConsts.UNDEFINED) {
+            mnFkUserReleaseId = SUtilConsts.USR_NA_ID;
+        }
+        if (mnFkUserAcceptId == SLibConsts.UNDEFINED) {
+            mnFkUserAcceptId = SUtilConsts.USR_NA_ID;
+        }
+        if (mnFkUserAnnulId == SLibConsts.UNDEFINED) {
+            mnFkUserAnnulId = SUtilConsts.USR_NA_ID;
+        }
+        
         if (mbRegistryNew) {
             computePrimaryKey(session);
             computeNextNumber(session);
             computeWebKey();
             mbDeleted = false;
             mbSystem = false;
-            mnFkUserReleaseId = SUtilConsts.USR_NA_ID;
-            mnFkUserAcceptId = SUtilConsts.USR_NA_ID;
-            mnFkUserAnnulId = SUtilConsts.USR_NA_ID;
             mnFkUserInsertId = session.getUser().getPkUserId();
             mnFkUserUpdateId = SUtilConsts.USR_NA_ID;
             
@@ -292,6 +350,7 @@ public class SDbShipment extends SDbRegistryUser{
                 "'" + msVehiclePlate + "', " + 
                 "'" + msWebKey + "', " + 
                 mdMeters2 + ", " + 
+                mdKilograms + ", " + 
                 "'" + msComments + "', " + 
                 (mbAnnulled ? 1 : 0) + ", " + 
                 (mbDeleted ? 1 : 0) + ", " + 
@@ -319,7 +378,7 @@ public class SDbShipment extends SDbRegistryUser{
             mnFkUserReleaseId = (mnFkShipmentStatusId == SModSysConsts.SS_SHIPT_ST_REL ? session.getUser().getPkUserId() : SUtilConsts.USR_NA_ID);
             
             msSql = "UPDATE " + getSqlTable() + " SET " +
-                "id_shipt = " + mnPkShipmentId + ", " +
+                //"id_shipt = " + mnPkShipmentId + ", " +
                 "number = " + mnNumber + ", " +
                 "shipt_date = '" + SLibUtils.DbmsDateFormatDate.format(mtShiptmentDate) + "', " +
                 "driver_name = '" + msDriverName + "', " +
@@ -327,6 +386,7 @@ public class SDbShipment extends SDbRegistryUser{
                 "vehic_plate = '" + msVehiclePlate + "', " +
                 "web_key = '" + msWebKey + "', " +
                 "m2 = " + mdMeters2 + ", " +
+                "kg = " + mdKilograms + ", " +   
                 "comments = '" + msComments + "', " +
                 "b_ann = " + (mbAnnulled ? 1 : 0) + ", " +
                 "b_del = " + (mbDeleted ? 1 : 0) + ", " +
@@ -342,15 +402,33 @@ public class SDbShipment extends SDbRegistryUser{
                 "fk_usr_ann = " + mnFkUserAnnulId + ", " +
                 //"fk_usr_ins = " + mnFkUserInsertId + ", " +
                 "fk_usr_upd = " + mnFkUserUpdateId + ", " +
-                (mnFkShipmentStatusId == SModSysConsts.SS_SHIPT_ST_REL ? ("ts_usr_release = " + "NOW()" + ", ") : "") +
-                "ts_usr_accept = " + "NOW()" + ", " +
-                "ts_usr_ann = " + "NOW()" + ", " +
+                (mnFkShipmentStatusId == SModSysConsts.SS_SHIPT_ST_REL ? "ts_usr_release = NOW(), " : "") +
+                (mnFkShipmentStatusId == SModSysConsts.SS_SHIPT_ST_ACC ? "ts_usr_accept = NOW(), " : "") +
+                (mbAnnulled ? "ts_usr_ann = NOW(), " : "") +
                 //"ts_usr_ins = " + "NOW()" + ", " +
                 "ts_usr_upd = " + "NOW()" + " " +
                  getSqlWhere();
         }
         
         session.getStatement().execute(msSql);
+        
+        msSql = "DELETE FROM " + SModConsts.TablesMap.get(SModConsts.S_SHIPT_ROW) + " " + getSqlWhere();
+        session.getStatement().execute(msSql);
+        
+        for (SDbShipmentRow child : maChildRows) {
+            child.setPkShipmentId(mnPkShipmentId);
+            child.setRegistryNew(true); // force treatment of row as new, consider that it is actually new
+            child.save(session);
+            
+            // if new destination has just been created, propagate its ID to other rows to prevent multiple creation of the same destination:
+            if (child.isAuxDestinationCreated()) {
+                for (SDbShipmentRow childAux : maChildRows) {
+                    if (childAux.isRegistryNew() && childAux.getFkDestinationId() == SLibConsts.UNDEFINED && childAux.getAuxSiteLocationId() == child.getAuxSiteLocationId()) {
+                        childAux.setFkDestinationId(child.getFkDestinationId());
+                    }
+                }
+            }
+        }
 
         mbRegistryNew = false;
         mnQueryResultId = SDbConsts.SAVE_OK;
@@ -368,6 +446,7 @@ public class SDbShipment extends SDbRegistryUser{
         registry.setVehiclePlate(this.getVehiclePlate());
         registry.setWebKey(this.getWebKey());
         registry.setMeters2(this.getMeters2());
+        registry.setKilograms(this.getKilograms());
         registry.setComments(this.getComments());
         registry.setAnnulled(this.isAnnulled());
         registry.setDeleted(this.isDeleted());
@@ -389,8 +468,11 @@ public class SDbShipment extends SDbRegistryUser{
         registry.setTsUserInsert(this.getTsUserInsert());
         registry.setTsUserUpdate(this.getTsUserUpdate());
         
+        for (SDbShipmentRow child : maChildRows) {
+            registry.getChildRows().add(child.clone());
+        }
+        
         registry.setRegistryNew(this.isRegistryNew());
         return registry;
     }
-
 }

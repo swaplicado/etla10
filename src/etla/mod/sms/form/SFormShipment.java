@@ -7,13 +7,30 @@ package etla.mod.sms.form;
 
 import etla.mod.SModConsts;
 import etla.mod.SModSysConsts;
+import etla.mod.cfg.db.SDbConfig;
+import etla.mod.etl.db.SDbConfigAvista;
+import etla.mod.etl.db.SEtlConsts;
+import etla.mod.etl.db.SEtlProcess;
 import etla.mod.sms.db.SDbShipment;
+import etla.mod.sms.db.SDbShipmentRow;
+import etla.mod.sms.db.SRowShipmentRow;
+import etla.mod.sms.db.SShippingUtils;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Vector;
 import javax.swing.JButton;
 import sa.lib.SLibConsts;
+import sa.lib.SLibTimeUtils;
 import sa.lib.SLibUtils;
 import sa.lib.db.SDbRegistry;
+import sa.lib.grid.SGridColumnForm;
+import sa.lib.grid.SGridConsts;
+import sa.lib.grid.SGridPaneForm;
+import sa.lib.grid.SGridRow;
 import sa.lib.gui.SGuiClient;
 import sa.lib.gui.SGuiConsts;
 import sa.lib.gui.SGuiUtils;
@@ -22,11 +39,16 @@ import sa.lib.gui.bean.SBeanForm;
 
 /**
  *
- * @author Daniel López
+ * @author Daniel López, Sergio Flores
  */
 public class SFormShipment extends SBeanForm implements ActionListener{
 
     private SDbShipment moRegistry;
+    private SGridPaneForm moGridAvailableRows;
+    private SGridPaneForm moGridSelectedRows;
+    private Connection miConnectionAvista;
+    private boolean mbRowsShown;
+    
     /**
      * Creates new form SFormShipmentOrder
      * @param client
@@ -82,17 +104,18 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         moTextDriverPhone = new sa.lib.gui.bean.SBeanFieldText();
         jpBody = new javax.swing.JPanel();
         jpRows = new javax.swing.JPanel();
-        jpFilters = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
+        jpFilterControls = new javax.swing.JPanel();
+        jlDateRows = new javax.swing.JLabel();
         moDateRows = new sa.lib.gui.bean.SBeanFieldDate();
-        jpAvailableRows = new javax.swing.JPanel();
-        jpSelectedRows = new javax.swing.JPanel();
-        jlTotalAvailables1 = new javax.swing.JLabel();
-        jpControlButtons = new javax.swing.JPanel();
+        jbShowRows = new javax.swing.JButton();
+        jbClearRows = new javax.swing.JButton();
+        jpRowControls = new javax.swing.JPanel();
         jPanel12 = new javax.swing.JPanel();
         jlDummy01 = new javax.swing.JLabel();
         jbRowAdd = new javax.swing.JButton();
         jbRowRemove = new javax.swing.JButton();
+        jpAvailableRows = new javax.swing.JPanel();
+        jpSelectedRows = new javax.swing.JPanel();
         jpFooter = new javax.swing.JPanel();
         jPanel20 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
@@ -110,8 +133,7 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         jlEstatus = new javax.swing.JLabel();
         jtfEstatus = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
-        jlReleaseOnSave = new javax.swing.JLabel();
-        jchReleaseOnSave = new javax.swing.JCheckBox();
+        jckReleaseOnSave = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -246,47 +268,51 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         jpRows.setBorder(javax.swing.BorderFactory.createTitledBorder("Remisiones:"));
         jpRows.setLayout(new java.awt.BorderLayout(5, 5));
 
-        jpFilters.setLayout(new java.awt.GridLayout(1, 1, 0, 5));
+        jpFilterControls.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
-        jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
-        jPanel4.add(moDateRows);
+        jlDateRows.setText("Fecha remisiones:");
+        jlDateRows.setPreferredSize(new java.awt.Dimension(100, 23));
+        jpFilterControls.add(jlDateRows);
+        jpFilterControls.add(moDateRows);
 
-        jpFilters.add(jPanel4);
+        jbShowRows.setText("Mostrar");
+        jbShowRows.setPreferredSize(new java.awt.Dimension(75, 23));
+        jpFilterControls.add(jbShowRows);
 
-        jpRows.add(jpFilters, java.awt.BorderLayout.NORTH);
+        jbClearRows.setText("Limpiar");
+        jbClearRows.setPreferredSize(new java.awt.Dimension(75, 23));
+        jpFilterControls.add(jbClearRows);
 
-        jpAvailableRows.setBorder(javax.swing.BorderFactory.createTitledBorder("Disponibles:"));
-        jpAvailableRows.setPreferredSize(new java.awt.Dimension(450, 100));
-        jpAvailableRows.setLayout(new java.awt.BorderLayout());
-        jpRows.add(jpAvailableRows, java.awt.BorderLayout.LINE_START);
+        jpRows.add(jpFilterControls, java.awt.BorderLayout.NORTH);
 
-        jpSelectedRows.setBorder(javax.swing.BorderFactory.createTitledBorder("Seleccionadas:"));
-        jpSelectedRows.setPreferredSize(new java.awt.Dimension(450, 100));
-        jpSelectedRows.setLayout(new java.awt.BorderLayout());
-
-        jlTotalAvailables1.setText("n");
-        jpSelectedRows.add(jlTotalAvailables1, java.awt.BorderLayout.SOUTH);
-
-        jpRows.add(jpSelectedRows, java.awt.BorderLayout.LINE_END);
-
-        jpControlButtons.setLayout(new java.awt.BorderLayout());
+        jpRowControls.setLayout(new java.awt.BorderLayout());
 
         jPanel12.setLayout(new java.awt.GridLayout(4, 1, 0, 5));
         jPanel12.add(jlDummy01);
 
         jbRowAdd.setText(">");
-        jbRowAdd.setToolTipText("Agregar");
+        jbRowAdd.setToolTipText("Agregar remisión");
         jbRowAdd.setPreferredSize(new java.awt.Dimension(75, 23));
         jPanel12.add(jbRowAdd);
 
         jbRowRemove.setText("<");
-        jbRowRemove.setToolTipText("Remover");
+        jbRowRemove.setToolTipText("Remover remisón");
         jbRowRemove.setPreferredSize(new java.awt.Dimension(75, 23));
         jPanel12.add(jbRowRemove);
 
-        jpControlButtons.add(jPanel12, java.awt.BorderLayout.PAGE_START);
+        jpRowControls.add(jPanel12, java.awt.BorderLayout.PAGE_START);
 
-        jpRows.add(jpControlButtons, java.awt.BorderLayout.CENTER);
+        jpRows.add(jpRowControls, java.awt.BorderLayout.CENTER);
+
+        jpAvailableRows.setBorder(javax.swing.BorderFactory.createTitledBorder("Remisiones disponibles:"));
+        jpAvailableRows.setPreferredSize(new java.awt.Dimension(475, 23));
+        jpAvailableRows.setLayout(new java.awt.BorderLayout());
+        jpRows.add(jpAvailableRows, java.awt.BorderLayout.WEST);
+
+        jpSelectedRows.setBorder(javax.swing.BorderFactory.createTitledBorder("Remisiones disponibles:"));
+        jpSelectedRows.setPreferredSize(new java.awt.Dimension(475, 23));
+        jpSelectedRows.setLayout(new java.awt.BorderLayout());
+        jpRows.add(jpSelectedRows, java.awt.BorderLayout.EAST);
 
         jpBody.add(jpRows, java.awt.BorderLayout.CENTER);
 
@@ -311,7 +337,7 @@ public class SFormShipment extends SBeanForm implements ActionListener{
 
         jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
-        jspComments.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jspComments.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         jspComments.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         jspComments.setPreferredSize(new java.awt.Dimension(378, 75));
         jspComments.setRequestFocusEnabled(false);
@@ -334,7 +360,7 @@ public class SFormShipment extends SBeanForm implements ActionListener{
 
         jPanel23.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 0));
 
-        jlTotalM2.setText("Total de m²:");
+        jlTotalM2.setText("Total m²:");
         jlTotalM2.setPreferredSize(new java.awt.Dimension(100, 23));
         jPanel23.add(jlTotalM2);
 
@@ -362,12 +388,11 @@ public class SFormShipment extends SBeanForm implements ActionListener{
 
         jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 0));
 
-        jlReleaseOnSave.setText("Liberar al guardar");
-        jlReleaseOnSave.setPreferredSize(new java.awt.Dimension(100, 23));
-        jPanel3.add(jlReleaseOnSave);
-
-        jchReleaseOnSave.setPreferredSize(new java.awt.Dimension(100, 23));
-        jPanel3.add(jchReleaseOnSave);
+        jckReleaseOnSave.setText("Liberar al guardar");
+        jckReleaseOnSave.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        jckReleaseOnSave.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+        jckReleaseOnSave.setPreferredSize(new java.awt.Dimension(200, 23));
+        jPanel3.add(jckReleaseOnSave);
 
         jPanel22.add(jPanel3);
 
@@ -400,37 +425,37 @@ public class SFormShipment extends SBeanForm implements ActionListener{
     private javax.swing.JPanel jPanel23;
     private javax.swing.JPanel jPanel24;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JButton jbAddComment;
+    private javax.swing.JButton jbClearRows;
     private javax.swing.JButton jbRowAdd;
     private javax.swing.JButton jbRowRemove;
-    private javax.swing.JCheckBox jchReleaseOnSave;
+    private javax.swing.JButton jbShowRows;
+    private javax.swing.JCheckBox jckReleaseOnSave;
     private javax.swing.JLabel jlCargoType;
     private javax.swing.JLabel jlDate;
+    private javax.swing.JLabel jlDateRows;
     private javax.swing.JLabel jlDriverName;
     private javax.swing.JLabel jlDriverPhone;
     private javax.swing.JLabel jlDummy01;
     private javax.swing.JLabel jlEstatus;
     private javax.swing.JLabel jlHandlingType;
     private javax.swing.JLabel jlNumber;
-    private javax.swing.JLabel jlReleaseOnSave;
     private javax.swing.JLabel jlShipmentType;
     private javax.swing.JLabel jlShipper;
-    private javax.swing.JLabel jlTotalAvailables1;
     private javax.swing.JLabel jlTotalM2;
     private javax.swing.JLabel jlVehiclePlate;
     private javax.swing.JLabel jlVehicleType;
     private javax.swing.JPanel jpAvailableRows;
     private javax.swing.JPanel jpBody;
-    private javax.swing.JPanel jpControlButtons;
-    private javax.swing.JPanel jpFilters;
+    private javax.swing.JPanel jpFilterControls;
     private javax.swing.JPanel jpFooter;
     private javax.swing.JPanel jpHeader;
+    private javax.swing.JPanel jpRowControls;
     private javax.swing.JPanel jpRows;
     private javax.swing.JPanel jpSelectedRows;
     private javax.swing.JScrollPane jspComments;
@@ -456,7 +481,7 @@ public class SFormShipment extends SBeanForm implements ActionListener{
     */
     
     private void initComponentsCustom() {
-        SGuiUtils.setWindowBounds(this, 1024, 590);
+        SGuiUtils.setWindowBounds(this, 1024, 640);
         
         moDateDate.setDateSettings(miClient, SGuiUtils.getLabelName(jlDate), true);
         moKeyShipmentType.setKeySettings(miClient, SGuiUtils.getLabelName(jlShipmentType), true);
@@ -467,6 +492,7 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         moTextVehiclePlate.setTextSettings(SGuiUtils.getLabelName(jlVehiclePlate), 25);
         moTextDriverName.setTextSettings(SGuiUtils.getLabelName(jlDriverName), 50);
         moTextDriverPhone.setTextSettings(SGuiUtils.getLabelName(jlDriverPhone), 50);
+        moDateRows.setDateSettings(miClient, SGuiUtils.getLabelName(jlDateRows), false);
         moKeyComment.setKeySettings(miClient, SGuiUtils.getLabelName(moKeyComment.getToolTipText()), false);
         
         moFields.addField(moDateDate);
@@ -478,36 +504,233 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         moFields.addField(moTextVehiclePlate);
         moFields.addField(moTextDriverName);
         moFields.addField(moTextDriverPhone);
+        moFields.addField(moDateRows);
         moFields.addField(moKeyComment);
         
         moFields.setFormButton(jbSave);
         
+        moGridAvailableRows = new SGridPaneForm(miClient, SModConsts.S_SHIPT_ROW, SLibConsts.UNDEFINED, "Remisiones disponibles", null) {
+            @Override
+            public void initGrid() {
+                setRowButtonsEnabled(false);
+            }
+
+            @Override
+            public ArrayList<SGridColumnForm> createGridColumns() {
+                int col = 0;
+                ArrayList<SGridColumnForm> gridColumnsForm = new ArrayList<>();
+                SGridColumnForm[] columns = new SGridColumnForm[7];
+
+                columns[col++] = new SGridColumnForm(SGridConsts.COL_TYPE_INT_RAW, "Remisión", 60);
+                columns[col++] = new SGridColumnForm(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "Invoice");
+                columns[col++] = new SGridColumnForm(SGridConsts.COL_TYPE_DATE, "Fecha invoice");
+                columns[col++] = new SGridColumnForm(SGridConsts.COL_TYPE_TEXT_NAME_BPR_S, "Cliente");
+                columns[col++] = new SGridColumnForm(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "Destino");
+                columns[col++] = new SGridColumnForm(SGridConsts.COL_TYPE_DEC_QTY, "m²");
+                columns[col++] = new SGridColumnForm(SGridConsts.COL_TYPE_DEC_QTY, "kg");
+
+                gridColumnsForm.addAll(Arrays.asList((SGridColumnForm[]) columns));
+
+                return gridColumnsForm;
+            }
+            
+            @Override
+            public void actionMouseClicked() {
+                actionPerformedAddRow();
+            }
+        };
+        
+        moGridAvailableRows.setForm(null);
+        moGridAvailableRows.setPaneFormOwner(null);
+        jpAvailableRows.add(moGridAvailableRows, BorderLayout.CENTER);
+        
+        moGridSelectedRows = new SGridPaneForm(miClient, SModConsts.S_SHIPT_ROW, SLibConsts.UNDEFINED, "Remisiones seleccionadas", null) {
+            @Override
+            public void initGrid() {
+                setRowButtonsEnabled(false, false, false);
+            }
+            
+            @Override
+            public ArrayList<SGridColumnForm> createGridColumns() {
+                int col = 0;
+                ArrayList<SGridColumnForm> gridColumnsForm = new ArrayList<>();
+                SGridColumnForm[] columns = new SGridColumnForm[7];
+
+                columns[col++] = new SGridColumnForm(SGridConsts.COL_TYPE_INT_RAW, "Remisión", 60);
+                columns[col++] = new SGridColumnForm(SGridConsts.COL_TYPE_TEXT_CODE_CAT, "Invoice");
+                columns[col++] = new SGridColumnForm(SGridConsts.COL_TYPE_DATE, "Fecha invoice");
+                columns[col++] = new SGridColumnForm(SGridConsts.COL_TYPE_TEXT_NAME_BPR_S, "Cliente");
+                columns[col++] = new SGridColumnForm(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "Destino");
+                columns[col++] = new SGridColumnForm(SGridConsts.COL_TYPE_DEC_QTY, "m²");
+                columns[col++] = new SGridColumnForm(SGridConsts.COL_TYPE_DEC_QTY, "kg");
+
+                gridColumnsForm.addAll(Arrays.asList((SGridColumnForm[]) columns));
+
+                return gridColumnsForm;            
+            }
+            
+            @Override
+            public void actionMouseClicked() {
+                actionPerformedRemoveRow();
+            }
+        };
+        
+        moGridSelectedRows.setForm(null);
+        moGridSelectedRows.setPaneFormOwner(null);
+        jpSelectedRows.add(moGridSelectedRows, BorderLayout.CENTER);
+        
+        mvFormGrids.add(moGridAvailableRows);
+        mvFormGrids.add(moGridSelectedRows);
     }
     
-    private void computeTotalM2() {
+    private void computeTotals() {
         double totalM2 = 0;
         
+        for (int i = 0; i < moGridSelectedRows.getTable().getRowCount(); i++) { 
+            totalM2 += ((SRowShipmentRow) moGridSelectedRows.getGridRow(i)).getShipmentRow().getMeters2();
+        }
+                
         jtfTotalM2.setText(SLibUtils.getDecimalFormatQuantity().format(totalM2));
         jtfTotalM2.setCaretPosition(0);
     }
     
-    private void actionPerformedAddComment() {
-        if(moKeyComment.getSelectedIndex() > 0) {
-            if(jtaComments.getText().isEmpty()) {
-                jtaComments.setText(moKeyComment.getSelectedItem().getItem());
+    private void checkRowToAdd(final SDbShipmentRow shipmentRow) throws Exception {
+        // validate customer:
+        if (shipmentRow.getFkCustomerId() == SLibConsts.UNDEFINED) {
+            throw new Exception("La remisión no tiene un cliente identificado.");
+        }
+//        if (shipmentRow.getInvoiceIdYear() == SLibConsts.UNDEFINED || shipmentRow.getInvoiceIdDoc() == SLibConsts.UNDEFINED) {
+//            throw new Exception("La remisión no está facturada.");
+//        }
+    }
+    
+    private void actionPerformedShowRows() {
+        if (jbShowRows.isEnabled()) {
+            if (moDateRows.getValue() == null) {
+                miClient.showMsgBoxWarning(SGuiConsts.ERR_MSG_FIELD_REQ + "'" + SGuiUtils.getLabelName(jlDateRows) + "'.");
+                moDateRows.requestFocus();
             }
             else {
-                jtaComments.append("\n" + moKeyComment.getSelectedItem().getItem());
+                try {
+                    moGridAvailableRows.populateGrid(new Vector<>(SShippingUtils.obtainAvailableRows(miClient.getSession(), miConnectionAvista, moDateRows.getValue())));
+                    
+                    if (moGridSelectedRows.getTable().getRowCount() > 0) {
+                        for (int i = 0; i < moGridAvailableRows.getTable().getRowCount(); i++) {
+                            if (rowIsSelected(((SRowShipmentRow) moGridAvailableRows.getGridRow(i)).getShipmentRow().getDeliveryId())) {
+                                moGridAvailableRows.removeGridRow(i);
+                                moGridAvailableRows.renderGridRows();
+                                i--; //Because the size of the Grid decrements 1 in size every time a row its removed
+                            }
+                        }
+                    }
+                    
+                    mbRowsShown = true;
+                    
+                    moDateRows.setEditable(false);
+                    jbShowRows.setEnabled(false);
+                    jbClearRows.setEnabled(true);
+                    
+                    jbClearRows.requestFocus();
+                }
+                catch (Exception e) {
+                    SLibUtils.showException(this, e);
+                }
             }
         }
     }
     
-    private void disableSaveButton() {
-        if(moRegistry.getFkShipmentStatusId() == SModSysConsts.SS_SHIPT_ST_REL) {   //If shipment it's already released
-            jbSave.setEnabled(false);
+    private boolean rowIsSelected(String deliveryId) {
+        boolean isSelected = false;
+        
+        for (int j = 0; j < moGridSelectedRows.getTable().getRowCount(); j++) {
+            if (( (SRowShipmentRow) moGridSelectedRows.getGridRow(j)).getShipmentRow().getDeliveryId().equalsIgnoreCase(deliveryId)) {
+                isSelected = true;
+                break;
+            }
+        }
+        
+        return isSelected;
+    }
+    
+    private void actionPerformedClearRows() {
+        if (jbClearRows.isEnabled()) {
+            moGridAvailableRows.clearGridRows();
+            
+            mbRowsShown = false;
+            
+            moDateRows.setEditable(true);
+            jbShowRows.setEnabled(true);
+            jbClearRows.setEnabled(false);
+            
+            moDateRows.requestFocus();
         }
     }
     
+    private void actionPerformedAddRow() {       
+        if (moGridAvailableRows.getSelectedGridRow() == null) {
+            miClient.showMsgBoxWarning(SGridConsts.MSG_SELECT_ROW);
+            moGridAvailableRows.getTable().requestFocus();
+        }
+        else {            
+            try {
+                checkRowToAdd(((SRowShipmentRow) moGridAvailableRows.getSelectedGridRow()).getShipmentRow());
+                
+                // identify row to be added:
+                int index = moGridAvailableRows.getTable().getSelectedRow();
+                
+                // add current row into selected rows:
+                moGridSelectedRows.addGridRow(moGridAvailableRows.getSelectedGridRow());
+                moGridSelectedRows.renderGridRows(); 
+                //moGridSelectedRows.setSelectedGridRow(moGridSelectedRows.getModel().getRowCount() - 1);
+                computeTotals();
+                
+                // remove current row from available rows:
+                moGridAvailableRows.removeGridRow(index);
+                moGridAvailableRows.renderGridRows();
+                moGridAvailableRows.setSelectedGridRow(index < moGridAvailableRows.getModel().getRowCount() ? index : moGridAvailableRows.getModel().getRowCount() - 1);
+            }
+            catch(Exception e) {
+                SLibUtils.showException(this, e);
+            }
+        }
+    }
+    
+    private void actionPerformedRemoveRow() {        
+        if (moGridSelectedRows.getSelectedGridRow() == null) {
+            miClient.showMsgBoxWarning(SGridConsts.MSG_SELECT_ROW);
+        } 
+        else {            
+            try{
+                // identify row to be removed:
+                int index = moGridSelectedRows.getTable().getSelectedRow();
+                
+                // check if row to be removed should be returned to available rows:
+                if (mbRowsShown && SLibTimeUtils.isSameDate(((SRowShipmentRow) moGridSelectedRows.getSelectedGridRow()).getShipmentRow().getDeliveryDate(), moDateRows.getValue())) {
+                    moGridAvailableRows.addGridRow(moGridSelectedRows.getSelectedGridRow());
+                    moGridAvailableRows.renderGridRows();
+                    //moGridAvailableRows.setSelectedGridRow(moGridAvailableRows.getModel().getRowCount() - 1);
+                }
+                
+                moGridSelectedRows.removeGridRow(index);
+                moGridSelectedRows.renderGridRows();
+                moGridSelectedRows.setSelectedGridRow(index < moGridSelectedRows.getModel().getRowCount() ? index : moGridSelectedRows.getModel().getRowCount() - 1);
+                computeTotals();
+            }
+            catch (Exception e) {
+                SLibUtils.showException(this, e);
+            }
+        }
+    }
+    
+    private void actionPerformedAddComment() {
+        if (moKeyComment.getSelectedIndex() <= 0) {
+            miClient.showMsgBoxWarning(SGuiConsts.ERR_MSG_FIELD_REQ + "'" + moKeyComment.getToolTipText() + "'.");
+            moKeyComment.requestFocus();
+        }
+        else {
+            jtaComments.append((jtaComments.getText().isEmpty() ? "" : "\n") + moKeyComment.getSelectedItem().getItem());
+        }
+    }      
     /*
      * Public methods
      */
@@ -518,11 +741,19 @@ public class SFormShipment extends SBeanForm implements ActionListener{
     
     @Override
     public void addAllListeners() {
+        jbShowRows.addActionListener(this);
+        jbClearRows.addActionListener(this);
+        jbRowAdd.addActionListener(this);
+        jbRowRemove.addActionListener(this);
         jbAddComment.addActionListener(this);
     }
 
     @Override
     public void removeAllListeners() {
+        jbShowRows.removeActionListener(this);
+        jbClearRows.removeActionListener(this);
+        jbRowAdd.removeActionListener(this);
+        jbRowRemove.removeActionListener(this);
         jbAddComment.removeActionListener(this);
     }
 
@@ -567,15 +798,48 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         moTextDriverName.setValue(moRegistry.getDriverName());
         moTextDriverPhone.setValue(moRegistry.getDriverPhone());
         jtaComments.setText(moRegistry.getComments());
+        jtaComments.setCaretPosition(0);
+        jtfTotalM2.setText(SLibUtils.getDecimalFormatQuantity().format(moRegistry.getMeters2()));
+        jtfTotalM2.setCaretPosition(0);
         
-        computeTotalM2();
+        moGridAvailableRows.populateGrid(new Vector<>());
+        moGridSelectedRows.populateGrid(new Vector<>());
+        
+        Vector<SGridRow> selectedRows = new Vector<>();
+        for (SDbShipmentRow shipmentRow : moRegistry.getChildRows()) {
+            selectedRows.add(new SRowShipmentRow(shipmentRow));
+        }
+        
+        moGridSelectedRows.populateGrid(selectedRows);
         
         setFormEditable(true);
-        disableSaveButton();
+        
+        if (moRegistry.getFkShipmentStatusId() != SModSysConsts.SS_SHIPT_ST_REL_TO) {
+            jbSave.setEnabled(false);   // shipment can only be modified if its status is "to be released"
+        }
         
         if (moRegistry.isRegistryNew()) {
+            jbSave.setEnabled(true);
         }
         else {
+        }
+        
+        moDateRows.setValue(miClient.getSession().getCurrentDate());
+        actionPerformedClearRows();
+        jckReleaseOnSave.setSelected(true);
+        
+        try {
+            SDbConfigAvista configAvista = ((SDbConfig) miClient.getSession().getConfigSystem()).getRegConfigAvista();
+            miConnectionAvista = SEtlProcess.createConnection(
+                    SEtlConsts.DB_SQL_SERVER, 
+                    configAvista.getAvistaHost(), 
+                    configAvista.getAvistaPort(), 
+                    configAvista.getAvistaName(), 
+                    configAvista.getAvistaUser(), 
+                    configAvista.getAvistaPassword());
+        }
+        catch (Exception e) {
+            SLibUtils.showException(this, e);
         }
         
         addAllListeners();
@@ -593,17 +857,22 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         registry.setDriverPhone(moTextDriverPhone.getText());
         registry.setVehiclePlate(moTextVehiclePlate.getText());
         //registry.setWebKey(...);
-        //registry.setTotalM2(...);
+        registry.setMeters2(SLibUtils.parseDouble(jtfTotalM2.getText()));
         registry.setComments(jtaComments.getText());
         //registry.setAnnulled(...);
         //registry.setDeleted(...);
         //registry.setSystem(...);
-        registry.setFkShipmentStatusId(jchReleaseOnSave.isSelected() ? SModSysConsts.SS_SHIPT_ST_REL : SModSysConsts.SS_SHIPT_ST_REL_TO);
+        registry.setFkShipmentStatusId(jckReleaseOnSave.isSelected() ? SModSysConsts.SS_SHIPT_ST_REL : SModSysConsts.SS_SHIPT_ST_REL_TO);
         registry.setFkShipmentTypeId(moKeyShipmentType.getValue()[0]);
         registry.setFkCargoTypeId(moKeyCargoType.getValue()[0]);
         registry.setFkHandlingTypeId(moKeyHandlingType.getValue()[0]);
         registry.setFkVehicleTypeId(moKeyVehicleType.getValue()[0]);
         registry.setFkShipperId(moKeyShipper.getValue()[0]);
+        
+        registry.getChildRows().clear();
+        for (int i = 0; i < moGridSelectedRows.getTable().getRowCount(); i++) {
+            registry.getChildRows().add(((SRowShipmentRow) moGridSelectedRows.getGridRow(i)).getShipmentRow());
+        }
 
         return registry;
     }
@@ -616,13 +885,30 @@ public class SFormShipment extends SBeanForm implements ActionListener{
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() instanceof JButton) {
-            JButton button = (JButton) e.getSource();
-            
-            if (button == jbAddComment) {
-                actionPerformedAddComment();
+    public void actionPerformed(ActionEvent evt) {
+        try {
+            if (evt.getSource() instanceof JButton) {
+                JButton button = (JButton) evt.getSource();
+
+                if (button == jbShowRows) {
+                    actionPerformedShowRows();
+                }
+                else if (button == jbClearRows) {
+                    actionPerformedClearRows();
+                }
+                else if (button == jbRowAdd) {
+                    actionPerformedAddRow();
+                }
+                else if (button == jbRowRemove) {
+                    actionPerformedRemoveRow();
+                }
+                else if (button == jbAddComment) {
+                    actionPerformedAddComment();
+                }
             }
+        } 
+        catch(Exception e) {
+            SLibUtils.showException(this, e);
         }
     }
 }

@@ -21,6 +21,7 @@ import sa.lib.gui.SGuiSession;
 public class SDbDestination extends SDbRegistryUser{
     
     protected int mnPkDestinationId;
+    protected int mnSiteLocationId;
     protected String msCode;
     protected String msName;
     protected boolean mbDeleted;
@@ -39,6 +40,7 @@ public class SDbDestination extends SDbRegistryUser{
      */
     
     public void setPkDestinationId(int n) { mnPkDestinationId = n; }
+    public void setSiteLocationId(int n) { mnSiteLocationId = n; }
     public void setCode(String s) { msCode = s; }
     public void setName(String s) { msName = s; }
     public void setDeleted(boolean b) { mbDeleted = b; }
@@ -49,6 +51,7 @@ public class SDbDestination extends SDbRegistryUser{
     public void setTsUserUpdate(Date t) { mtTsUserUpdate = t; }
 
     public int getPkDestinationId() { return mnPkDestinationId; }
+    public int getSiteLocationId() { return mnSiteLocationId; }
     public String getCode() { return msCode; }
     public String getName() { return msName; }
     public boolean isDeleted() { return mbDeleted; }
@@ -81,6 +84,7 @@ public class SDbDestination extends SDbRegistryUser{
         initBaseRegistry();
         
         mnPkDestinationId = 0;
+        mnSiteLocationId = 0;
         msCode = "";
         msName = "";
         mbDeleted = false;
@@ -136,6 +140,7 @@ public class SDbDestination extends SDbRegistryUser{
         else {
             
             mnPkDestinationId = resultSet.getInt("id_destin");
+            mnSiteLocationId = resultSet.getInt("site_loc_id");
             msCode = resultSet.getString("code");
             msName = resultSet.getString("name");
             mbDeleted = resultSet.getBoolean("b_del");
@@ -164,7 +169,8 @@ public class SDbDestination extends SDbRegistryUser{
             mnFkUserUpdateId = SUtilConsts.USR_NA_ID;
             
             msSql = "INSERT INTO " + getSqlTable() + " VALUES (" +
-                mnPkDestinationId + ", " + 
+                mnPkDestinationId + ", " +
+                mnSiteLocationId + ", " + 
                 "'" + msCode + "', " + 
                 "'" + msName + "', " + 
                 (mbDeleted ? 1 : 0) + ", " + 
@@ -180,6 +186,7 @@ public class SDbDestination extends SDbRegistryUser{
             
             msSql = "UPDATE " + getSqlTable() + " SET " +
                     "id_destin = " + mnPkDestinationId + ", " +
+                    "site_loc_id = " + mnSiteLocationId + ", " +
                     "code = '" + msCode + "', " +
                     "name = '" + msName + "', " +
                     "b_del = " + (mbDeleted ? 1 : 0) + ", " +
@@ -202,6 +209,7 @@ public class SDbDestination extends SDbRegistryUser{
         SDbDestination  registry = new SDbDestination();
         
         registry.setPkDestinationId(this.getPkDestinationId());
+        registry.setSiteLocationId(this.getSiteLocationId());
         registry.setCode(this.getCode());
         registry.setName(this.getName());
         registry.setDeleted(this.isDeleted());

@@ -176,7 +176,7 @@ public class SDbShipmentType extends SDbRegistryUser{
             mnFkUserUpdateId = session.getUser().getPkUserId();
             
             msSql = "UPDATE " + getSqlTable() + " SET " +
-                "id_shipt_tp = " + mnPkShipmentTypeId + ", " +
+                //"id_shipt_tp = " + mnPkShipmentTypeId + ", " +
                 "code = '" + msCode + "', " +
                 "name = '" + msName + "', " +
                 "b_del = " + (mbDeleted ? 1 : 0) + ", " +

@@ -176,8 +176,20 @@ public class SModModuleSms extends SGuiModule {
         
         switch (type) {
             case SModConsts.S_SHIPT:
-                view = new SViewShipment(miClient, "Embarques");
-                break;
+                switch (subtype) {
+                    case SLibConsts.UNDEFINED:
+                        view = new SViewShipment(miClient, subtype, "Embarques");
+                        break;
+                    case SModSysConsts.SS_SHIPT_ST_REL_TO:
+                        view = new SViewShipment(miClient, subtype, "Embarques por liberar");
+                        break;
+                    case SModSysConsts.SS_SHIPT_ST_REL:
+                        view = new SViewShipment(miClient, subtype, "Embarques liberados");
+                        break;
+                    default:
+                        miClient.showMsgBoxError(SLibConsts.ERR_MSG_OPTION_UNKNOWN);
+                }
+            break;
             case SModConsts.SU_SHIPPER:
                 view = new SViewShipper(miClient, "Transportistas");
                 break;

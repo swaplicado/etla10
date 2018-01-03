@@ -111,6 +111,17 @@
             <MenuItem class="javax.swing.JMenuItem" name="jmiSmsShipments">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Embarques"/>
+                <Property name="actionCommand" type="java.lang.String" value="Embarques"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jmiSmsShipmentsToRel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Embarques por liberar"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jmiSmsShipmentsRel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Embarques liberados"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="jsFile4">

@@ -183,7 +183,7 @@ public class SDbHandlingType extends SDbRegistryUser{
             mnFkUserUpdateId = session.getUser().getPkUserId();
             
             msSql = "UPDATE " + getSqlTable() + " SET " +
-                "id_handg_tp = " + mnPkHandlingTypeId + ", " +
+                //"id_handg_tp = " + mnPkHandlingTypeId + ", " +
                 "code = '" + msCode + "', " +
                 "name = '" + msName + "', " +
                 "b_del = " + (mbDeleted ? 1 : 0) + ", " +

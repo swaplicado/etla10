@@ -177,7 +177,7 @@ public class SDbComment extends SDbRegistryUser{
             mnFkUserUpdateId = session.getUser().getPkUserId();
             
             msSql = "UPDATE " + getSqlTable() + " SET " +
-                "id_comment = " + mnPkCommentId + ", " +
+                //"id_comment = " + mnPkCommentId + ", " +
                 "code = '" + msCode + "', " +
                 "name = '" + msName + "', " +
                 "b_del = " + (mbDeleted ? 1 : 0) + ", " +

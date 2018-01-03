@@ -177,7 +177,7 @@ public class SDbVehicleType extends SDbRegistryUser{
             mnFkUserUpdateId = session.getUser().getPkUserId();
             
             msSql = "UPDATE " + getSqlTable() + " SET " +
-                "id_vehic_tp = " + mnPkVehicleTypeId + ", " +
+                //"id_vehic_tp = " + mnPkVehicleTypeId + ", " +
                 "code = '" + msCode + "', " +
                 "name = '" + msName + "', " +
                 "b_del = " + (mbDeleted ? 1 : 0) + ", " +
