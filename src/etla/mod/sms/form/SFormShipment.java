@@ -599,9 +599,9 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         if (shipmentRow.getFkCustomerId() == SLibConsts.UNDEFINED) {
             throw new Exception("La remisión no tiene un cliente identificado.");
         }
-//        if (shipmentRow.getInvoiceIdYear() == SLibConsts.UNDEFINED || shipmentRow.getInvoiceIdDoc() == SLibConsts.UNDEFINED) {
-//            throw new Exception("La remisión no está facturada.");
-//        }
+        if (shipmentRow.getInvoiceIdYear() == SLibConsts.UNDEFINED || shipmentRow.getInvoiceIdDoc() == SLibConsts.UNDEFINED) {
+            throw new Exception("La remisión no está facturada.");
+        }
     }
     
     private void actionPerformedShowRows() {
