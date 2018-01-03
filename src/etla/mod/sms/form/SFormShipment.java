@@ -309,7 +309,7 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         jpAvailableRows.setLayout(new java.awt.BorderLayout());
         jpRows.add(jpAvailableRows, java.awt.BorderLayout.WEST);
 
-        jpSelectedRows.setBorder(javax.swing.BorderFactory.createTitledBorder("Remisiones disponibles:"));
+        jpSelectedRows.setBorder(javax.swing.BorderFactory.createTitledBorder("Remisiones seleccionadas:"));
         jpSelectedRows.setPreferredSize(new java.awt.Dimension(475, 23));
         jpSelectedRows.setLayout(new java.awt.BorderLayout());
         jpRows.add(jpSelectedRows, java.awt.BorderLayout.EAST);
