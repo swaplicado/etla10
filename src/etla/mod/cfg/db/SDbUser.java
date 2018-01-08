@@ -55,6 +55,10 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
         super(SModConsts.CU_USR);
     }
 
+    /*
+     * Public methods
+     */
+    
     public void setPkUserId(int n) { mnPkUserId = n; }
     public void setDesUserId(int n) { mnDesUserId = n; }
     public void setName(String s) { msName = s; }
@@ -86,6 +90,10 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
     public void setAuxClearPasswordOnSave(boolean b) { mbAuxClearPasswordOnSave = b; }
 
     public boolean isAuxClearPasswordOnSave() { return mbAuxClearPasswordOnSave; }
+    
+    /*
+     * Overriden methods
+     */
     
     @Override
     public boolean isAdministrator() {

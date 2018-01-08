@@ -22,7 +22,7 @@ public abstract class SEtlProcess {
     public static void computeEtl(final SGuiSession session, final int mode, final Date periodStart, final Date periodEnd, final Date dateIssue, final int invoiceLot, final boolean updateData, final int updateMode) throws Exception {
         SDbEtlLog etlLog = new SDbEtlLog();
         SDbConfig config = (SDbConfig) session.getConfigSystem();
-        SDbConfigAvista configAvista = config.getRegConfigAvista();
+        SDbConfigAvista configAvista = config.getDbConfigAvista();
         Connection connectionSiie = null;
         Connection connectionAvista = null;
         SEtlPackage etlPackage = null;

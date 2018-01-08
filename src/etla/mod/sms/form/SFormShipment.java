@@ -830,7 +830,7 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         jckReleaseOnSave.setSelected(true);
         
         try {
-            SDbConfigAvista configAvista = ((SDbConfig) miClient.getSession().getConfigSystem()).getRegConfigAvista();
+            SDbConfigAvista configAvista = ((SDbConfig) miClient.getSession().getConfigSystem()).getDbConfigAvista();
             miConnectionAvista = SEtlProcess.createConnection(
                     SEtlConsts.DB_SQL_SERVER, 
                     configAvista.getAvistaHost(), 

@@ -57,4 +57,6 @@ public abstract class SModSysConsts {
     public static final int SU_SHIPPER_NA = 1;
     
     public static final int SU_DESTIN_NA = 1;
+    
+    public static final int S_CFG_CFG = 1;
 }

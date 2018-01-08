@@ -231,7 +231,7 @@ public class SDbItem extends SDbRegistryUser {
 
         // Compare and reset Avista Configuration default values:
 
-        configAvista = ((SDbConfig) session.getConfigSystem()).getRegConfigAvista();
+        configAvista = ((SDbConfig) session.getConfigSystem()).getDbConfigAvista();
         
         if (mnFkSrcRequiredCurrencyId_n == configAvista.getFkSrcDefaultCurrencyId()) {
             mnFkSrcRequiredCurrencyId_n = SLibConsts.UNDEFINED;

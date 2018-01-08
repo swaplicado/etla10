@@ -38,8 +38,10 @@ public class SDbShipment extends SDbRegistryUser{
     protected double mdKilograms;
     protected String msComments;
     protected boolean mbAnnulled;
+    /*
     protected boolean mbDeleted;
     protected boolean mbSystem;
+    */
     protected int mnFkShipmentStatusId;
     protected int mnFkShipmentTypeId;
     protected int mnFkCargoTypeId;
@@ -49,13 +51,17 @@ public class SDbShipment extends SDbRegistryUser{
     protected int mnFkUserReleaseId;
     protected int mnFkUserAcceptId;
     protected int mnFkUserAnnulId;
+    /*
     protected int mnFkUserInsertId;
     protected int mnFkUserUpdateId;
+    */
     protected Date mtTsUserRelease;
     protected Date mtTsUserAccept;
     protected Date mtTsUserAnnul;
+    /*
     protected Date mtTsUserInsert;
     protected Date mtTsUserUpdate;
+    */
     
     protected ArrayList<SDbShipmentRow> maChildRows;
     
@@ -158,7 +164,7 @@ public class SDbShipment extends SDbRegistryUser{
     
     public ArrayList<SDbShipmentRow> getChildRows() { return maChildRows; }
     
-     /*
+    /*
      * Overriden methods
      */
 

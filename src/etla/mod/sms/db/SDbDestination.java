@@ -24,18 +24,20 @@ public class SDbDestination extends SDbRegistryUser{
     protected int mnSiteLocationId;
     protected String msCode;
     protected String msName;
+    /*
     protected boolean mbDeleted;
     protected boolean mbSystem;
     protected int mnFkUserInsertId;
     protected int mnFkUserUpdateId;
     protected Date mtTsUserInsert;
     protected Date mtTsUserUpdate;
+    */
 
     public SDbDestination () {
         super(SModConsts.SU_DESTIN);
     }
     
-     /*
+    /*
      * Public methods
      */
     
@@ -60,13 +62,10 @@ public class SDbDestination extends SDbRegistryUser{
     public int getFkUserUpdateId() { return mnFkUserUpdateId; }
     public Date getTsUserInsert() { return mtTsUserInsert; }
     public Date getTsUserUpdate() { return mtTsUserUpdate; }
-
-
     
-     /*
+    /*
      * Overriden methods
      */
-
 
     @Override
     public void setPrimaryKey(int[] pk) {
@@ -185,15 +184,15 @@ public class SDbDestination extends SDbRegistryUser{
             mnFkUserUpdateId = session.getUser().getPkUserId();
             
             msSql = "UPDATE " + getSqlTable() + " SET " +
-                    "id_destin = " + mnPkDestinationId + ", " +
+                    //"id_destin = " + mnPkDestinationId + ", " +
                     "site_loc_id = " + mnSiteLocationId + ", " +
                     "code = '" + msCode + "', " +
                     "name = '" + msName + "', " +
                     "b_del = " + (mbDeleted ? 1 : 0) + ", " +
                     "b_sys = " + (mbSystem ? 1 : 0) + ", " +
-                    "fk_usr_ins = " + mnFkUserInsertId + ", " +
+                    //"fk_usr_ins = " + mnFkUserInsertId + ", " +
                     "fk_usr_upd = " + mnFkUserUpdateId + ", " +
-                    "ts_usr_ins = " + "NOW()" + ", " +
+                    //"ts_usr_ins = " + "NOW()" + ", " +
                     "ts_usr_upd = " + "NOW()" +
                  getSqlWhere(); 
         }

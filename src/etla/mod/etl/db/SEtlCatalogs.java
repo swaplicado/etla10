@@ -29,7 +29,7 @@ public class SEtlCatalogs {
     
     public SEtlCatalogs(SGuiSession session, boolean readSalesAgents, boolean readItems) throws Exception {
         moSession = session;
-        moConfigAvista = ((SDbConfig) session.getConfigSystem()).getRegConfigAvista();
+        moConfigAvista = ((SDbConfig) session.getConfigSystem()).getDbConfigAvista();
         mbReadSalesAgents = readSalesAgents;
         mbReadItems = readItems;
         

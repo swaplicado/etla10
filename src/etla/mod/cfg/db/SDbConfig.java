@@ -7,6 +7,7 @@ package etla.mod.cfg.db;
 
 import etla.mod.SModConsts;
 import etla.mod.etl.db.SDbConfigAvista;
+import etla.mod.sms.db.SDbConfigSms;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
@@ -40,12 +41,17 @@ public class SDbConfig extends SDbRegistryUser implements SGuiConfigSystem {
     protected Date mtTsUserUpdate;
     */
     
-    protected SDbConfigAvista moRegConfigAvista;
+    protected SDbConfigAvista moDbConfigAvista;
+    protected SDbConfigSms moDbConfigSms;
     
     public SDbConfig() {
         super(SModConsts.C_CFG);
     }
 
+    /*
+     * Public methods
+     */
+    
     public void setPkConfigId(int n) { mnPkConfigId = n; }
     public void setVersion(int n) { mnVersion = n; }
     public void setVersionTs(Date t) { mtVersionTs = t; }
@@ -76,10 +82,16 @@ public class SDbConfig extends SDbRegistryUser implements SGuiConfigSystem {
     public Date getTsUserInsert() { return mtTsUserInsert; }
     public Date getTsUserUpdate() { return mtTsUserUpdate; }
 
-    public void setRegConfigAvista(SDbConfigAvista o) { moRegConfigAvista = o; }
+    public void setDbConfigAvista(SDbConfigAvista o) { moDbConfigAvista = o; }
+    public void setDbConfigSms(SDbConfigSms o) { moDbConfigSms = o; }
     
-    public SDbConfigAvista getRegConfigAvista() { return moRegConfigAvista; }
+    public SDbConfigAvista getDbConfigAvista() { return moDbConfigAvista; }
+    public SDbConfigSms getDbConfigSms() { return moDbConfigSms; }
     
+    /*
+     * Overriden methods
+     */
+
     @Override
     public void setPrimaryKey(int[] pk) {
         mnPkConfigId = pk[0];
@@ -109,7 +121,8 @@ public class SDbConfig extends SDbRegistryUser implements SGuiConfigSystem {
         mtTsUserInsert = null;
         mtTsUserUpdate = null;
         
-        moRegConfigAvista = new SDbConfigAvista();
+        moDbConfigAvista = null;
+        moDbConfigSms = null;
     }
 
     @Override
@@ -171,7 +184,11 @@ public class SDbConfig extends SDbRegistryUser implements SGuiConfigSystem {
             
             // Read aswell supplementary info:
             
-            moRegConfigAvista.read(session, new int[] { mnPkConfigId });
+            moDbConfigAvista = new SDbConfigAvista();
+            moDbConfigAvista.read(session, new int[] { mnPkConfigId });
+            
+            moDbConfigSms = new SDbConfigSms();
+            moDbConfigSms.read(session, new int[] { mnPkConfigId });
             
             // Finish registry reading:
 
@@ -239,7 +256,9 @@ public class SDbConfig extends SDbRegistryUser implements SGuiConfigSystem {
         
         // Save aswell supplementary info:
         
-        moRegConfigAvista.save(session);
+        moDbConfigAvista.save(session);
+        
+        moDbConfigSms.save(session);
             
         // Finish registry updating:
         
@@ -266,7 +285,8 @@ public class SDbConfig extends SDbRegistryUser implements SGuiConfigSystem {
         registry.setTsUserInsert(this.getTsUserInsert());
         registry.setTsUserUpdate(this.getTsUserUpdate());
         
-        registry.setRegConfigAvista(moRegConfigAvista.clone());
+        registry.setDbConfigAvista(this.getDbConfigAvista() == null ? null : this.getDbConfigAvista().clone());
+        registry.setDbConfigSms(this.getDbConfigSms() == null ? null : this.getDbConfigSms().clone());
 
         registry.setRegistryNew(this.isRegistryNew());
         return registry;

@@ -41,7 +41,7 @@ public class SEtlProcessCatItems {
         ResultSet resultSetSiie = null;
         ResultSet resultSetAvista = null;
         SDataItem dataItem = null;
-        SDbConfigAvista dbConfigAvista = ((SDbConfig) session.getConfigSystem()).getRegConfigAvista();
+        SDbConfigAvista dbConfigAvista = ((SDbConfig) session.getConfigSystem()).getDbConfigAvista();
         SDbItem dbItem = null;
         SEtlCatalogs etlCatalogs = null;
         

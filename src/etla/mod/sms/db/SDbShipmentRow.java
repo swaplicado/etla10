@@ -50,7 +50,7 @@ public class SDbShipmentRow extends SDbRegistryUser{
         super(SModConsts.S_SHIPT_ROW);
     }
     
-     /*
+    /*
      * Public methods
      */
     

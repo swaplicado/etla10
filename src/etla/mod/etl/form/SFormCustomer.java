@@ -309,7 +309,7 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
      */
     
     private void initComponentsCustom() {
-        SDbConfigAvista configAvista = ((SDbConfig) miClient.getSession().getConfigSystem()).getRegConfigAvista();
+        SDbConfigAvista configAvista = ((SDbConfig) miClient.getSession().getConfigSystem()).getDbConfigAvista();
         
         SGuiUtils.setWindowBounds(this, 640, 400);
         

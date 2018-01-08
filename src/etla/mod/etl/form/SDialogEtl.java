@@ -356,7 +356,7 @@ public class SDialogEtl extends SBeanFormDialog implements ActionListener, ItemL
         jbSave.setText(SGuiConsts.TXT_BTN_OK);
         
         try {
-            configAvista = ((SDbConfig) miClient.getSession().getConfigSystem()).getRegConfigAvista();
+            configAvista = ((SDbConfig) miClient.getSession().getConfigSystem()).getDbConfigAvista();
             
             moConnectionAvista = createConnection(
                     SEtlConsts.DB_SQL_SERVER, 
@@ -424,7 +424,7 @@ public class SDialogEtl extends SBeanFormDialog implements ActionListener, ItemL
             moRadUpdateModeSel.setEnabled(true);
             moRadUpdateModeAll.setEnabled(true);
             
-            if (((SDbConfig) miClient.getSession().getConfigSystem()).getRegConfigAvista().getGuiEtlUpdateMode() == SEtlConsts.UPD_MODE_SEL) {
+            if (((SDbConfig) miClient.getSession().getConfigSystem()).getDbConfigAvista().getGuiEtlUpdateMode() == SEtlConsts.UPD_MODE_SEL) {
                 moRadUpdateModeSel.setSelected(true);
             }
             else {

@@ -119,7 +119,7 @@ public class SEtlProcessDocInvoices {
         ResultSet rsAvistaInvoiceData = null;
         SDbInvoice dbInvoice = null;
         SDbInvoiceRow dbInvoiceRow = null;
-        SDbConfigAvista dbConfigAvista = ((SDbConfig) session.getConfigSystem()).getRegConfigAvista();
+        SDbConfigAvista dbConfigAvista = ((SDbConfig) session.getConfigSystem()).getDbConfigAvista();
         SEtlCatalogs etlCatalogs = null;
         
         // ETL-process start-up:

@@ -111,7 +111,6 @@
             <MenuItem class="javax.swing.JMenuItem" name="jmiSmsShipments">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Embarques"/>
-                <Property name="actionCommand" type="java.lang.String" value="Embarques"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jmiSmsShipmentsToRel">

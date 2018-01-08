@@ -210,7 +210,7 @@ public class SFormExchangeRate extends SBeanForm {
         SGuiValidation validation = moFields.validateFields();
         
         if (validation.isValid()) {
-            if (moKeyCurrency.getValue()[0] == ((SDbConfig) miClient.getSession().getConfigSystem()).getRegConfigAvista().getFkSrcLocalCurrencyId()) {
+            if (moKeyCurrency.getValue()[0] == ((SDbConfig) miClient.getSession().getConfigSystem()).getDbConfigAvista().getFkSrcLocalCurrencyId()) {
                 validation.setMessage(SGuiConsts.ERR_MSG_FIELD_DIF + "'" + SGuiUtils.getLabelName(jlCurrency) + "'.");
                 validation.setComponent(moKeyCurrency);
             }

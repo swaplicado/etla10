@@ -23,18 +23,20 @@ public class SDbShipmentType extends SDbRegistryUser{
     protected int mnPkShipmentTypeId;
     protected String msCode;
     protected String msName;
+    /*
     protected boolean mbDeleted;
     protected boolean mbSystem;
     protected int mnFkUserInsertId;
     protected int mnFkUserUpdateId;
     protected Date mtTsUserInsert;
     protected Date mtTsUserUpdate;
+    */
     
     public SDbShipmentType () {
         super(SModConsts.SU_SHIPT_TP);
     }
     
-     /*
+    /*
      * Public methods
      */
     
@@ -58,11 +60,9 @@ public class SDbShipmentType extends SDbRegistryUser{
     public Date getTsUserInsert() { return mtTsUserInsert; }
     public Date getTsUserUpdate() { return mtTsUserUpdate; }
 
-    
-     /*
+    /*
      * Overriden methods
      */
-
 
     @Override
     public void setPrimaryKey(int[] pk) {
@@ -181,9 +181,9 @@ public class SDbShipmentType extends SDbRegistryUser{
                 "name = '" + msName + "', " +
                 "b_del = " + (mbDeleted ? 1 : 0) + ", " +
                 "b_sys = " + (mbSystem ? 1 : 0) + ", " +
-                "fk_usr_ins = " + mnFkUserInsertId + ", " +
+                //"fk_usr_ins = " + mnFkUserInsertId + ", " +
                 "fk_usr_upd = " + mnFkUserUpdateId + ", " +
-                "ts_usr_ins = " + "NOW()" + ", " +
+                //"ts_usr_ins = " + "NOW()" + ", " +
                 "ts_usr_upd = " + "NOW()" + " " +
                  getSqlWhere();
         }

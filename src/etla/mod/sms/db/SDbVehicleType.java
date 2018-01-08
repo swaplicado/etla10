@@ -23,18 +23,20 @@ public class SDbVehicleType extends SDbRegistryUser{
     protected int mnPkVehicleTypeId;
     protected String msCode;
     protected String msName;
+    /*
     protected boolean mbDeleted;
     protected boolean mbSystem;
     protected int mnFkUserInsertId;
     protected int mnFkUserUpdateId;
     protected Date mtTsUserInsert;
     protected Date mtTsUserUpdate;
+    */
     
     public SDbVehicleType () {
         super(SModConsts.SU_VEHIC_TP);
     }
     
-     /*
+    /*
      * Public methods
      */
     
@@ -58,12 +60,9 @@ public class SDbVehicleType extends SDbRegistryUser{
     public Date getTsUserInsert() { return mtTsUserInsert; }
     public Date getTsUserUpdate() { return mtTsUserUpdate; }
 
-
-    
-     /*
+    /*
      * Overriden methods
      */
-
 
     @Override
     public void setPrimaryKey(int[] pk) {
@@ -182,9 +181,9 @@ public class SDbVehicleType extends SDbRegistryUser{
                 "name = '" + msName + "', " +
                 "b_del = " + (mbDeleted ? 1 : 0) + ", " +
                 "b_sys = " + (mbSystem ? 1 : 0) + ", " +
-                "fk_usr_ins = " + mnFkUserInsertId + ", " +
+                //"fk_usr_ins = " + mnFkUserInsertId + ", " +
                 "fk_usr_upd = " + mnFkUserUpdateId + ", " +
-                "ts_usr_ins = " + "NOW()" + ", " +
+                //"ts_usr_ins = " + "NOW()" + ", " +
                 "ts_usr_upd = " + "NOW()" + " " +
                  getSqlWhere();
         }

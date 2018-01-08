@@ -23,18 +23,20 @@ public class SDbComment extends SDbRegistryUser{
     protected int mnPkCommentId;
     protected String msCode;
     protected String msName;
+    /*
     protected boolean mbDeleted;
     protected boolean mbSystem;
     protected int mnFkUserInsertId;
     protected int mnFkUserUpdateId;
     protected Date mtTsUserInsert;
     protected Date mtTsUserUpdate;
+    */
     
     public SDbComment () {
         super(SModConsts.SU_COMMENT);
     }
     
-     /*
+    /*
      * Public methods
      */
     
@@ -58,11 +60,9 @@ public class SDbComment extends SDbRegistryUser{
     public Date getTsUserInsert() { return mtTsUserInsert; }
     public Date getTsUserUpdate() { return mtTsUserUpdate; }
 
-    
-     /*
+    /*
      * Overriden methods
      */
-
 
     @Override
     public void setPrimaryKey(int[] pk) {
@@ -182,9 +182,9 @@ public class SDbComment extends SDbRegistryUser{
                 "name = '" + msName + "', " +
                 "b_del = " + (mbDeleted ? 1 : 0) + ", " +
                 "b_sys = " + (mbSystem ? 1 : 0) + ", " +
-                "fk_usr_ins = " + mnFkUserInsertId + ", " +
+                //"fk_usr_ins = " + mnFkUserInsertId + ", " +
                 "fk_usr_upd = " + mnFkUserUpdateId + ", " +
-                "ts_usr_ins = " + "NOW()" + ", " +
+                //"ts_usr_ins = " + "NOW()" + ", " +
                 "ts_usr_upd = " + "NOW()" + " " +
                 getSqlWhere();
         }

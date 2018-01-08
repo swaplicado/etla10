@@ -75,7 +75,7 @@ public abstract class SEtlUtils {
         int number = 0;
         String sql = "";
         ResultSet resultSet = null;
-        SDbConfigAvista configAvista = ((SDbConfig) session.getConfigSystem()).getRegConfigAvista();
+        SDbConfigAvista configAvista = ((SDbConfig) session.getConfigSystem()).getDbConfigAvista();
         
         sql = "SELECT COALESCE(MAX(CAST(num AS SIGNED)) + 1, 0) "
                 + "FROM trn_dps "

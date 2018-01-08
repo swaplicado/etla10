@@ -55,6 +55,7 @@ public abstract class SModConsts {
     public static final int SU_SHIPPER = 222051;
     public static final int SU_DESTIN = 222061;
     
+    public static final int S_CFG = 223001;
     public static final int S_SHIPT = 223011;
     public static final int S_SHIPT_ROW = 223016;
     public static final int S_EVIDENCE = 223021;
@@ -97,6 +98,7 @@ public abstract class SModConsts {
         TablesMap.put(SU_SHIPPER, "su_shipper");
         TablesMap.put(SU_DESTIN, "su_destin");
 
+        TablesMap.put(S_CFG, "s_cfg");
         TablesMap.put(S_SHIPT, "s_shipt");
         TablesMap.put(S_SHIPT_ROW, "s_shipt_row");
         TablesMap.put(S_EVIDENCE, "s_evidence");

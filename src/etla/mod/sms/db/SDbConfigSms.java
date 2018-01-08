@@ -16,14 +16,12 @@ import sa.lib.gui.SGuiSession;
 
 /**
  *
- * 
- * @author Daniel López
+ * @author Sergio Flores
  */
-public class SDbHandlingType extends SDbRegistryUser{
+public class SDbConfigSms extends SDbRegistryUser{
     
-    protected int mnPkHandlingTypeId;
-    protected String msCode;
-    protected String msName;
+    protected int mnPkConfigSmsId;
+    protected String msUrlSms;
     /*
     protected boolean mbDeleted;
     protected boolean mbSystem;
@@ -33,17 +31,16 @@ public class SDbHandlingType extends SDbRegistryUser{
     protected Date mtTsUserUpdate;
     */
     
-    public SDbHandlingType () {
-        super(SModConsts.SU_HANDG_TP);
+    public SDbConfigSms () {
+        super(SModConsts.S_CFG);
     }
     
     /*
      * Public methods
      */
     
-    public void setPkHandlingTypeId(int n) { mnPkHandlingTypeId = n; }
-    public void setCode(String s) { msCode = s; }
-    public void setName(String s) { msName = s; }
+    public void setPkConfigSmsId(int n) { mnPkConfigSmsId = n; }
+    public void setUrlSms(String s) { msUrlSms = s; }
     public void setDeleted(boolean b) { mbDeleted = b; }
     public void setSystem(boolean b) { mbSystem = b; }
     public void setFkUserInsertId(int n) { mnFkUserInsertId = n; }
@@ -51,29 +48,27 @@ public class SDbHandlingType extends SDbRegistryUser{
     public void setTsUserInsert(Date t) { mtTsUserInsert = t; }
     public void setTsUserUpdate(Date t) { mtTsUserUpdate = t; }
 
-    
-    public int getPkHandlingTypeId() { return mnPkHandlingTypeId; }
-    public String getCode() { return msCode; }
-    public String getName() { return msName; }
+    public int getPkConfigSmsId() { return mnPkConfigSmsId; }
+    public String getUrlSms() { return msUrlSms; }
     public boolean isDeleted() { return mbDeleted; }
     public boolean isSystem() { return mbSystem; }
     public int getFkUserInsertId() { return mnFkUserInsertId; }
     public int getFkUserUpdateId() { return mnFkUserUpdateId; }
     public Date getTsUserInsert() { return mtTsUserInsert; }
     public Date getTsUserUpdate() { return mtTsUserUpdate; }
-    
+
     /*
      * Overriden methods
      */
 
     @Override
     public void setPrimaryKey(int[] pk) {
-        mnPkHandlingTypeId = pk[0];
+        mnPkConfigSmsId = pk[0];
     }
 
     @Override
     public int[] getPrimaryKey() {
-        return new int[] { mnPkHandlingTypeId };
+        return new int[] { mnPkConfigSmsId };
     }
 
     @Override
@@ -81,16 +76,14 @@ public class SDbHandlingType extends SDbRegistryUser{
         
         initBaseRegistry();
         
-        mnPkHandlingTypeId = 0;
-        msCode = "";
-        msName = "";
+        mnPkConfigSmsId = 0;
+        msUrlSms = "";
         mbDeleted = false;
         mbSystem = false;
         mnFkUserInsertId = 0;
         mnFkUserUpdateId = 0;
         mtTsUserInsert = null;
         mtTsUserUpdate = null;
-
     }
 
     @Override
@@ -100,24 +93,24 @@ public class SDbHandlingType extends SDbRegistryUser{
 
     @Override
     public String getSqlWhere() {
-        return "WHERE id_handg_tp = " + mnPkHandlingTypeId + " ";
+        return "WHERE id_cfg = " + mnPkConfigSmsId + " ";
     }
 
     @Override
     public String getSqlWhere(int[] pk) {
-        return "WHERE id_handg_tp = " + pk[0] + " ";
+        return "WHERE id_cfg = " + pk[0] + " ";
     }
 
     @Override
     public void computePrimaryKey(SGuiSession session) throws SQLException, Exception {
         ResultSet resultSet = null;
 
-        mnPkHandlingTypeId = 0;
+        mnPkConfigSmsId = 0;
 
-        msSql = "SELECT COALESCE(MAX(id_handg_tp), 0) + 1 FROM " + getSqlTable() + " ";
+        msSql = "SELECT COALESCE(MAX(id_cfg), 0) + 1 FROM " + getSqlTable() + " ";
         resultSet = session.getStatement().executeQuery(msSql);
         if (resultSet.next()) {
-            mnPkHandlingTypeId = resultSet.getInt(1);
+            mnPkConfigSmsId = resultSet.getInt(1);
         }
     }
 
@@ -135,16 +128,14 @@ public class SDbHandlingType extends SDbRegistryUser{
             throw new Exception(SDbConsts.ERR_MSG_REG_NOT_FOUND);
         }
         else {
-            mnPkHandlingTypeId = resultSet.getInt("id_handg_tp");
-            msCode = resultSet.getString("code");
-            msName = resultSet.getString("name");
+            mnPkConfigSmsId = resultSet.getInt("id_cfg");
+            msUrlSms = resultSet.getString("url_sms");
             mbDeleted = resultSet.getBoolean("b_del");
             mbSystem = resultSet.getBoolean("b_sys");
             mnFkUserInsertId = resultSet.getInt("fk_usr_ins");
             mnFkUserUpdateId = resultSet.getInt("fk_usr_upd");
             mtTsUserInsert = resultSet.getTimestamp("ts_usr_ins");
             mtTsUserUpdate = resultSet.getTimestamp("ts_usr_upd");
-
             
             mbRegistryNew = false;
         }
@@ -165,32 +156,28 @@ public class SDbHandlingType extends SDbRegistryUser{
             mnFkUserUpdateId = SUtilConsts.USR_NA_ID;
             
             msSql = "INSERT INTO " + getSqlTable() + " VALUES (" +
-                mnPkHandlingTypeId + ", " + 
-                "'" + msCode + "', " + 
-                "'" + msName + "', " + 
+                mnPkConfigSmsId + ", " + 
+                "'" + msUrlSms + "', " + 
                 (mbDeleted ? 1 : 0) + ", " + 
                 (mbSystem ? 1 : 0) + ", " + 
                 mnFkUserInsertId + ", " + 
                 mnFkUserUpdateId + ", " + 
                 "NOW()" + ", " + 
-                "NOW()" + 
-
+                "NOW()" + " " + 
                  ")";
         }
         else {
             mnFkUserUpdateId = session.getUser().getPkUserId();
             
             msSql = "UPDATE " + getSqlTable() + " SET " +
-                //"id_handg_tp = " + mnPkHandlingTypeId + ", " +
-                "code = '" + msCode + "', " +
-                "name = '" + msName + "', " +
+                //"id_cfg = " + mnPkConfigSmsId + ", " +
+                "url_sms = '" + msUrlSms + "', " +
                 "b_del = " + (mbDeleted ? 1 : 0) + ", " +
                 "b_sys = " + (mbSystem ? 1 : 0) + ", " +
                 //"fk_usr_ins = " + mnFkUserInsertId + ", " +
                 "fk_usr_upd = " + mnFkUserUpdateId + ", " +
                 //"ts_usr_ins = " + "NOW()" + ", " +
-                "ts_usr_upd = " + "NOW() " +
-
+                "ts_usr_upd = " + "NOW()" + ", " +
                  getSqlWhere();
         }
         
@@ -201,21 +188,19 @@ public class SDbHandlingType extends SDbRegistryUser{
     }
 
     @Override
-    public SDbHandlingType clone() throws CloneNotSupportedException {
-        SDbHandlingType  registry = new SDbHandlingType();
+    public SDbConfigSms clone() throws CloneNotSupportedException {
+        SDbConfigSms  registry = new SDbConfigSms();
         
-        registry.setPkHandlingTypeId(this.getPkHandlingTypeId());
-        registry.setCode(this.getCode());
-        registry.setName(this.getName());
+        registry.setPkConfigSmsId(this.getPkConfigSmsId());
+        registry.setUrlSms(this.getUrlSms());
         registry.setDeleted(this.isDeleted());
         registry.setSystem(this.isSystem());
         registry.setFkUserInsertId(this.getFkUserInsertId());
         registry.setFkUserUpdateId(this.getFkUserUpdateId());
         registry.setTsUserInsert(this.getTsUserInsert());
         registry.setTsUserUpdate(this.getTsUserUpdate());
-
+        
         registry.setRegistryNew(this.isRegistryNew());
         return registry;
     }
-
 }

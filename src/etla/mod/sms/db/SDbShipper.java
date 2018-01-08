@@ -27,13 +27,17 @@ public class SDbShipper extends SDbRegistryUser{
     protected String msCode;
     protected String msName;
     protected String msMail;
+    /*
     protected boolean mbDeleted;
     protected boolean mbSystem;
+    */
     protected int mnFkUserId;
+    /*
     protected int mnFkUserInsertId;
     protected int mnFkUserUpdateId;
     protected Date mtTsUserInsert;
     protected Date mtTsUserUpdate;
+    */
     
     protected SDbUser moDbUser;
     
@@ -41,7 +45,7 @@ public class SDbShipper extends SDbRegistryUser{
         super(SModConsts.SU_SHIPPER);
     }
     
-     /*
+    /*
      * Public methods
      */
     
@@ -73,10 +77,9 @@ public class SDbShipper extends SDbRegistryUser{
     
     public SDbUser getDbUser() { return moDbUser; }
     
-     /*
+    /*
      * Overriden methods
      */
-
 
     @Override
     public void setPrimaryKey(int[] pk) {

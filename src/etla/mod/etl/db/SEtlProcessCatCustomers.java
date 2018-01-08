@@ -150,7 +150,7 @@ public abstract class SEtlProcessCatCustomers {
         SDbSysCurrency dbSysCurrencyRequired = null;
         SDbSysUnitOfMeasure dbSysUnitOfMeasureCustomer = null;
         SDbSysUnitOfMeasure dbSysUnitOfMeasureRequired = null;
-        SDbConfigAvista dbConfigAvista = ((SDbConfig) session.getConfigSystem()).getRegConfigAvista();
+        SDbConfigAvista dbConfigAvista = ((SDbConfig) session.getConfigSystem()).getDbConfigAvista();
         SDbSalesAgent dbSalesAgent = null;
         SDbCustomer dbCustomer = null;
         SEtlCatalogs etlCatalogs = null;
