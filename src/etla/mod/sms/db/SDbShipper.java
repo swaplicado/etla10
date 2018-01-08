@@ -181,7 +181,7 @@ public class SDbShipper extends SDbRegistryUser{
             //moDbUser.setPkUserId(...);
             moDbUser.setDesUserId(SLibConsts.UNDEFINED);
             moDbUser.setName(msMail);
-            moDbUser.setPassword(msMail);
+            //moDbUser.setPassword(...);
             moDbUser.setWeb(true);
             //moDbUser.setDeleted(...);
             //moDbUser.setSystem(...);
@@ -191,9 +191,11 @@ public class SDbShipper extends SDbRegistryUser{
             //moDbUser.setFkUserUpdateId(...);
             //moDbUser.setTsUserInsert(...);
             //moDbUser.setTsUserUpdate(...);
+            
+            moDbUser.setAuxClearPasswordOnSave(true);
+            
+            moDbUser.save(session);
         }
-        
-        moDbUser.save(session);
         
         if (mbRegistryNew) {
             computePrimaryKey(session);

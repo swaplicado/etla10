@@ -48,6 +48,8 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
     protected Date mtTsUserInsert;
     protected Date mtTsUserUpdate;
     */
+    
+    protected boolean mbAuxClearPasswordOnSave;
 
     public SDbUser() {
         super(SModConsts.CU_USR);
@@ -81,6 +83,10 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
     public Date getTsUserInsert() { return mtTsUserInsert; }
     public Date getTsUserUpdate() { return mtTsUserUpdate; }
 
+    public void setAuxClearPasswordOnSave(boolean b) { mbAuxClearPasswordOnSave = b; }
+
+    public boolean isAuxClearPasswordOnSave() { return mbAuxClearPasswordOnSave; }
+    
     @Override
     public boolean isAdministrator() {
         return isSupervisor() || mnFkUserTypeId == SModSysConsts.CS_USR_TP_ADM;
@@ -198,6 +204,8 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
         mnFkUserUpdateId = 0;
         mtTsUserInsert = null;
         mtTsUserUpdate = null;
+        
+        mbAuxClearPasswordOnSave = false;
     }
 
     @Override
@@ -266,6 +274,10 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
     public void save(SGuiSession session) throws SQLException, Exception {
         initQueryMembers();
         mnQueryResultId = SDbConsts.SAVE_ERROR;
+        
+        if (mbAuxClearPasswordOnSave) {
+            msPassword = "";
+        }
 
         if (mbRegistryNew) {
             computePrimaryKey(session);
@@ -277,12 +289,12 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
             mbSystem = false;
             mnFkUserInsertId = session.getUser().getPkUserId();
             mnFkUserUpdateId = SUtilConsts.USR_NA_ID;
-
+            
             msSql = "INSERT INTO " + getSqlTable() + " VALUES (" +
                     mnPkUserId + ", " +
                     mnDesUserId + ", " + 
                     "'" + msName + "', " +
-                    "PASSWORD('" + msPassword + "'), " +
+                    (mbAuxClearPasswordOnSave ? "''" : "PASSWORD('" + msPassword + "')") + ", " +
                     (mbWeb ? 1 : 0) + ", " + 
                     (mbDeleted ? 1 : 0) + ", " +
                     (mbSystem ? 1 : 0) + ", " +
@@ -301,7 +313,7 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
                     //"id_usr = " + mnPkUserId + ", " +
                     "des_usr_id = " + mnDesUserId + ", " +
                     "name = '" + msName + "', " +
-                    (msPassword.isEmpty() ? "" : "pswd = PASSWORD('" + msPassword + "'), ") +
+                    (mbAuxClearPasswordOnSave ? "pswd = '', " : (msPassword.isEmpty() ? "" : "pswd = PASSWORD('" + msPassword + "'), ")) +
                     "b_web = " + (mbWeb ? 1 : 0) + ", " +
                     "b_del = " + (mbDeleted ? 1 : 0) + ", " +
                     "b_sys = " + (mbSystem ? 1 : 0) + ", " +
@@ -336,6 +348,8 @@ public class SDbUser extends SDbRegistryUser implements SGuiUser {
         registry.setFkUserUpdateId(this.getFkUserUpdateId());
         registry.setTsUserInsert(this.getTsUserInsert());
         registry.setTsUserUpdate(this.getTsUserUpdate());
+        
+        registry.setAuxClearPasswordOnSave(this.isAuxClearPasswordOnSave());
 
         registry.setRegistryNew(this.isRegistryNew());
         return registry;
