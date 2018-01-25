@@ -5,6 +5,7 @@
  */
 package etla.mod.sms.view;
 
+import etla.gui.SGuiMain;
 import etla.mod.SModConsts;
 import etla.mod.SModSysConsts;
 import etla.mod.cfg.db.SDbConfig;
@@ -150,7 +151,11 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
                     try {                     
                         map = miClient.createReportParams();
                         map.put("id_Shipt", obj.getPkShipmentId());
-                        map.put("usr", miClient.getSession().getUser().getName());
+                        map.put("usr", miClient.getSession().getUser().getName());                        
+                        map.put("app_provider", SGuiMain.APP_PROVIDER);
+                        map.put("oFormatDate", SLibUtils.DateFormatDate);
+                        map.put("oFormatDatetime", SLibUtils.DateFormatDatetime);
+                       
                         
                         String sql = "";
                         String web_key = "";
