@@ -7,6 +7,8 @@ package etla.mod.sms.view;
 
 import etla.mod.SModConsts;
 import etla.mod.SModSysConsts;
+import etla.mod.cfg.db.SDbConfig;
+import etla.mod.sms.db.SDbConfigSms;
 import etla.mod.sms.db.SDbShipment;
 import etla.mod.sms.db.SShippingUtils;
 import java.awt.Image;
@@ -148,7 +150,8 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
                     try {                     
                         map = miClient.createReportParams();
                         map.put("id_Shipt", obj.getPkShipmentId());
-
+                        map.put("usr", miClient.getSession().getUser().getName());
+                        
                         String sql = "";
                         String web_key = "";
                         ResultSet resultIdSet = null;
@@ -165,7 +168,8 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
                         }
                         //Create QR for shipment order and server address
                         BufferedImage biQrCode = null;
-                        biQrCode = sa.lib.img.SImgUtils.createQrCodeBufferedImageCfdi33("192.168.1.104/sms/url.php?key=" + (web_key), 400, 400);
+                        SDbConfigSms dbConfigSms = ((SDbConfig) miClient.getSession().getConfigSystem()).getDbConfigSms();
+                        biQrCode = sa.lib.img.SImgUtils.createQrCodeBufferedImageCfdi33( dbConfigSms.getUrlSms() + "/url.php?key=" + (web_key), 400, 400);
 
                         if (biQrCode != null) {
                             map.put("sImageQr", biQrCode.getScaledInstance(biQrCode.getWidth(), biQrCode.getHeight(), Image.SCALE_DEFAULT));
