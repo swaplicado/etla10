@@ -54,6 +54,8 @@ public abstract class SModSysConsts {
     public static final int SS_WEB_ROLE_CREDIT = 21;
     public static final int SS_WEB_ROLE_SHIPPER = 31;
     
+    public static final int SU_VEHIC_TP_CUS = 9; //customer picks up
+    
     public static final int SU_SHIPPER_NA = 1;
     
     public static final int SU_DESTIN_NA = 1;

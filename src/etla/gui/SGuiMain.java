@@ -69,7 +69,7 @@ import sa.lib.xml.SXmlUtils;
 public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
 
     public static final String APP_NAME = "SIIE ETL Avista 1.0";
-    public static final String APP_RELEASE = "SIIE ETL Avista 1.0 009.01";
+    public static final String APP_RELEASE = "SIIE ETL Avista 1.0 011.01";
     public static final String APP_COPYRIGHT = "© Software Aplicado SA de CV. Todos los derechos reservados.";
     public static final String APP_PROVIDER = "www.swaplicado.com.mx";
 
@@ -222,7 +222,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
         jlAppRelease.setPreferredSize(new java.awt.Dimension(150, 20));
         jPanel1.add(jlAppRelease);
 
-        jPanelStatus.add(jPanel1, java.awt.BorderLayout.WEST);
+        jPanelStatus.add(jPanel1, java.awt.BorderLayout.CENTER);
 
         jPanel2.setBackground(java.awt.Color.black);
         jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 5, 2));
@@ -232,7 +232,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
         jlAppLogo.setPreferredSize(new java.awt.Dimension(100, 20));
         jPanel2.add(jlAppLogo);
 
-        jPanelStatus.add(jPanel2, java.awt.BorderLayout.CENTER);
+        jPanelStatus.add(jPanel2, java.awt.BorderLayout.EAST);
 
         getContentPane().add(jPanelStatus, java.awt.BorderLayout.SOUTH);
 
@@ -296,7 +296,6 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
         jmSmsShipments.setText("Embarques");
 
         jmiSmsShipments.setText("Embarques");
-        jmiSmsShipments.setActionCommand("Embarques");
         jmSmsShipments.add(jmiSmsShipments);
 
         jmiSmsShipmentsToRel.setText("Embarques por liberar");
