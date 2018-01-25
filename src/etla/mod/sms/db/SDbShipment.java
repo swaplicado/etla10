@@ -26,6 +26,8 @@ import sa.lib.gui.SGuiSession;
 public class SDbShipment extends SDbRegistryUser{
     
     public static final int WEB_KEY_LENGTH = 10;
+    public static final String MSG_EVIDENCES = "El registro tiene evidencias.";
+    public static final String MSG_STATUS = "El estatus actual del registro no es el adecuado.";
     
     protected int mnPkShipmentId;
     protected int mnNumber;
@@ -75,6 +77,10 @@ public class SDbShipment extends SDbRegistryUser{
     
     protected ArrayList<SDbShipmentRow> maChildRows;
     
+    protected boolean mbOriginalTared;
+    protected boolean mbOriginalAnnulled;
+    protected int mnOriginalFkShipmentStatusId;
+    
     public SDbShipment () {
         super(SModConsts.S_SHIPT);
     }
@@ -87,7 +93,7 @@ public class SDbShipment extends SDbRegistryUser{
         msWebKey = SLibUtils.generateRandomKey(WEB_KEY_LENGTH);
     }
     
-    public void computeNextNumber(SGuiSession session) throws SQLException, Exception {
+    private void computeNextNumber(SGuiSession session) throws SQLException, Exception {
         ResultSet resultSet = null;
         mnNumber = 0;
 
@@ -98,7 +104,7 @@ public class SDbShipment extends SDbRegistryUser{
         }
     }
     
-    public void computeTotals() {
+    private void computeTotals() {
         mdMeters2 = 0;
         mdKilograms = 0;
         
@@ -106,6 +112,29 @@ public class SDbShipment extends SDbRegistryUser{
             mdMeters2 += child.getMeters2();
             mdKilograms += child.getKilograms();
         }
+    }
+    
+    private boolean checkChangedTared() {
+        return mbTared != mbOriginalTared;
+    }
+        
+    private boolean checkChangedAnnulled() {
+        return mbAnnulled != mbOriginalAnnulled;
+    }
+        
+    private boolean checkChangedShipmentStatus() {
+        return mnFkShipmentStatusId != mnOriginalFkShipmentStatusId;
+    }
+    
+    private int countEvidences(final SGuiSession session) throws Exception {
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM " + SModConsts.TablesMap.get(SModConsts.S_EVIDENCE) + " WHERE fk_ship_ship = " + mnPkShipmentId + " ";
+        Statement statement = session.getStatement().getConnection().createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+        if (resultSet.next()) {
+            count = resultSet.getInt(1);
+        }
+        return count;
     }
         
     /*
@@ -254,6 +283,10 @@ public class SDbShipment extends SDbRegistryUser{
         mtTsUserUpdate = null;
         
         maChildRows = new ArrayList<>();
+        
+        mbOriginalTared = false;
+        mbOriginalAnnulled = false;
+        mnOriginalFkShipmentStatusId = 0;
     }
 
     @Override
@@ -316,11 +349,11 @@ public class SDbShipment extends SDbRegistryUser{
             mtScaleTicket2Datetime_n = resultSet.getTimestamp("scale_tkt_2_dt_n");
             mdScaleTicket2Kilograms = resultSet.getDouble("scale_tkt_2_kg");
             mdTareKilograms = resultSet.getDouble("tare_kg");
-            mbTared = resultSet.getBoolean("b_tared");
-            mbAnnulled = resultSet.getBoolean("b_ann");
+            mbTared = mbOriginalTared = resultSet.getBoolean("b_tared");        //preserve original value
+            mbAnnulled = mbOriginalAnnulled = resultSet.getBoolean("b_ann");    //preserve original value
             mbDeleted = resultSet.getBoolean("b_del");
             mbSystem = resultSet.getBoolean("b_sys");
-            mnFkShipmentStatusId = resultSet.getInt("fk_shipt_st");
+            mnFkShipmentStatusId = mnOriginalFkShipmentStatusId = resultSet.getInt("fk_shipt_st");  //preserve original value
             mnFkShipmentTypeId = resultSet.getInt("fk_shipt_tp");
             mnFkCargoTypeId = resultSet.getInt("fk_cargo_tp");
             mnFkHandlingTypeId = resultSet.getInt("fk_handg_tp");
@@ -360,24 +393,34 @@ public class SDbShipment extends SDbRegistryUser{
         
         computeTotals();
         
-        switch (mnFkShipmentStatusId) {
-            case SModSysConsts.SS_SHIPT_ST_REL_TO:
-                break;
-            case SModSysConsts.SS_SHIPT_ST_REL:
-                mnFkUserReleaseId = session.getUser().getPkUserId();
-                break;
-            case SModSysConsts.SS_SHIPT_ST_ACC_TO:
-                break;
-            case SModSysConsts.SS_SHIPT_ST_ACC:
-                mnFkUserAcceptId = session.getUser().getPkUserId();
-                break;
-            default:
+        //preserve user that changed current shipment status:
+        if (checkChangedShipmentStatus()) {
+            switch (mnFkShipmentStatusId) {
+                case SModSysConsts.SS_SHIPT_ST_REL_TO:
+                    break;
+                case SModSysConsts.SS_SHIPT_ST_REL:
+                    mnFkUserReleaseId = session.getUser().getPkUserId();
+                    break;
+                case SModSysConsts.SS_SHIPT_ST_ACC_TO:
+                    break;
+                case SModSysConsts.SS_SHIPT_ST_ACC:
+                    mnFkUserAcceptId = session.getUser().getPkUserId();
+                    break;
+                default:
+            }
         }
         
-        if (mbAnnulled) {
+        //preserve user that changed current tared status:
+        if (mbTared && checkChangedTared()) {
+            mnFkUserTareId = session.getUser().getPkUserId();
+        }
+        
+        //preserve user that changed current annulled status:
+        if (mbAnnulled && checkChangedAnnulled()) {
             mnFkUserAnnulId = session.getUser().getPkUserId();
         }
         
+        //set non-applicable user where required:
         if (mnFkUserTareId == SLibConsts.UNDEFINED) {
             mnFkUserTareId = SUtilConsts.USR_NA_ID;
         }
@@ -412,10 +455,10 @@ public class SDbShipment extends SDbRegistryUser{
                 mdKilograms + ", " + 
                 "'" + msComments + "', " +
                 mnScaleTicket1 + ", " + 
-                "NULL" + ", " +
+                (mtScaleTicket1Datetime_n == null ? "NULL" : "'" + SLibUtils.DbmsDateFormatDatetime.format(mtScaleTicket1Datetime_n) + "'") + ", " +
                 mdScaleTicket1Kilograms + ", " +
                 mnScaleTicket2 + ", " +
-                "NULL" + ", " +
+                (mtScaleTicket2Datetime_n == null ? "NULL" : "'" + SLibUtils.DbmsDateFormatDatetime.format(mtScaleTicket2Datetime_n) + "'") + ", " +
                 mdScaleTicket2Kilograms + ", " +
                 mdTareKilograms + ", " +
                 (mbTared ? 1 : 0) + ", " + 
@@ -458,10 +501,10 @@ public class SDbShipment extends SDbRegistryUser{
                 "kg = " + mdKilograms + ", " +   
                 "comments = '" + msComments + "', " +
                 "scale_tkt_1 = " + mnScaleTicket1 + ", " +
-                "scale_tkt_1_dt_n = " + "NOW()" + ", " +
+                "scale_tkt_1_dt_n = " + (mtScaleTicket1Datetime_n == null ? "NULL" : "'" + SLibUtils.DbmsDateFormatDatetime.format(mtScaleTicket1Datetime_n) + "'") + ", " +
                 "scale_tkt_1_kg = " + mdScaleTicket1Kilograms + ", " +
                 "scale_tkt_2 = " + mnScaleTicket2 + ", " +
-                "scale_tkt_2_dt_n = " + "NOW()" + ", " +
+                "scale_tkt_2_dt_n = " + (mtScaleTicket2Datetime_n == null ? "NULL" : "'" + SLibUtils.DbmsDateFormatDatetime.format(mtScaleTicket2Datetime_n) + "'") + ", " +
                 "scale_tkt_2_kg = " + mdScaleTicket2Kilograms + ", " +
                 "tare_kg = " + mdTareKilograms + ", " +
                 "b_tared = " + (mbTared ? 1 : 0) + ", " +
@@ -474,16 +517,16 @@ public class SDbShipment extends SDbRegistryUser{
                 "fk_handg_tp = " + mnFkHandlingTypeId + ", " +
                 "fk_vehic_tp = " + mnFkVehicleTypeId + ", " +
                 "fk_shipper = " + mnFkShipperId + ", " +
-                "fk_usr_tare = " + /*mnFkUserTareId*/ 1 + ", " +
+                "fk_usr_tare = " + mnFkUserTareId + ", " +
                 "fk_usr_release = " + mnFkUserReleaseId + ", " +
                 "fk_usr_accept = " + mnFkUserAcceptId + ", " +
                 "fk_usr_ann = " + mnFkUserAnnulId + ", " +
                 //"fk_usr_ins = " + mnFkUserInsertId + ", " +
                 "fk_usr_upd = " + mnFkUserUpdateId + ", " +
-                "ts_usr_tare = " + "NOW()" + ", " +
-                (mnFkShipmentStatusId == SModSysConsts.SS_SHIPT_ST_REL ? "ts_usr_release = NOW(), " : "") +
-                (mnFkShipmentStatusId == SModSysConsts.SS_SHIPT_ST_ACC ? "ts_usr_accept = NOW(), " : "") +
-                (mbAnnulled ? "ts_usr_ann = NOW(), " : "") +
+                (mbTared && checkChangedTared() ? "ts_usr_tare = NOW(), " : "") +
+                (mnFkShipmentStatusId == SModSysConsts.SS_SHIPT_ST_REL && checkChangedShipmentStatus() ? "ts_usr_release = NOW(), " : "") +
+                (mnFkShipmentStatusId == SModSysConsts.SS_SHIPT_ST_ACC && checkChangedShipmentStatus() ? "ts_usr_accept = NOW(), " : "") +
+                (mbAnnulled && checkChangedAnnulled() ? "ts_usr_ann = NOW(), " : "") +
                 //"ts_usr_ins = " + "NOW()" + ", " +
                 "ts_usr_upd = " + "NOW()" + " " +
                  getSqlWhere();
@@ -563,5 +606,60 @@ public class SDbShipment extends SDbRegistryUser{
         
         registry.setRegistryNew(this.isRegistryNew());
         return registry;
+    }
+    
+    @Override
+    public boolean canSave(final SGuiSession session) throws SQLException, Exception {
+        boolean canSave = super.canSave(session);
+        
+        if (canSave) {
+            if (countEvidences(session) > 0) {
+                throw new Exception(MSG_EVIDENCES);
+            }
+        }
+        
+        return canSave;
+    }
+
+    @Override
+    public boolean canDisable(final SGuiSession session) throws SQLException, Exception {
+        boolean canDisable = super.canDisable(session);
+        
+        if (canDisable) {
+            if (!mbAnnulled) {
+                if (countEvidences(session) > 0) {
+                    throw new Exception(MSG_EVIDENCES);
+                }
+                else if (mnFkShipmentStatusId != SModSysConsts.SS_SHIPT_ST_REL_TO) {
+                    throw new Exception(MSG_STATUS);
+                }
+            }
+        }
+        
+        return canDisable;
+    }
+
+    @Override
+    public boolean canDelete(final SGuiSession session) throws SQLException, Exception {
+        boolean canDelete = super.canDelete(session);
+        
+        if (canDelete) {
+            if (!mbDeleted) {
+                if (countEvidences(session) > 0) {
+                    throw new Exception(MSG_EVIDENCES);
+                }
+                else if (mnFkShipmentStatusId != SModSysConsts.SS_SHIPT_ST_REL_TO) {
+                    throw new Exception(MSG_STATUS);
+                }
+            }
+        }
+        
+        return canDelete;
+    }
+
+    @Override
+    public void disable(final SGuiSession session) throws SQLException, Exception {
+        mbAnnulled = !mbAnnulled;
+        save(session);
     }
 }
