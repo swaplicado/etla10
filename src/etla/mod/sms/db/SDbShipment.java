@@ -37,6 +37,14 @@ public class SDbShipment extends SDbRegistryUser{
     protected double mdMeters2;
     protected double mdKilograms;
     protected String msComments;
+    protected int mnScaleTicket1;
+    protected Date mtScaleTicket1Datetime_n;
+    protected double mdScaleTicket1Kilograms;
+    protected int mnScaleTicket2;
+    protected Date mtScaleTicket2Datetime_n;
+    protected double mdScaleTicket2Kilograms;
+    protected double mdTareKilograms;
+    protected boolean mbTared;
     protected boolean mbAnnulled;
     /*
     protected boolean mbDeleted;
@@ -48,6 +56,7 @@ public class SDbShipment extends SDbRegistryUser{
     protected int mnFkHandlingTypeId;
     protected int mnFkVehicleTypeId;
     protected int mnFkShipperId;
+    protected int mnFkUserTareId;
     protected int mnFkUserReleaseId;
     protected int mnFkUserAcceptId;
     protected int mnFkUserAnnulId;
@@ -55,6 +64,7 @@ public class SDbShipment extends SDbRegistryUser{
     protected int mnFkUserInsertId;
     protected int mnFkUserUpdateId;
     */
+    protected Date mtTsUserTare;
     protected Date mtTsUserRelease;
     protected Date mtTsUserAccept;
     protected Date mtTsUserAnnul;
@@ -112,6 +122,14 @@ public class SDbShipment extends SDbRegistryUser{
     public void setMeters2(double d) { mdMeters2 = d; }
     public void setKilograms(double d) { mdKilograms = d; }
     public void setComments(String s) { msComments = s; }
+    public void setScaleTicket1(int n) { mnScaleTicket1 = n; }
+    public void setScaleTicket1Datetime_n(Date t) { mtScaleTicket1Datetime_n = t; }
+    public void setScaleTicket1Kilograms(double d) { mdScaleTicket1Kilograms = d; }
+    public void setScaleTicket2(int n) { mnScaleTicket2 = n; }
+    public void setScaleTicket2Datetime_n(Date t) { mtScaleTicket2Datetime_n = t; }
+    public void setScaleTicket2Kilograms(double d) { mdScaleTicket2Kilograms = d; }
+    public void setTareKilograms(double d) { mdTareKilograms = d; }
+    public void setTared(boolean b) { mbTared = b; }
     public void setAnnulled(boolean b) { mbAnnulled = b; }
     public void setDeleted(boolean b) { mbDeleted = b; }
     public void setSystem(boolean b) { mbSystem = b; }
@@ -121,11 +139,13 @@ public class SDbShipment extends SDbRegistryUser{
     public void setFkHandlingTypeId(int n) { mnFkHandlingTypeId = n; }
     public void setFkVehicleTypeId(int n) { mnFkVehicleTypeId = n; }
     public void setFkShipperId(int n) { mnFkShipperId = n; }
+    public void setFkUserTareId(int n) { mnFkUserTareId = n; }
     public void setFkUserReleaseId(int n) { mnFkUserReleaseId = n; }
     public void setFkUserAcceptId(int n) { mnFkUserAcceptId = n; }
     public void setFkUserAnnulId(int n) { mnFkUserAnnulId = n; }
     public void setFkUserInsertId(int n) { mnFkUserInsertId = n; }
     public void setFkUserUpdateId(int n) { mnFkUserUpdateId = n; }
+    public void setTsUserTare(Date t) { mtTsUserTare = t; }
     public void setTsUserRelease(Date t) { mtTsUserRelease = t; }
     public void setTsUserAccept(Date t) { mtTsUserAccept = t; }
     public void setTsUserAnnul(Date t) { mtTsUserAnnul = t; }
@@ -142,6 +162,14 @@ public class SDbShipment extends SDbRegistryUser{
     public double getMeters2() { return mdMeters2; }
     public double getKilograms() { return mdKilograms; }
     public String getComments() { return msComments; }
+    public int getScaleTicket1() { return mnScaleTicket1; }
+    public Date getScaleTicket1Datetime_n() { return mtScaleTicket1Datetime_n; }
+    public double getScaleTicket1Kilograms() { return mdScaleTicket1Kilograms; }
+    public int getScaleTicket2() { return mnScaleTicket2; }
+    public Date getScaleTicket2Datetime_n() { return mtScaleTicket2Datetime_n; }
+    public double getScaleTicket2Kilograms() { return mdScaleTicket2Kilograms; }
+    public double getTareKilograms() { return mdTareKilograms; }
+    public boolean isTared() { return mbTared; }
     public boolean isAnnulled() { return mbAnnulled; }
     public boolean isDeleted() { return mbDeleted; }
     public boolean isSystem() { return mbSystem; }
@@ -151,11 +179,13 @@ public class SDbShipment extends SDbRegistryUser{
     public int getFkHandlingTypeId() { return mnFkHandlingTypeId; }
     public int getFkVehicleTypeId() { return mnFkVehicleTypeId; }
     public int getFkShipperId() { return mnFkShipperId; }
+    public int getFkUserTareId() { return mnFkUserTareId; }
     public int getFkUserReleaseId() { return mnFkUserReleaseId; }
     public int getFkUserAcceptId() { return mnFkUserAcceptId; }
     public int getFkUserAnnulId() { return mnFkUserAnnulId; }
     public int getFkUserInsertId() { return mnFkUserInsertId; }
     public int getFkUserUpdateId() { return mnFkUserUpdateId; }
+    public Date getTsUserTare() { return mtTsUserTare; }
     public Date getTsUserRelease() { return mtTsUserRelease; }
     public Date getTsUserAccept() { return mtTsUserAccept; }
     public Date getTsUserAnnul() { return mtTsUserAnnul; }
@@ -193,6 +223,14 @@ public class SDbShipment extends SDbRegistryUser{
         mdMeters2 = 0;
         mdKilograms = 0;
         msComments = "";
+        mnScaleTicket1 = 0;
+        mtScaleTicket1Datetime_n = null;
+        mdScaleTicket1Kilograms = 0;
+        mnScaleTicket2 = 0;
+        mtScaleTicket2Datetime_n = null;
+        mdScaleTicket2Kilograms = 0;
+        mdTareKilograms = 0;
+        mbTared = false;
         mbAnnulled = false;
         mbDeleted = false;
         mbSystem = false;
@@ -202,11 +240,13 @@ public class SDbShipment extends SDbRegistryUser{
         mnFkHandlingTypeId = 0;
         mnFkVehicleTypeId = 0;
         mnFkShipperId = 0;
+        mnFkUserTareId = 0;
         mnFkUserReleaseId = 0;
         mnFkUserAcceptId = 0;
         mnFkUserAnnulId = 0;
         mnFkUserInsertId = 0;
         mnFkUserUpdateId = 0;
+        mtTsUserTare = null;
         mtTsUserRelease = null;
         mtTsUserAccept = null;
         mtTsUserAnnul = null;
@@ -269,6 +309,14 @@ public class SDbShipment extends SDbRegistryUser{
             mdMeters2 = resultSet.getDouble("m2");
             mdKilograms = resultSet.getDouble("kg");
             msComments = resultSet.getString("comments");
+            mnScaleTicket1 = resultSet.getInt("scale_tkt_1");
+            mtScaleTicket1Datetime_n = resultSet.getTimestamp("scale_tkt_1_dt_n");
+            mdScaleTicket1Kilograms = resultSet.getDouble("scale_tkt_1_kg");
+            mnScaleTicket2 = resultSet.getInt("scale_tkt_2");
+            mtScaleTicket2Datetime_n = resultSet.getTimestamp("scale_tkt_2_dt_n");
+            mdScaleTicket2Kilograms = resultSet.getDouble("scale_tkt_2_kg");
+            mdTareKilograms = resultSet.getDouble("tare_kg");
+            mbTared = resultSet.getBoolean("b_tared");
             mbAnnulled = resultSet.getBoolean("b_ann");
             mbDeleted = resultSet.getBoolean("b_del");
             mbSystem = resultSet.getBoolean("b_sys");
@@ -278,11 +326,13 @@ public class SDbShipment extends SDbRegistryUser{
             mnFkHandlingTypeId = resultSet.getInt("fk_handg_tp");
             mnFkVehicleTypeId = resultSet.getInt("fk_vehic_tp");
             mnFkShipperId = resultSet.getInt("fk_shipper");
+            mnFkUserTareId = resultSet.getInt("fk_usr_tare");
             mnFkUserReleaseId = resultSet.getInt("fk_usr_release");
             mnFkUserAcceptId = resultSet.getInt("fk_usr_accept");
             mnFkUserAnnulId = resultSet.getInt("fk_usr_ann");
             mnFkUserInsertId = resultSet.getInt("fk_usr_ins");
             mnFkUserUpdateId = resultSet.getInt("fk_usr_upd");
+            mtTsUserTare = resultSet.getTimestamp("ts_usr_tare");
             mtTsUserRelease = resultSet.getTimestamp("ts_usr_release");
             mtTsUserAccept = resultSet.getTimestamp("ts_usr_accept");
             mtTsUserAnnul = resultSet.getTimestamp("ts_usr_ann");
@@ -328,6 +378,9 @@ public class SDbShipment extends SDbRegistryUser{
             mnFkUserAnnulId = session.getUser().getPkUserId();
         }
         
+        if (mnFkUserTareId == SLibConsts.UNDEFINED) {
+            mnFkUserTareId = SUtilConsts.USR_NA_ID;
+        }
         if (mnFkUserReleaseId == SLibConsts.UNDEFINED) {
             mnFkUserReleaseId = SUtilConsts.USR_NA_ID;
         }
@@ -357,7 +410,15 @@ public class SDbShipment extends SDbRegistryUser{
                 "'" + msWebKey + "', " + 
                 mdMeters2 + ", " + 
                 mdKilograms + ", " + 
-                "'" + msComments + "', " + 
+                "'" + msComments + "', " +
+                mnScaleTicket1 + ", " + 
+                "NULL" + ", " +
+                mdScaleTicket1Kilograms + ", " +
+                mnScaleTicket2 + ", " +
+                "NULL" + ", " +
+                mdScaleTicket2Kilograms + ", " +
+                mdTareKilograms + ", " +
+                (mbTared ? 1 : 0) + ", " + 
                 (mbAnnulled ? 1 : 0) + ", " + 
                 (mbDeleted ? 1 : 0) + ", " + 
                 (mbSystem ? 1 : 0) + ", " + 
@@ -366,12 +427,14 @@ public class SDbShipment extends SDbRegistryUser{
                 mnFkCargoTypeId + ", " + 
                 mnFkHandlingTypeId + ", " + 
                 mnFkVehicleTypeId + ", " + 
-                mnFkShipperId + ", " + 
+                mnFkShipperId + ", " +
+                mnFkUserTareId + ", " + 
                 mnFkUserReleaseId + ", " + 
                 mnFkUserAcceptId + ", " + 
                 mnFkUserAnnulId + ", " + 
                 mnFkUserInsertId + ", " + 
-                mnFkUserUpdateId + ", " + 
+                mnFkUserUpdateId + ", " +
+                "NOW()" + ", " +
                 "NOW()" + ", " + 
                 "NOW()" + ", " + 
                 "NOW()" + ", " + 
@@ -394,6 +457,14 @@ public class SDbShipment extends SDbRegistryUser{
                 "m2 = " + mdMeters2 + ", " +
                 "kg = " + mdKilograms + ", " +   
                 "comments = '" + msComments + "', " +
+                "scale_tkt_1 = " + mnScaleTicket1 + ", " +
+                "scale_tkt_1_dt_n = " + "NOW()" + ", " +
+                "scale_tkt_1_kg = " + mdScaleTicket1Kilograms + ", " +
+                "scale_tkt_2 = " + mnScaleTicket2 + ", " +
+                "scale_tkt_2_dt_n = " + "NOW()" + ", " +
+                "scale_tkt_2_kg = " + mdScaleTicket2Kilograms + ", " +
+                "tare_kg = " + mdTareKilograms + ", " +
+                "b_tared = " + (mbTared ? 1 : 0) + ", " +
                 "b_ann = " + (mbAnnulled ? 1 : 0) + ", " +
                 "b_del = " + (mbDeleted ? 1 : 0) + ", " +
                 "b_sys = " + (mbSystem ? 1 : 0) + ", " +
@@ -403,11 +474,13 @@ public class SDbShipment extends SDbRegistryUser{
                 "fk_handg_tp = " + mnFkHandlingTypeId + ", " +
                 "fk_vehic_tp = " + mnFkVehicleTypeId + ", " +
                 "fk_shipper = " + mnFkShipperId + ", " +
+                "fk_usr_tare = " + /*mnFkUserTareId*/ 1 + ", " +
                 "fk_usr_release = " + mnFkUserReleaseId + ", " +
                 "fk_usr_accept = " + mnFkUserAcceptId + ", " +
                 "fk_usr_ann = " + mnFkUserAnnulId + ", " +
                 //"fk_usr_ins = " + mnFkUserInsertId + ", " +
                 "fk_usr_upd = " + mnFkUserUpdateId + ", " +
+                "ts_usr_tare = " + "NOW()" + ", " +
                 (mnFkShipmentStatusId == SModSysConsts.SS_SHIPT_ST_REL ? "ts_usr_release = NOW(), " : "") +
                 (mnFkShipmentStatusId == SModSysConsts.SS_SHIPT_ST_ACC ? "ts_usr_accept = NOW(), " : "") +
                 (mbAnnulled ? "ts_usr_ann = NOW(), " : "") +
@@ -454,6 +527,14 @@ public class SDbShipment extends SDbRegistryUser{
         registry.setMeters2(this.getMeters2());
         registry.setKilograms(this.getKilograms());
         registry.setComments(this.getComments());
+        registry.setScaleTicket1(this.getScaleTicket1());
+        registry.setScaleTicket1Datetime_n(this.getScaleTicket1Datetime_n());
+        registry.setScaleTicket1Kilograms(this.getScaleTicket1Kilograms());
+        registry.setScaleTicket2(this.getScaleTicket2());
+        registry.setScaleTicket2Datetime_n(this.getScaleTicket2Datetime_n());
+        registry.setScaleTicket2Kilograms(this.getScaleTicket2Kilograms());
+        registry.setTareKilograms(this.getTareKilograms());
+        registry.setTared(this.isTared());
         registry.setAnnulled(this.isAnnulled());
         registry.setDeleted(this.isDeleted());
         registry.setSystem(this.isSystem());
@@ -463,11 +544,13 @@ public class SDbShipment extends SDbRegistryUser{
         registry.setFkHandlingTypeId(this.getFkHandlingTypeId());
         registry.setFkVehicleTypeId(this.getFkVehicleTypeId());
         registry.setFkShipperId(this.getFkShipperId());
+        registry.setFkUserTareId(this.getFkUserTareId());
         registry.setFkUserReleaseId(this.getFkUserReleaseId());
         registry.setFkUserAcceptId(this.getFkUserAcceptId());
         registry.setFkUserAnnulId(this.getFkUserAnnulId());
         registry.setFkUserInsertId(this.getFkUserInsertId());
         registry.setFkUserUpdateId(this.getFkUserUpdateId());
+        registry.setTsUserTare(this.getTsUserTare());
         registry.setTsUserRelease(this.getTsUserRelease());
         registry.setTsUserAccept(this.getTsUserAccept());
         registry.setTsUserAnnul(this.getTsUserAnnul());
