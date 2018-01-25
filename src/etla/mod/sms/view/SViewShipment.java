@@ -68,18 +68,18 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
         
         switch (subType) {
             case SLibConsts.UNDEFINED:  // for new shipments
-                setRowButtonsEnabled(true, true, true, false, true);
+                setRowButtonsEnabled(true, false, true, true, true);
                 getPanelCommandsSys(SGuiConsts.PANEL_CENTER).add(moFilterDatePeriod);
                 mjSendBack.setEnabled(false);
                 mjSendNext.setEnabled(false);
                 break;
             case SModSysConsts.SS_SHIPT_ST_REL_TO:  // for release of shipments
-                setRowButtonsEnabled(false, false, false, false, false);
+                setRowButtonsEnabled(false);
                 mjSendBack.setEnabled(false);
                 mjSendNext.setEnabled(true);
                 break;
             case SModSysConsts.SS_SHIPT_ST_REL:     // for released shipments
-                setRowButtonsEnabled(false, false, false, false, false);
+                setRowButtonsEnabled(false);
                 getPanelCommandsSys(SGuiConsts.PANEL_CENTER).add(moFilterDatePeriod);
                 mjSendBack.setEnabled(true);
                 mjSendNext.setEnabled(false);
@@ -228,11 +228,11 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
         }
         
         msSql = "SELECT st.name AS " + SDbConsts.FIELD_NAME + ", "
-                + "cus.name, "
                 + "sp.name, "
                 + "vh.name, "
                 + "sh.vehic_plate, "
                 + "sh.driver_name, "
+                + "sh.driver_phone, "
                 + "sh.id_shipt AS " + SDbConsts.FIELD_ID + "1, "
                 + "sh.number AS " + SDbConsts.FIELD_CODE + ", "
                 + "sh.shipt_date AS " + SDbConsts.FIELD_DATE + ", "
@@ -245,14 +245,19 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
                 + "sh.ts_usr_upd AS " + SDbConsts.FIELD_USER_UPD_TS + ", "
                 + "sh.fk_usr_release, "
                 + "sh.ts_usr_release, "
+                + "sht.name, "
+                + "shc.name, "
+                + "shh.name, "
                 + "ui.name AS " + SDbConsts.FIELD_USER_INS_NAME + ", "
                 + "uu.name AS " + SDbConsts.FIELD_USER_UPD_NAME + ", "
                 + "ur.name "
                 + "FROM " + SModConsts.TablesMap.get(SModConsts.S_SHIPT) + " AS sh "
-                + "INNER JOIN " + SModConsts.TablesMap.get(SModConsts.S_SHIPT_ROW) + " AS sr ON "
-                + "sh.id_shipt = sr.id_shipt "
-                + "INNER JOIN " + SModConsts.TablesMap.get(SModConsts.AU_CUS) + " AS cus ON "
-                + "sr.fk_customer = cus.id_cus "
+                + "INNER JOIN " + SModConsts.TablesMap.get(SModConsts.SU_SHIPT_TP) + " AS sht ON "
+                + "sh.fk_shipt_tp = sht.id_shipt_tp "
+                + "INNER JOIN " + SModConsts.TablesMap.get(SModConsts.SU_CARGO_TP) + " AS shc ON "
+                + "sh.fk_cargo_tp = shc.id_cargo_tp "
+                + "INNER JOIN " + SModConsts.TablesMap.get(SModConsts.SU_HANDG_TP) + " AS shh ON "
+                + "sh.fk_handg_tp = shh.id_handg_tp "
                 + "INNER JOIN " + SModConsts.TablesMap.get(SModConsts.SU_SHIPPER) + " AS sp ON "
                 + "sp.id_shipper = sh.fk_shipper "
                 + "INNER JOIN " + SModConsts.TablesMap.get(SModConsts.SU_VEHIC_TP) + " AS vh ON "
@@ -265,6 +270,8 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
                 + "sh.fk_usr_release = ur.id_usr "
                 + "INNER JOIN " + SModConsts.TablesMap.get(SModConsts.SS_SHIPT_ST) + " AS st ON "
                 + "sh.fk_shipt_st = st.id_shipt_st "
+                + "LEFT OUTER JOIN " + SModConsts.TablesMap.get(SModConsts.S_SHIPT_ROW) + " AS sr ON "
+                + "sh.id_shipt = sr.id_shipt "
                 + (sql.isEmpty() ? "" : "WHERE " + sql)
                 + "GROUP BY sh.number, sh.id_shipt "
                 + "ORDER BY sh.number, sh.id_shipt ";
@@ -274,13 +281,17 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
     public ArrayList<SGridColumnView> createGridColumns() {
         ArrayList<SGridColumnView> columns = new ArrayList<SGridColumnView>();
 
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_ITM, SDbConsts.FIELD_CODE, "Número"));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "sp.name", "Transportista"));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "vh.name", "Vehículo"));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_ITM, "sh.vehic_plate", "Placas vehículo"));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_M, "sh.driver_name", "Chofer"));        
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_INT_RAW, SDbConsts.FIELD_CODE, "Folio"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_DATE, SDbConsts.FIELD_DATE, SGridConsts.COL_TITLE_DATE));
-        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_CODE_ITM, SDbConsts.FIELD_NAME, "Estatus"));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "sht.name", "Tipo embarque"));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "shc.name", "Tipo carga"));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "shh.name", "Tipo maniobra"));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "sp.name", "Línea transportista"));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "vh.name", "Tipo vehículo"));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "sh.vehic_plate", "Placas vehículo"));
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "sh.driver_name", "Nombre chofer"));        
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, "sh.driver_phone", "Teléfono chofer"));        
+        columns.add(new SGridColumnView(SGridConsts.COL_TYPE_TEXT_NAME_CAT_S, SDbConsts.FIELD_NAME, "Estatus"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_BOOL_S, "sh.b_ann", "Anulado"));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_BOOL_S, SDbConsts.FIELD_IS_DEL, SGridConsts.COL_TITLE_IS_DEL));
         columns.add(new SGridColumnView(SGridConsts.COL_TYPE_BOOL_S, SDbConsts.FIELD_IS_SYS, SGridConsts.COL_TITLE_IS_SYS));
