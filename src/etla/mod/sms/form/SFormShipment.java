@@ -18,6 +18,8 @@ import etla.mod.sms.db.SShippingUtils;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,13 +37,14 @@ import sa.lib.gui.SGuiClient;
 import sa.lib.gui.SGuiConsts;
 import sa.lib.gui.SGuiUtils;
 import sa.lib.gui.SGuiValidation;
+import sa.lib.gui.bean.SBeanFieldKey;
 import sa.lib.gui.bean.SBeanForm;
 
 /**
  *
  * @author Daniel López, Sergio Flores
  */
-public class SFormShipment extends SBeanForm implements ActionListener{
+public class SFormShipment extends SBeanForm implements ActionListener, ItemListener {
 
     private SDbShipment moRegistry;
     private SGridPaneForm moGridAvailableRows;
@@ -102,6 +105,9 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         jPanel15 = new javax.swing.JPanel();
         jlDriverPhone = new javax.swing.JLabel();
         moTextDriverPhone = new sa.lib.gui.bean.SBeanFieldText();
+        jPanel18 = new javax.swing.JPanel();
+        jlScaleTicket1 = new javax.swing.JLabel();
+        moIntScaleTicket1 = new sa.lib.gui.bean.SBeanFieldInteger();
         jpBody = new javax.swing.JPanel();
         jpRows = new javax.swing.JPanel();
         jpFilterControls = new javax.swing.JPanel();
@@ -140,7 +146,7 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         jpHeader.setLayout(new java.awt.GridLayout(1, 2));
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Datos del registro:"));
-        jPanel5.setLayout(new java.awt.GridLayout(5, 1, 0, 5));
+        jPanel5.setLayout(new java.awt.GridLayout(6, 1, 0, 5));
 
         jPanel7.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
@@ -201,12 +207,12 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         jpHeader.add(jPanel5);
 
         jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("Datos del transportista:"));
-        jPanel6.setLayout(new java.awt.GridLayout(5, 1, 0, 5));
+        jPanel6.setLayout(new java.awt.GridLayout(6, 1, 0, 5));
 
         jPanel13.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
-        jlShipper.setText("Transportista:*");
-        jlShipper.setPreferredSize(new java.awt.Dimension(100, 23));
+        jlShipper.setText("Línea transportista:*");
+        jlShipper.setPreferredSize(new java.awt.Dimension(110, 23));
         jPanel13.add(jlShipper);
 
         moKeyShipper.setPreferredSize(new java.awt.Dimension(250, 23));
@@ -217,7 +223,7 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         jPanel16.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
         jlVehicleType.setText("Tipo vehículo:*");
-        jlVehicleType.setPreferredSize(new java.awt.Dimension(100, 23));
+        jlVehicleType.setPreferredSize(new java.awt.Dimension(110, 23));
         jlVehicleType.setRequestFocusEnabled(false);
         jPanel16.add(jlVehicleType);
 
@@ -228,8 +234,8 @@ public class SFormShipment extends SBeanForm implements ActionListener{
 
         jPanel17.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
-        jlVehiclePlate.setText("Placas vehículo:*");
-        jlVehiclePlate.setPreferredSize(new java.awt.Dimension(100, 23));
+        jlVehiclePlate.setText("Placas vehículo:");
+        jlVehiclePlate.setPreferredSize(new java.awt.Dimension(110, 23));
         jPanel17.add(jlVehiclePlate);
 
         moTextVehiclePlate.setPreferredSize(new java.awt.Dimension(150, 23));
@@ -239,8 +245,8 @@ public class SFormShipment extends SBeanForm implements ActionListener{
 
         jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
-        jlDriverName.setText("Nombre chofer:*");
-        jlDriverName.setPreferredSize(new java.awt.Dimension(100, 23));
+        jlDriverName.setText("Nombre chofer:");
+        jlDriverName.setPreferredSize(new java.awt.Dimension(110, 23));
         jPanel14.add(jlDriverName);
 
         moTextDriverName.setPreferredSize(new java.awt.Dimension(250, 23));
@@ -250,14 +256,23 @@ public class SFormShipment extends SBeanForm implements ActionListener{
 
         jPanel15.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
-        jlDriverPhone.setText("Teléfono chofer:*");
-        jlDriverPhone.setPreferredSize(new java.awt.Dimension(100, 23));
+        jlDriverPhone.setText("Teléfono chofer:");
+        jlDriverPhone.setPreferredSize(new java.awt.Dimension(110, 23));
         jPanel15.add(jlDriverPhone);
 
         moTextDriverPhone.setPreferredSize(new java.awt.Dimension(250, 23));
         jPanel15.add(moTextDriverPhone);
 
         jPanel6.add(jPanel15);
+
+        jPanel18.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
+
+        jlScaleTicket1.setText("Boleto báscula:");
+        jlScaleTicket1.setPreferredSize(new java.awt.Dimension(110, 23));
+        jPanel18.add(jlScaleTicket1);
+        jPanel18.add(moIntScaleTicket1);
+
+        jPanel6.add(jPanel18);
 
         jpHeader.add(jPanel6);
 
@@ -323,8 +338,8 @@ public class SFormShipment extends SBeanForm implements ActionListener{
 
         jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
-        moKeyComment.setToolTipText("Comentario");
-        moKeyComment.setPreferredSize(new java.awt.Dimension(350, 23));
+        moKeyComment.setToolTipText("Observación");
+        moKeyComment.setPreferredSize(new java.awt.Dimension(370, 23));
         jPanel1.add(moKeyComment);
 
         jbAddComment.setText("+");
@@ -339,7 +354,7 @@ public class SFormShipment extends SBeanForm implements ActionListener{
 
         jspComments.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         jspComments.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        jspComments.setPreferredSize(new java.awt.Dimension(378, 75));
+        jspComments.setPreferredSize(new java.awt.Dimension(400, 75));
         jspComments.setRequestFocusEnabled(false);
 
         jtaComments.setColumns(20);
@@ -418,6 +433,7 @@ public class SFormShipment extends SBeanForm implements ActionListener{
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
+    private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel20;
     private javax.swing.JPanel jPanel21;
@@ -445,6 +461,7 @@ public class SFormShipment extends SBeanForm implements ActionListener{
     private javax.swing.JLabel jlEstatus;
     private javax.swing.JLabel jlHandlingType;
     private javax.swing.JLabel jlNumber;
+    private javax.swing.JLabel jlScaleTicket1;
     private javax.swing.JLabel jlShipmentType;
     private javax.swing.JLabel jlShipper;
     private javax.swing.JLabel jlTotalM2;
@@ -465,6 +482,7 @@ public class SFormShipment extends SBeanForm implements ActionListener{
     private javax.swing.JTextField jtfTotalM2;
     private sa.lib.gui.bean.SBeanFieldDate moDateDate;
     private sa.lib.gui.bean.SBeanFieldDate moDateRows;
+    private sa.lib.gui.bean.SBeanFieldInteger moIntScaleTicket1;
     private sa.lib.gui.bean.SBeanFieldKey moKeyCargoType;
     private sa.lib.gui.bean.SBeanFieldKey moKeyComment;
     private sa.lib.gui.bean.SBeanFieldKey moKeyHandlingType;
@@ -489,9 +507,10 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         moKeyHandlingType.setKeySettings(miClient, SGuiUtils.getLabelName(jlHandlingType), true);
         moKeyShipper.setKeySettings(miClient, SGuiUtils.getLabelName(jlShipper), true);
         moKeyVehicleType.setKeySettings(miClient, SGuiUtils.getLabelName(jlVehicleType), true);
-        moTextVehiclePlate.setTextSettings(SGuiUtils.getLabelName(jlVehiclePlate), 25);
-        moTextDriverName.setTextSettings(SGuiUtils.getLabelName(jlDriverName), 50);
-        moTextDriverPhone.setTextSettings(SGuiUtils.getLabelName(jlDriverPhone), 50);
+        moTextVehiclePlate.setTextSettings(SGuiUtils.getLabelName(jlVehiclePlate), 25, 0);
+        moTextDriverName.setTextSettings(SGuiUtils.getLabelName(jlDriverName), 50, 0);
+        moTextDriverPhone.setTextSettings(SGuiUtils.getLabelName(jlDriverPhone), 50, 0);
+        moIntScaleTicket1.setIntegerSettings(SGuiUtils.getLabelName(jlScaleTicket1), SGuiConsts.GUI_TYPE_INT_RAW, false);
         moDateRows.setDateSettings(miClient, SGuiUtils.getLabelName(jlDateRows), false);
         moDateRows.setNextButton(jbShowRows);
         moKeyComment.setKeySettings(miClient, SGuiUtils.getLabelName(moKeyComment.getToolTipText()), false);
@@ -505,6 +524,7 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         moFields.addField(moTextVehiclePlate);
         moFields.addField(moTextDriverName);
         moFields.addField(moTextDriverPhone);
+        moFields.addField(moIntScaleTicket1);
         moFields.addField(moDateRows);
         moFields.addField(moKeyComment);
         
@@ -731,7 +751,18 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         else {
             jtaComments.append((jtaComments.getText().isEmpty() ? "" : "\n") + moKeyComment.getSelectedItem().getItem());
         }
-    }      
+    }
+    
+    private void itemStateChangedShipper() {
+        if (moKeyShipper.getSelectedIndex() == SModSysConsts.SU_SHIPPER_NA) { //if 'N/A' is the selected item
+            moKeyVehicleType.setSelectedIndex(SModSysConsts.SU_VEHIC_TP_CUS); //Set 'RECOGE CLIENTE' selected
+            moKeyVehicleType.setEnabled(false);
+        }
+        else {
+            moKeyVehicleType.setSelectedIndex(0);
+            moKeyVehicleType.setEnabled(true);
+        }
+    }
     /*
      * Public methods
      */
@@ -747,6 +778,8 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         jbRowAdd.addActionListener(this);
         jbRowRemove.addActionListener(this);
         jbAddComment.addActionListener(this);
+        
+        moKeyShipper.addItemListener(this);
     }
 
     @Override
@@ -756,6 +789,8 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         jbRowAdd.removeActionListener(this);
         jbRowRemove.removeActionListener(this);
         jbAddComment.removeActionListener(this);
+        
+        moKeyShipper.removeItemListener(this);
     }
 
     @Override
@@ -780,11 +815,10 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         
         if (moRegistry.isRegistryNew()) {
             moRegistry.setShiptmentDate(miClient.getSession().getCurrentDate());
+            moRegistry.setFkShipmentStatusId(SModSysConsts.SS_SHIPT_ST_REL_TO);
             jtfRegistryKey.setText("");
         }
         else {
-            jtfEstatus.setText(miClient.getSession().readField(SModConsts.SS_SHIPT_ST, new int[] {moRegistry.getFkShipmentStatusId()} , SDbRegistry.FIELD_NAME).toString());
-            jtfEstatus.setCaretPosition(0);
             jtfRegistryKey.setText(SLibUtils.textKey(moRegistry.getPrimaryKey()));
         }
         
@@ -798,6 +832,7 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         moTextVehiclePlate.setValue(moRegistry.getVehiclePlate());
         moTextDriverName.setValue(moRegistry.getDriverName());
         moTextDriverPhone.setValue(moRegistry.getDriverPhone());
+        moIntScaleTicket1.setValue(moRegistry.getScaleTicket1());
         jtaComments.setText(moRegistry.getComments());
         jtaComments.setCaretPosition(0);
         jtfTotalM2.setText(SLibUtils.getDecimalFormatQuantity().format(moRegistry.getMeters2()));
@@ -813,6 +848,14 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         
         moGridSelectedRows.populateGrid(selectedRows);
         
+        moDateRows.setValue(miClient.getSession().getCurrentDate());
+        actionPerformedClearRows();
+        
+        jtfEstatus.setText((String) miClient.getSession().readField(SModConsts.SS_SHIPT_ST, new int[] {moRegistry.getFkShipmentStatusId()}, SDbRegistry.FIELD_NAME));
+        jtfEstatus.setCaretPosition(0);
+        
+        jckReleaseOnSave.setSelected(moRegistry.getFkShipmentStatusId() == SModSysConsts.SS_SHIPT_ST_REL);
+        
         setFormEditable(true);
         
         if (moRegistry.getFkShipmentStatusId() != SModSysConsts.SS_SHIPT_ST_REL_TO) {
@@ -824,11 +867,7 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         }
         else {
         }
-        
-        moDateRows.setValue(miClient.getSession().getCurrentDate());
-        actionPerformedClearRows();
-        jckReleaseOnSave.setSelected(true);
-        
+       
         try {
             SDbConfigAvista configAvista = ((SDbConfig) miClient.getSession().getConfigSystem()).getDbConfigAvista();
             miConnectionAvista = SEtlProcess.createConnection(
@@ -859,7 +898,15 @@ public class SFormShipment extends SBeanForm implements ActionListener{
         registry.setVehiclePlate(moTextVehiclePlate.getText());
         //registry.setWebKey(...);
         registry.setMeters2(SLibUtils.parseDouble(jtfTotalM2.getText()));
+        //registry.setKilograms(...);
         registry.setComments(jtaComments.getText());
+        registry.setScaleTicket1(moIntScaleTicket1.getValue());
+        //registry.setScaleTicket1Datetime_n(...);
+        //registry.setScaleTicket1Kilograms(...);
+        //registry.setScaleTicket2(...);
+        //registry.setScaleTicket2Datetime_n(...);
+        //registry.setScaleTicket2Kilograms(...);
+        //registry.setTared(...);
         //registry.setAnnulled(...);
         //registry.setDeleted(...);
         //registry.setSystem(...);
@@ -879,37 +926,76 @@ public class SFormShipment extends SBeanForm implements ActionListener{
     }
 
     @Override
-    public SGuiValidation validateForm() {
+    public SGuiValidation validateForm() {        
         SGuiValidation validation = moFields.validateFields();
+        
+        if (validation.isValid()) {
+            if (moKeyShipper.getSelectedIndex() == SModSysConsts.SU_SHIPPER_NA && moKeyVehicleType.getSelectedIndex() != SModSysConsts.SU_VEHIC_TP_CUS) {
+                validation.setMessage(SGuiConsts.ERR_MSG_FIELD_DIF + "'" + SGuiUtils.getLabelName(jlVehicleType));
+                validation.setComponent(moKeyVehicleType);
+            }
+            else if (moKeyShipper.getSelectedIndex() != SModSysConsts.SU_SHIPPER_NA && moKeyVehicleType.getSelectedIndex() == SModSysConsts.SU_VEHIC_TP_CUS) {
+                validation.setMessage(SGuiConsts.ERR_MSG_FIELD_DIF + "'" + SGuiUtils.getLabelName(jlVehicleType));
+                validation.setComponent(moKeyVehicleType);
+            }
+            else {
+                if (jckReleaseOnSave.isSelected()) {
+                    if (moTextVehiclePlate.getValue().isEmpty()) {
+                        validation.setMessage(SGuiConsts.ERR_MSG_FIELD_REQ + "'" + SGuiUtils.getLabelName(jlVehiclePlate) + "'.");
+                        validation.setComponent(moTextVehiclePlate);
+                    }
+                    else if (moTextDriverName.getValue().isEmpty()) {
+                        validation.setMessage(SGuiConsts.ERR_MSG_FIELD_REQ + "'" + SGuiUtils.getLabelName(jlDriverName) + "'.");
+                        validation.setComponent(moTextDriverName);
+                    }
+                    else if (moTextDriverPhone.getValue().isEmpty()) {
+                        validation.setMessage(SGuiConsts.ERR_MSG_FIELD_REQ + "'" + SGuiUtils.getLabelName(jlDriverPhone) + "'.");
+                        validation.setComponent(moTextDriverPhone);
+                    }
+                    else if (moIntScaleTicket1.getValue() == 0) {
+                        validation.setMessage(SGuiConsts.ERR_MSG_FIELD_REQ + "'" + SGuiUtils.getLabelName(jlScaleTicket1) + "'.");
+                        validation.setComponent(moIntScaleTicket1);
+                    }
+                }
+            }
+        }
         
         return validation;
     }
 
     @Override
     public void actionPerformed(ActionEvent evt) {
-        try {
-            if (evt.getSource() instanceof JButton) {
-                JButton button = (JButton) evt.getSource();
+        if (evt.getSource() instanceof JButton) {
+            JButton button = (JButton) evt.getSource();
 
-                if (button == jbShowRows) {
-                    actionPerformedShowRows();
-                }
-                else if (button == jbClearRows) {
-                    actionPerformedClearRows();
-                }
-                else if (button == jbRowAdd) {
-                    actionPerformedAddRow();
-                }
-                else if (button == jbRowRemove) {
-                    actionPerformedRemoveRow();
-                }
-                else if (button == jbAddComment) {
-                    actionPerformedAddComment();
+            if (button == jbShowRows) {
+                actionPerformedShowRows();
+            }
+            else if (button == jbClearRows) {
+                actionPerformedClearRows();
+            }
+            else if (button == jbRowAdd) {
+                actionPerformedAddRow();
+            }
+            else if (button == jbRowRemove) {
+                actionPerformedRemoveRow();
+            }
+            else if (button == jbAddComment) {
+                actionPerformedAddComment();
+            }
+        }
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+        if (e.getSource() instanceof SBeanFieldKey) {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                SBeanFieldKey field = (SBeanFieldKey) e.getSource();
+
+                if (field == moKeyShipper){
+                    itemStateChangedShipper();
                 }
             }
-        } 
-        catch(Exception e) {
-            SLibUtils.showException(this, e);
         }
     }
 }

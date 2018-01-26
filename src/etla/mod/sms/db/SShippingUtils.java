@@ -42,7 +42,7 @@ public abstract class SShippingUtils {
         String sql = "SELECT ci.CustomerInvoiceKey, ci.InvoiceNumber, ci.BatchNumber, ci.Created, ci.Description, RIGHT(ci.Description, LEN(ci.Description) - 5) AS _bol, " +
                 "c.CustomerId, c.CustomerName, st.SiteLocation, st.City + ', ' + st.State + ', '+ st.ZipCode AS _site_loc, " + 
                 "SUM(cii.Area)/1000000.0 AS _m2, SUM(cii.Weight)/1000000.0 AS _kg, COUNT(*) AS _orders, " +
-                "(SELECT COUNT(*) FROM dbo.BOLUnitsView where BOLKey=RIGHT(ci.Description, LEN(ci.Description) - LEN('BOL: '))) AS _bales " +
+                "(SELECT SUM(NoLoads) FROM dbo.BOLUnitsView where BOLKey=RIGHT(ci.Description, LEN(ci.Description) - LEN('BOL: '))) AS _bales " +
                 "FROM " +
                 "dbo.CustomerInvoices AS ci " +
                 "INNER JOIN dbo.CustomerInvoiceItems AS cii ON cii.CustomerInvoiceKey=ci.CustomerInvoiceKey " +
