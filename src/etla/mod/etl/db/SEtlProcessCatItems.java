@@ -106,11 +106,11 @@ public class SEtlProcessCatItems {
                 nSiieItemId = nSiieItemAliveId != 0 ? nSiieItemAliveId : nSiieItemDeletedId;
 
                 if (nSiieItemId == 0) {
-                    // Business partner is new on SIIE:
+                    // Item is new on SIIE:
 
                     statementSiie.execute("START TRANSACTION");
 
-                    // Create business partner registry:
+                    // Create item registry:
 
                     dataItem = new SDataItem();
                     //dataItem.setPkItemId(...); // set on save
