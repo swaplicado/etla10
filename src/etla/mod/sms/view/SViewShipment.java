@@ -150,9 +150,10 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
 
                     try {                     
                         map = miClient.createReportParams();
-                        map.put("id_Shipt", obj.getPkShipmentId());
+                        map.put("id_Shipt", obj.getPkShipmentId());                        
                         map.put("usr", miClient.getSession().getUser().getName());                        
                         map.put("app_provider", SGuiMain.APP_PROVIDER);
+                        map.put("app_copyright", SGuiMain.APP_COPYRIGHT);
                         map.put("oFormatDate", SLibUtils.DateFormatDate);
                         map.put("oFormatDatetime", SLibUtils.DateFormatDatetime);
                        
