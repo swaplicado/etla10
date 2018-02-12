@@ -196,9 +196,12 @@ public class SDbShipper extends SDbRegistryUser {
             //moDbUser.setTsUserUpdate(...);
             
             moDbUser.setAuxClearPasswordOnSave(true);
-            
-            moDbUser.save(session);
         }
+        else {
+            moDbUser.setName(msMail);
+        }
+        
+        moDbUser.save(session);
         
         if (mbRegistryNew) {
             computePrimaryKey(session);
