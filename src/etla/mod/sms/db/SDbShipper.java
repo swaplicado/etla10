@@ -21,7 +21,7 @@ import sa.lib.gui.SGuiSession;
  *
  * @author Daniel López
  */
-public class SDbShipper extends SDbRegistryUser{
+public class SDbShipper extends SDbRegistryUser {
     
     protected int mnPkShipperId;
     protected String msCode;
@@ -233,9 +233,9 @@ public class SDbShipper extends SDbRegistryUser{
                 "b_del = " + (mbDeleted ? 1 : 0) + ", " +
                 "b_sys = " + (mbSystem ? 1 : 0) + ", " +
                 "fk_usr = " + mnFkUserId + ", " +
-                "fk_usr_ins = " + mnFkUserInsertId + ", " +
+                //"fk_usr_ins = " + mnFkUserInsertId + ", " +
                 "fk_usr_upd = " + mnFkUserUpdateId + ", " +
-                "ts_usr_ins = " + "NOW()" + ", " +
+                //"ts_usr_ins = " + "NOW()" + ", " +
                 "ts_usr_upd = " + "NOW()" + " " +
                  getSqlWhere();
         }

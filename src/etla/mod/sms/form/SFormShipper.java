@@ -67,8 +67,6 @@ public class SFormShipper extends SBeanForm {
         jlCode.setText("Código:*");
         jlCode.setPreferredSize(new java.awt.Dimension(100, 23));
         jPanel3.add(jlCode);
-
-        moTextCode.setPreferredSize(new java.awt.Dimension(200, 23));
         jPanel3.add(moTextCode);
 
         jPanel2.add(jPanel3);
@@ -79,7 +77,7 @@ public class SFormShipper extends SBeanForm {
         jlName.setPreferredSize(new java.awt.Dimension(100, 23));
         jPanel4.add(jlName);
 
-        moTextName.setPreferredSize(new java.awt.Dimension(200, 23));
+        moTextName.setPreferredSize(new java.awt.Dimension(300, 23));
         jPanel4.add(moTextName);
 
         jPanel2.add(jPanel4);
@@ -90,7 +88,7 @@ public class SFormShipper extends SBeanForm {
         jlMail.setPreferredSize(new java.awt.Dimension(100, 23));
         jPanel6.add(jlMail);
 
-        moTextMail.setPreferredSize(new java.awt.Dimension(200, 23));
+        moTextMail.setPreferredSize(new java.awt.Dimension(300, 23));
         jPanel6.add(moTextMail);
 
         jPanel2.add(jPanel6);
