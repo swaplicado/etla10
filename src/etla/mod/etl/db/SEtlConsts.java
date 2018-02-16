@@ -41,6 +41,7 @@ public abstract class SEtlConsts {
     public static final String AVISTA_UOM_M = "M";      // not supported yet
     public static final String AVISTA_UOM_KG = "KG";    // not supported yet
     public static final String AVISTA_UOM_TON = "TON";
+    public static final String AVISTA_UOM_FF = "FF";    // due to issue of extra charge in CustomerInvoices with CustomerInvoiceKey=85155, InvoiceNumber=82164, BOL=85613, Created=2018-02-15
     
     public static final String AVISTA_PAY_TERM_CNT = "CNT"; // contado
     public static final String AVISTA_BOOL_N = "N"; // no
@@ -118,7 +119,7 @@ public abstract class SEtlConsts {
     public static final String TXT_MISC_PO = "Orden de compra";
     public static final String TXT_MISC_PO_ACR = "OC";
     public static final String TXT_SYS_SIIE = "SIIE";
-    public static final String TXT_SYS_AVISTA = "Avista";
+    public static final String TXT_SYS_AVISTA = "Avista Axiom";
     
     public static final String MSG_ERR = "Ha ocurrido una excepción";
     public static final String MSG_ERR_UNS_UOM = MSG_ERR + ": unidad de medida no soportada.";

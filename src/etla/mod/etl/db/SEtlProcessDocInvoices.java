@@ -48,6 +48,7 @@ public class SEtlProcessDocInvoices {
         int idInvoiceCurrencyReq = 0;
         boolean isInvoiceExported = false;
         HashSet<Integer> setLineCurrencySrcIds = new HashSet<>();
+        String sInvoiceErrMsg = "";
         
         double dInvoiceAmountSrc = 0;
         double dInvoiceAmountReq = 0;
@@ -67,6 +68,7 @@ public class SEtlProcessDocInvoices {
         
         // Avista invoice row (line) variables:
         
+        double dLineUnits = 0;      // units
         double dLinePieces = 0;     // pce
         double dLineArea = 0;       // 1k·m²
         double dLineWeight = 0;     // kg
@@ -75,6 +77,7 @@ public class SEtlProcessDocInvoices {
         double dLinePriceReq = 0;
         double dLineAmountReq = 0;
         boolean isLineUnitEqual = false;
+        String sLinePricePerCode = "";  // for dbo.CustomerInvoiceItems.PricePer, i.e., price per unit of measure (provided by code)
         
         // SIIE & ETL invoice row variables:
         
@@ -150,7 +153,7 @@ public class SEtlProcessDocInvoices {
         
         // Obtain invoices list from Avista:
         
-        sql = "SELECT ci.CustomerInvoiceKey, ci.InvoiceNumber, ci.Created AS InvoiceCreated, ci.CustomerId "
+        sql = "SELECT ci.CustomerInvoiceKey, ci.InvoiceNumber, ci.Created AS InvoiceCreated, ci.CustomerId, ci.Description "
                 + "FROM dbo.CustomerInvoices AS ci "
                 + "WHERE CAST(ci.Created AS DATE) BETWEEN '" + SLibUtils.DbmsDateFormatDate.format(etlPackage.PeriodStart) + "' AND '" + SLibUtils.DbmsDateFormatDate.format(etlPackage.PeriodEnd) + "' AND "
                 + "ci.CurrentStatusKey IN (" + SEtlConsts.AVISTA_INV_STA_APP + ", " + SEtlConsts.AVISTA_INV_STA_ARC + ") AND "
@@ -208,6 +211,7 @@ public class SEtlProcessDocInvoices {
                 idInvoiceCurrencySrc = 0;
                 idInvoiceCurrencyReq = 0;
                 setLineCurrencySrcIds.clear();
+                sInvoiceErrMsg = "\n(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + ": ID=" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "; #" + rsAvistaInvoiceList.getString("InvoiceNumber") + "; '" + rsAvistaInvoiceList.getString("Description") + "')";
 
                 dInvoiceAmountSrc = 0;
                 dInvoiceAmountReq = 0;
@@ -218,8 +222,8 @@ public class SEtlProcessDocInvoices {
                 dbInvoiceCustomer = SEtlUtils.getEtlCustomer(session, rsAvistaInvoiceList.getString("CustomerId"));
                 if (dbInvoiceCustomer == null) {
                     throw new Exception(SEtlConsts.MSG_ERR_UNK_CUS + "\n"
-                            + SEtlConsts.TXT_MISC_ID + "='" + rsAvistaInvoiceList.getString("CustomerId") + "'.\n"
-                            + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                            + SEtlConsts.TXT_MISC_ID + "='" + rsAvistaInvoiceList.getString("CustomerId") + "'."
+                            + sInvoiceErrMsg);
                 }
                 else if (dbInvoiceCustomer.isEtlIgnore()) {
                     continue;   // customer is set to be ignored on ETL process
@@ -229,13 +233,13 @@ public class SEtlProcessDocInvoices {
                 
                 dataBizPartnerCustomer = new SDataBizPartner();
                 if (dataBizPartnerCustomer.read(new int[] { dbInvoiceCustomer.getDesCustomerId() }, stSiie) != SLibConstants.DB_ACTION_READ_OK) {
-                    throw new Exception(SEtlConsts.MSG_ERR_SIIE_CUS_QRY + "'" + dbInvoiceCustomer.getName() + "'.\n"
-                            + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                    throw new Exception(SEtlConsts.MSG_ERR_SIIE_CUS_QRY + "'" + dbInvoiceCustomer.getName() + "'."
+                            + sInvoiceErrMsg);
                 }
                 else if (dataBizPartnerCustomer.getIsDeleted() || dataBizPartnerCustomer.getDbmsCategorySettingsCus().getIsDeleted()) {
                     throw new Exception(SEtlConsts.MSG_ERR_SIIE_CUS_STA + "'" + dbInvoiceCustomer.getName() + "'.\n"
-                            + SEtlConsts.MSG_ERR_REC_STA_DEL + "\n"
-                            + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')"); // business partner record (at least as customer) is deleted
+                            + SEtlConsts.MSG_ERR_REC_STA_DEL
+                            + sInvoiceErrMsg); // business partner record (at least as customer) is deleted
                 }
 
                 // Set invoice's pay method & account from SIIE customer's registries:
@@ -251,8 +255,8 @@ public class SEtlProcessDocInvoices {
                     if (dbInvoiceSalesAgent != null) {
                         if (dbInvoiceSalesAgent.getDesSalesAgentId() == SLibConsts.UNDEFINED) {
                             throw new Exception(SEtlConsts.MSG_ERR_UNK_SAL_AGT + "\n"
-                                    + "'" + dbInvoiceSalesAgent.getName() + "' (" + SEtlConsts.TXT_CUS + "='" + dbInvoiceCustomer.getName() + "').\n"
-                                                        + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                                    + "'" + dbInvoiceSalesAgent.getName() + "' (" + SEtlConsts.TXT_CUS + "='" + dbInvoiceCustomer.getName() + "')."
+                                    + sInvoiceErrMsg);
                         }
                         else {
                             idInvoiceSalesAgentDes = dbInvoiceSalesAgent.getDesSalesAgentId();
@@ -293,8 +297,8 @@ public class SEtlProcessDocInvoices {
                     if (dbLineItem == null) {
                         throw new Exception(SEtlConsts.MSG_ERR_UNK_ITM + "\n"
                                 + SEtlConsts.TXT_BRD + "='" + rsAvistaInvoiceListRows.getInt("PlantBoardTypeKey") + "', "
-                                + SEtlConsts.TXT_FLT + "='" + rsAvistaInvoiceListRows.getString("Flute") + "'.\n"
-                                + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                                + SEtlConsts.TXT_FLT + "='" + rsAvistaInvoiceListRows.getString("Flute") + "'."
+                                + sInvoiceErrMsg);
                     }
                     
                     if (dbLineItem.getFkSrcRequiredCurrencyId_n() != 0) { // does current item have required currency?
@@ -302,8 +306,8 @@ public class SEtlProcessDocInvoices {
                             idInvoiceCurrencyReq = dbLineItem.getFkSrcRequiredCurrencyId_n();
                         }
                         else if (idInvoiceCurrencyReq != dbLineItem.getFkSrcRequiredCurrencyId_n()) {
-                            throw new Exception(SEtlConsts.MSG_ERR_UNK_CUR_MLT_ETL + ".\n"
-                                    + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                            throw new Exception(SEtlConsts.MSG_ERR_UNK_CUR_MLT_ETL
+                                    + sInvoiceErrMsg);
                         }
                     }
                     
@@ -315,8 +319,8 @@ public class SEtlProcessDocInvoices {
                 }
                 
                 if (setLineCurrencySrcIds.size() > 1) {
-                    throw new Exception(SEtlConsts.MSG_ERR_UNK_CUR_MLT_SRC + ".\n"
-                            + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                    throw new Exception(SEtlConsts.MSG_ERR_UNK_CUR_MLT_SRC
+                            + sInvoiceErrMsg);
                 }
                 
                 // Set invoice's original currency:
@@ -328,8 +332,8 @@ public class SEtlProcessDocInvoices {
                 dbInvoiceCurrencySrc = etlCatalogs.getEtlCurrency(idInvoiceCurrencySrc);
                 if (dbInvoiceCurrencySrc == null) {
                     throw new Exception(SEtlConsts.MSG_ERR_UNK_CUR + "\n"
-                            + SEtlConsts.TXT_MISC_ID + "='" + idInvoiceCurrencySrc + "' (" + SEtlConsts.TXT_CUR + " " + SEtlConsts.TXT_MISC_SRC + ").\n"
-                            + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                            + SEtlConsts.TXT_MISC_ID + "='" + idInvoiceCurrencySrc + "' (" + SEtlConsts.TXT_CUR + " " + SEtlConsts.TXT_MISC_SRC + ")."
+                            + sInvoiceErrMsg);
                 }
                 
                 // Set invoice's required currency:
@@ -343,8 +347,8 @@ public class SEtlProcessDocInvoices {
                 dbInvoiceCurrencyReq = etlCatalogs.getEtlCurrency(idInvoiceCurrencyReq);
                 if (dbInvoiceCurrencyReq == null) {
                     throw new Exception(SEtlConsts.MSG_ERR_UNK_CUR + "\n"
-                            + SEtlConsts.TXT_MISC_ID + "='" + idInvoiceCurrencyReq + "' (" + SEtlConsts.TXT_CUR + " " + SEtlConsts.TXT_MISC_REQ + ").\n"
-                            + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                            + SEtlConsts.TXT_MISC_ID + "='" + idInvoiceCurrencyReq + "' (" + SEtlConsts.TXT_CUR + " " + SEtlConsts.TXT_MISC_REQ + ")."
+                            + sInvoiceErrMsg);
                 }
                 
                 // Validate exchange rate if necessary:
@@ -357,8 +361,8 @@ public class SEtlProcessDocInvoices {
                     if (dInvoiceExchangeRate == 0) {
                         throw new Exception(SEtlConsts.MSG_ERR_UNK_EXR + "\n"
                                 + SEtlConsts.TXT_CUR + "='" + dbInvoiceCurrencyReq.getName() + "', "
-                                + SEtlConsts.TXT_MISC_DAT + "='" + SLibUtils.DateFormatDate.format(etlPackage.DateIssue) + "'.\n"
-                                + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                                + SEtlConsts.TXT_MISC_DAT + "='" + SLibUtils.DateFormatDate.format(etlPackage.DateIssue) + "'."
+                                + sInvoiceErrMsg);
                     }
                 }
                 
@@ -451,33 +455,47 @@ public class SEtlProcessDocInvoices {
                             if (dbLineItem == null) {
                                 throw new Exception(SEtlConsts.MSG_ERR_UNK_ITM + "\n"
                                         + SEtlConsts.TXT_BRD + "='" + rsAvistaInvoiceData.getInt("PlantBoardTypeKey") + "', "
-                                        + SEtlConsts.TXT_FLT + "='" + rsAvistaInvoiceData.getString("Flute") + "'.\n"
-                                        + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                                        + SEtlConsts.TXT_FLT + "='" + rsAvistaInvoiceData.getString("Flute") + "'."
+                                        + sInvoiceErrMsg);
                             }
                             
+                            dLineUnits = rsAvistaInvoiceData.getDouble("Units"); // units
                             dLinePieces = rsAvistaInvoiceData.getDouble("Pieces"); // pce
                             dLineArea = rsAvistaInvoiceData.getDouble("Length") * rsAvistaInvoiceData.getDouble("Width") * rsAvistaInvoiceData.getDouble("Pieces") / Math.pow(10, 9); // mm² to 1k·m²
                             dLineWeight = rsAvistaInvoiceData.getDouble("Weight") / Math.pow(10, 6); // mg to kg
                             
-                            // Define original units:
+                            // Define original (source) unit of measure:
                             
-                            dbLineUnitOfMeasureSrc = etlCatalogs.getEtlUnitOfMeasure(etlCatalogs.getEtlIdForUnitOfMeasure(rsAvistaInvoiceData.getString("LinePricePerCode")));
+                            sLinePricePerCode = rsAvistaInvoiceData.getString("LinePricePerCode");
+                            dbLineUnitOfMeasureSrc = etlCatalogs.getEtlUnitOfMeasure(etlCatalogs.getEtlIdForUnitOfMeasure(sLinePricePerCode));
+                            
+                            // check source unit of measure for current row:
                             if (dbLineUnitOfMeasureSrc == null) {
                                 throw new Exception(SEtlConsts.MSG_ERR_UNK_UOM + "\n"
-                                        + SEtlConsts.TXT_MISC_ID + "='" + rsAvistaInvoiceData.getString("LinePricePerCode") + "' (" + SEtlConsts.TXT_UOM + " " + SEtlConsts.TXT_MISC_SRC + ").\n"
-                                        + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                                        + SEtlConsts.TXT_MISC_ID + "='" + rsAvistaInvoiceData.getString("LinePricePerCode") + "' (" + SEtlConsts.TXT_UOM + " " + SEtlConsts.TXT_MISC_SRC + ")."
+                                        + sInvoiceErrMsg);
                             }
                             
-                            // Define final units:
+                            // Define required unit of measure:
                             
-                            dbLineUnitOfMeasureReq = 
-                                    dbLineItem.getFkSrcRequiredUnitOfMeasureId_n() != 0 ? etlCatalogs.getEtlUnitOfMeasure(dbLineItem.getFkSrcRequiredUnitOfMeasureId_n()) : 
-                                    dbInvoiceCustomer.getFkSrcRequiredUnitOfMeasureId_n() != 0 ? etlCatalogs.getEtlUnitOfMeasure(dbInvoiceCustomer.getFkSrcRequiredUnitOfMeasureId_n()) : 
-                                    dbLineUnitOfMeasureSrc; // set line item's required unit of measure if any, othewise customer's if any, otherwise line item's original unit of measure
+                            if (sLinePricePerCode.compareTo(SEtlConsts.AVISTA_UOM_FF) == 0) {
+                                dbLineUnitOfMeasureReq = dbLineUnitOfMeasureSrc;    // same unit when 'FF'
+                            }
+                            else if (dbLineItem.getFkSrcRequiredUnitOfMeasureId_n() != SLibConsts.UNDEFINED) {
+                                dbLineUnitOfMeasureReq = etlCatalogs.getEtlUnitOfMeasure(dbLineItem.getFkSrcRequiredUnitOfMeasureId_n());   // required unit at item's level
+                            }
+                            else if (dbInvoiceCustomer.getFkSrcRequiredUnitOfMeasureId_n() != SLibConsts.UNDEFINED) {
+                                dbLineUnitOfMeasureReq = etlCatalogs.getEtlUnitOfMeasure(dbInvoiceCustomer.getFkSrcRequiredUnitOfMeasureId_n());    // required unit at customer's level
+                            }
+                            else {
+                                dbLineUnitOfMeasureReq = dbLineUnitOfMeasureSrc;    // same unit because there is not any spacial need to fit
+                            }
+                            
+                            // check required unit of measure for current row (does not really needed, just for consistence):
                             if (dbLineUnitOfMeasureReq == null) {
                                 throw new Exception(SEtlConsts.MSG_ERR_UNK_UOM + "\n"
-                                        + SEtlConsts.TXT_MISC_ID + "='" + dbLineItem.getSrcRequiredUnitOfMeasureFk_n() + "' (" + SEtlConsts.TXT_UOM + " " + SEtlConsts.TXT_MISC_REQ + ").\n"
-                                        + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                                        + SEtlConsts.TXT_MISC_ID + "='" + dbLineItem.getSrcRequiredUnitOfMeasureFk_n() + "' (" + SEtlConsts.TXT_UOM + " " + SEtlConsts.TXT_MISC_REQ + ")."
+                                        + sInvoiceErrMsg);
                             }
                             
                             // Compute final price and amount:
@@ -496,9 +514,12 @@ public class SEtlProcessDocInvoices {
                                 case SEtlConsts.AVISTA_UOM_TON:
                                     dLineUnitsSrc = dLineWeight;
                                     break;
+                                case SEtlConsts.AVISTA_UOM_FF:
+                                    dLineUnitsSrc = dLineUnits;
+                                    break;
                                 default:
-                                    throw new Exception(SLibConsts.ERR_MSG_OPTION_UNKNOWN + SEtlConsts.TXT_MISC_QTY + " " + SEtlConsts.TXT_MISC_SRC + ".\n"
-                                            + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                                    throw new Exception(SLibConsts.ERR_MSG_OPTION_UNKNOWN + SEtlConsts.TXT_MISC_QTY + " " + SEtlConsts.TXT_MISC_SRC + "."
+                                            + sInvoiceErrMsg);
                             }
                             
                             if (dbLineUnitOfMeasureSrc.getPkUnitOfMeasureId() == dbLineUnitOfMeasureReq.getPkUnitOfMeasureId()) {
@@ -565,14 +586,14 @@ public class SEtlProcessDocInvoices {
                                         }
                                         break;
                                     default:
-                                        throw new Exception(SLibConsts.ERR_MSG_OPTION_UNKNOWN + SEtlConsts.TXT_MISC_QTY + " " + SEtlConsts.TXT_MISC_REQ + ".\n"
-                                                + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                                        throw new Exception(SLibConsts.ERR_MSG_OPTION_UNKNOWN + SEtlConsts.TXT_MISC_QTY + " " + SEtlConsts.TXT_MISC_REQ + "."
+                                                + sInvoiceErrMsg);
                                 }
                             }
                             
                             if (dLineUnitsReq == 0) {
-                                throw new Exception(SLibConsts.ERR_MSG_OPTION_UNKNOWN + SEtlConsts.TXT_MISC_QTY + " " + SEtlConsts.TXT_MISC_REQ + ".\n"
-                                        + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                                throw new Exception(SLibConsts.ERR_MSG_OPTION_UNKNOWN + SEtlConsts.TXT_MISC_QTY + " " + SEtlConsts.TXT_MISC_REQ + "."
+                                        + sInvoiceErrMsg);
                             }
                             
                             if (isLineUnitEqual) {
@@ -826,12 +847,12 @@ public class SEtlProcessDocInvoices {
                         
                         dataItem = new SDataItem();
                         if (dataItem.read(new int[] { row.getDesItemFk() }, stSiie) != SLibConstants.DB_ACTION_READ_OK) {
-                            throw new Exception(SEtlConsts.MSG_ERR_SIIE_ITM_QRY + "'" + row.getName() + "'.\n"
-                                                + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                            throw new Exception(SEtlConsts.MSG_ERR_SIIE_ITM_QRY + "'" + row.getName() + "'."
+                                                + sInvoiceErrMsg);
                         }
                         else if (dataItem.getFkUnitId() != nMiscDefaultSiieUnitId) {
-                            throw new Exception(SEtlConsts.MSG_ERR_UNS_UOM + "\n(" + SEtlConsts.TXT_ITM + "='" + row.getName() + "').\n"
-                                                + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                            throw new Exception(SEtlConsts.MSG_ERR_UNS_UOM + "\n(" + SEtlConsts.TXT_ITM + "='" + row.getName() + "')."
+                                                + sInvoiceErrMsg);
                         }
                         
                         // Compute entry quantity:
@@ -848,9 +869,12 @@ public class SEtlProcessDocInvoices {
                             case SEtlConsts.SIIE_UNIT_MSF:
                                 dEntryQuantity = SLibUtils.round((dEntryArea / 1000.0) * (1000.0 / dMisc1kFeetTo1kMeters), nMiscDecsAmountUnit);  // from m² to 1k·m², then to 1k·ft²
                                 break;
+                            case erp.mod.SModSysConsts.ITMU_UNIT_UNIT:
+                                dEntryQuantity = row.getOriginalUnits();
+                                break;
                             default:
-                                throw new Exception(SLibConsts.ERR_MSG_OPTION_UNKNOWN + "\n" + SEtlConsts.MSG_ERR_UNS_UOM + "\n(" + SEtlConsts.TXT_ITM + "='" + row.getName() + "').\n"
-                                                + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                                throw new Exception(SLibConsts.ERR_MSG_OPTION_UNKNOWN + "\n" + SEtlConsts.MSG_ERR_UNS_UOM + "\n(" + SEtlConsts.TXT_ITM + "='" + row.getName() + "')."
+                                                + sInvoiceErrMsg);
                         }
                         
                         dataDpsEntry = new SDataDpsEntry();
@@ -1025,8 +1049,8 @@ public class SEtlProcessDocInvoices {
                     dataDps.calculateTotal(null);
 
                     if (dataDps.save(etlPackage.ConnectionSiie) != SLibConstants.DB_ACTION_SAVE_OK) {
-                        throw new Exception(SEtlConsts.MSG_ERR_SIIE_ITM_INS + "'" + SLibUtils.textTrim(rsAvistaInvoiceData.getString("InvoiceNumber")) + "'.\n"
-                                                + "(" + SEtlConsts.TXT_INV + " " + SEtlConsts.TXT_SYS_AVISTA + "='" + rsAvistaInvoiceList.getInt("CustomerInvoiceKey") + "')");
+                        throw new Exception(SEtlConsts.MSG_ERR_SIIE_ITM_INS + "'" + SLibUtils.textTrim(rsAvistaInvoiceData.getString("InvoiceNumber")) + "'."
+                                                + sInvoiceErrMsg);
                     }
 
                     stSiie.execute("COMMIT");
