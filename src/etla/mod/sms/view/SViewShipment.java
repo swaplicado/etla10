@@ -5,7 +5,6 @@
  */
 package etla.mod.sms.view;
 
-import etla.gui.SGuiMain;
 import etla.mod.SModConsts;
 import etla.mod.SModSysConsts;
 import etla.mod.cfg.db.SDbConfig;
@@ -16,11 +15,8 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import sa.gui.util.SUtilConsts;
@@ -38,8 +34,8 @@ import sa.lib.grid.SGridUtils;
 import sa.lib.gui.SGuiClient;
 import sa.lib.gui.SGuiConsts;
 import sa.lib.gui.SGuiDate;
-import sa.lib.gui.SGuiSession;
 import sa.lib.img.SImgConsts;
+import sa.lib.img.SImgUtils;
 
 /**
  *
@@ -131,8 +127,6 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
     }
     
     private void actionPerformedPrint() throws Exception {
-        Map<String, Object> map = null;
-        
         if (mjPrint.isEnabled()) {
             if (jtTable.getSelectedRowCount() != 1) {
                 miClient.showMsgBoxInformation(SGridConsts.MSG_SELECT_ROW);
@@ -144,45 +138,23 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
                     miClient.showMsgBoxWarning(SGridConsts.ERR_MSG_ROW_TYPE_DATA);
                 }
                 else {
-                    
-                    SDbShipment obj = new SDbShipment();
-                    obj.read((SGuiSession) miClient.getSession(), getSelectedGridRow().getRowPrimaryKey());
+                    SDbShipment shipment = (SDbShipment) miClient.getSession().readRegistry(SModConsts.S_SHIPT, getSelectedGridRow().getRowPrimaryKey());
 
-                    try {                     
-                        map = miClient.createReportParams();
-                        map.put("id_Shipt", obj.getPkShipmentId());                        
-                        map.put("usr", miClient.getSession().getUser().getName());                        
-                        map.put("app_provider", SGuiMain.APP_PROVIDER);
-                        map.put("app_copyright", SGuiMain.APP_COPYRIGHT);
-                        map.put("oFormatDate", SLibUtils.DateFormatDate);
-                        map.put("oFormatDatetime", SLibUtils.DateFormatDatetime);
-                       
+                    try {
+                        HashMap<String, Object> map = miClient.createReportParams();
                         
-                        String sql = "";
-                        String web_key = "";
-                        ResultSet resultIdSet = null;
-                        Statement statement = null;
-                        //Obtain web key for order
-                        sql = "SELECT web_key "
-                              + "FROM s_shipt "
-                              + "WHERE number = " + obj.getNumber();
-
-                        statement = miClient.getSession().getDatabase().getConnection().createStatement();
-                        resultIdSet = statement.executeQuery(sql);
-                         if (resultIdSet.next()) {
-                            web_key = resultIdSet.getString(1);
-                        }
+                        map.put("nShiptId", shipment.getPkShipmentId());
+                        map.put("bReleased", shipment.getFkShipmentStatusId() >= SModSysConsts.SS_SHIPT_ST_REL);
+                        
                         //Create QR for shipment order and server address
-                        BufferedImage biQrCode = null;
-                        SDbConfigSms dbConfigSms = ((SDbConfig) miClient.getSession().getConfigSystem()).getDbConfigSms();
-                        biQrCode = sa.lib.img.SImgUtils.createQrCodeBufferedImageCfdi33( dbConfigSms.getUrlSms() + "/url.php?key=" + (web_key), 400, 400);
+                        SDbConfigSms configSms = ((SDbConfig) miClient.getSession().getConfigSystem()).getDbConfigSms();
+                        BufferedImage imageQr = SImgUtils.createQrCodeBufferedImageCfdi33(configSms.getUrlSms() + "/url.php?key=" + shipment.getWebKey(), 400, 400);
 
-                        if (biQrCode != null) {
-                            map.put("sImageQr", biQrCode.getScaledInstance(biQrCode.getWidth(), biQrCode.getHeight(), Image.SCALE_DEFAULT));
+                        if (imageQr != null) {
+                            map.put("oImageQr", imageQr.getScaledInstance(imageQr.getWidth(), imageQr.getHeight(), Image.SCALE_DEFAULT));
                         }
 
-                        miClient.getSession().printReport(SModConsts.SR_SHIPT, SLibConsts.UNDEFINED, null, (HashMap<String, Object>) map);
-
+                        miClient.getSession().printReport(SModConsts.SR_SHIPT, SLibConsts.UNDEFINED, null, map);
                     }
                     catch (Exception e) {
                         SLibUtils.showException(this, e);
@@ -319,15 +291,16 @@ public class SViewShipment extends SGridPaneView implements ActionListener{
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() instanceof JButton) {
-            JButton button = (JButton) e.getSource();
+    public void actionPerformed(ActionEvent evt) {
+        if (evt.getSource() instanceof JButton) {
+            JButton button = (JButton) evt.getSource();
             
             if (button == mjPrint) {
                 try {
                     actionPerformedPrint();
-                } catch (Exception ex) {
-                    SLibUtils.showException(this, ex);
+                }
+                catch (Exception e) {
+                    SLibUtils.showException(this, e);
                 }
             }
             else if (button == mjSendNext) {
