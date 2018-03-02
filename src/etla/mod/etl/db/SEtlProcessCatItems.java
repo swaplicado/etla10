@@ -149,7 +149,11 @@ public class SEtlProcessCatItems {
                     dataItem.setWeightDelivery(0);
                     dataItem.setUnitAlternativeBaseEquivalence(0);
                     dataItem.setSurplusPercentage(0);
+                    dataItem.setTariff("");
+                    dataItem.setCustomsUnit("");
+                    dataItem.setCustomsEquivalence(0);
                     dataItem.setIsReference(false);
+                    dataItem.setIsPrepayment(false);
                     dataItem.setIsFreePrice(false);
                     dataItem.setIsFreeDiscount(false);
                     dataItem.setIsFreeDiscountUnitary(false);

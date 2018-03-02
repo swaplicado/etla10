@@ -972,6 +972,7 @@ public class SEtlProcessDocInvoices {
                         dataDpsEntry.setTicket("");
                         dataDpsEntry.setContainerTank("");
                         dataDpsEntry.setVgm("");
+                        dataDpsEntry.setOperationsType(SDataConstantsSys.TRNX_OPS_TYPE_OPS_OPS);
                         dataDpsEntry.setUserId(SLibConsts.UNDEFINED);
                         //dataDpsEntry.setSortingPosition(...); // set when saved
                         dataDpsEntry.setIsPrepayment(false);
