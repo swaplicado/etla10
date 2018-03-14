@@ -22,6 +22,10 @@ public class SDbConfigSms extends SDbRegistryUser{
     
     protected int mnPkConfigSmsId;
     protected String msUrlSms;
+    protected double mdVmInMaxVariationPercent;
+    protected double mdVmInMaxVariationWeight;
+    protected double mdVmOutMaxVariationPercent;
+    protected double mdVmOutMaxVariationWeight;
     /*
     protected boolean mbDeleted;
     protected boolean mbSystem;
@@ -41,6 +45,10 @@ public class SDbConfigSms extends SDbRegistryUser{
     
     public void setPkConfigSmsId(int n) { mnPkConfigSmsId = n; }
     public void setUrlSms(String s) { msUrlSms = s; }
+    public void setVmInMaxVariationPercent(double d) { mdVmInMaxVariationPercent = d; }
+    public void setVmInMaxVariationWeight(double d) { mdVmInMaxVariationWeight = d; }
+    public void setVmOutMaxVariationPercent(double d) { mdVmOutMaxVariationPercent = d; }
+    public void setVmOutMaxVariationWeight(double d) { mdVmOutMaxVariationWeight = d; }
     public void setDeleted(boolean b) { mbDeleted = b; }
     public void setSystem(boolean b) { mbSystem = b; }
     public void setFkUserInsertId(int n) { mnFkUserInsertId = n; }
@@ -50,6 +58,10 @@ public class SDbConfigSms extends SDbRegistryUser{
 
     public int getPkConfigSmsId() { return mnPkConfigSmsId; }
     public String getUrlSms() { return msUrlSms; }
+    public double getVmInMaxVariationPercent() { return mdVmInMaxVariationPercent; }
+    public double getVmInMaxVariationWeight() { return mdVmInMaxVariationWeight; }
+    public double getVmOutMaxVariationPercent() { return mdVmOutMaxVariationPercent; }
+    public double getVmOutMaxVariationWeight() { return mdVmOutMaxVariationWeight; }
     public boolean isDeleted() { return mbDeleted; }
     public boolean isSystem() { return mbSystem; }
     public int getFkUserInsertId() { return mnFkUserInsertId; }
@@ -78,6 +90,10 @@ public class SDbConfigSms extends SDbRegistryUser{
         
         mnPkConfigSmsId = 0;
         msUrlSms = "";
+        mdVmInMaxVariationPercent = 0;
+        mdVmInMaxVariationWeight = 0;
+        mdVmOutMaxVariationPercent = 0;
+        mdVmOutMaxVariationWeight = 0;
         mbDeleted = false;
         mbSystem = false;
         mnFkUserInsertId = 0;
@@ -130,6 +146,10 @@ public class SDbConfigSms extends SDbRegistryUser{
         else {
             mnPkConfigSmsId = resultSet.getInt("id_cfg");
             msUrlSms = resultSet.getString("url_sms");
+            mdVmInMaxVariationPercent = resultSet.getDouble("wm_in_max_var_pct");
+            mdVmInMaxVariationWeight = resultSet.getDouble("wm_in_max_var_weight");
+            mdVmOutMaxVariationPercent = resultSet.getDouble("wm_out_max_var_pct");
+            mdVmOutMaxVariationWeight = resultSet.getDouble("wm_out_max_var_weight");
             mbDeleted = resultSet.getBoolean("b_del");
             mbSystem = resultSet.getBoolean("b_sys");
             mnFkUserInsertId = resultSet.getInt("fk_usr_ins");
@@ -158,6 +178,10 @@ public class SDbConfigSms extends SDbRegistryUser{
             msSql = "INSERT INTO " + getSqlTable() + " VALUES (" +
                 mnPkConfigSmsId + ", " + 
                 "'" + msUrlSms + "', " + 
+                mdVmInMaxVariationPercent + ", " + 
+                mdVmInMaxVariationWeight + ", " + 
+                mdVmOutMaxVariationPercent + ", " + 
+                mdVmOutMaxVariationWeight + ", " + 
                 (mbDeleted ? 1 : 0) + ", " + 
                 (mbSystem ? 1 : 0) + ", " + 
                 mnFkUserInsertId + ", " + 
@@ -172,6 +196,10 @@ public class SDbConfigSms extends SDbRegistryUser{
             msSql = "UPDATE " + getSqlTable() + " SET " +
                 //"id_cfg = " + mnPkConfigSmsId + ", " +
                 "url_sms = '" + msUrlSms + "', " +
+                "wm_in_max_var_pct = " + mdVmInMaxVariationPercent + ", " +
+                "wm_in_max_var_weight = " + mdVmInMaxVariationWeight + ", " +
+                "wm_out_max_var_pct = " + mdVmOutMaxVariationPercent + ", " +
+                "wm_out_max_var_weight = " + mdVmOutMaxVariationWeight + ", " +
                 "b_del = " + (mbDeleted ? 1 : 0) + ", " +
                 "b_sys = " + (mbSystem ? 1 : 0) + ", " +
                 //"fk_usr_ins = " + mnFkUserInsertId + ", " +
@@ -193,6 +221,10 @@ public class SDbConfigSms extends SDbRegistryUser{
         
         registry.setPkConfigSmsId(this.getPkConfigSmsId());
         registry.setUrlSms(this.getUrlSms());
+        registry.setVmInMaxVariationPercent(this.getVmInMaxVariationPercent());
+        registry.setVmInMaxVariationWeight(this.getVmInMaxVariationWeight());
+        registry.setVmOutMaxVariationPercent(this.getVmOutMaxVariationPercent());
+        registry.setVmOutMaxVariationWeight(this.getVmOutMaxVariationWeight());
         registry.setDeleted(this.isDeleted());
         registry.setSystem(this.isSystem());
         registry.setFkUserInsertId(this.getFkUserInsertId());

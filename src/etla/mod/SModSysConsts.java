@@ -54,6 +54,13 @@ public abstract class SModSysConsts {
     public static final int SS_WEB_ROLE_CREDIT = 21;
     public static final int SS_WEB_ROLE_SHIPPER = 31;
     
+    public static final int SS_WM_TICKET_TP_IN = 1;     // in
+    public static final int SS_WM_TICKET_TP_OUT = 2;    // out
+
+    public static final int SS_WM_LINK_ST_PEND = 1; // pending
+    public static final int SS_WM_LINK_ST_APPD = 2; // approved
+    public static final int SS_WM_LINK_ST_REJD = 3; // rejected
+
     public static final int SU_VEHIC_TP_CUS = 9; //customer picks up
     
     public static final int SU_SHIPPER_NA = 1;

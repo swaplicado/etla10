@@ -46,7 +46,8 @@ public abstract class SModConsts {
     
     public static final int SS_SHIPT_ST = 221011;
     public static final int SS_WEB_ROLE = 221101;
-    public static final int SS_WM_TICKET_TP = 221201;
+    public static final int SS_WM_TICKET_TP = 221211;
+    public static final int SS_WM_LINK_ST = 221221;
     
     public static final int SU_SHIPT_TP = 222011;
     public static final int SU_CARGO_TP = 222012;
@@ -61,8 +62,9 @@ public abstract class SModConsts {
     public static final int S_SHIPT = 223011;
     public static final int S_SHIPT_ROW = 223016;
     public static final int S_EVIDENCE = 223021;
-    public static final int SU_WM_TICKET = 223201;
-    public static final int SU_WM_TICKET_LINK = 223211;
+    public static final int S_ERP_DOC = 223201;
+    public static final int SU_WM_TICKET = 223211;
+    public static final int SU_WM_TICKET_LINK = 223221;
 
     public static final HashMap<Integer, String> TablesMap = new HashMap<>();
 
@@ -94,6 +96,7 @@ public abstract class SModConsts {
         TablesMap.put(SS_SHIPT_ST, "ss_shipt_st");
         TablesMap.put(SS_WEB_ROLE, "ss_web_role");
         TablesMap.put(SS_WM_TICKET_TP, "ss_wm_ticket_tp");
+        TablesMap.put(SS_WM_LINK_ST, "ss_wm_link_st");
 
         TablesMap.put(SU_SHIPT_TP, "su_shipt_tp");
         TablesMap.put(SU_CARGO_TP, "su_cargo_tp");
@@ -108,6 +111,7 @@ public abstract class SModConsts {
         TablesMap.put(S_SHIPT, "s_shipt");
         TablesMap.put(S_SHIPT_ROW, "s_shipt_row");
         TablesMap.put(S_EVIDENCE, "s_evidence");
+        TablesMap.put(S_ERP_DOC, "s_erp_doc");
         TablesMap.put(SU_WM_TICKET, "su_wm_ticket");
         TablesMap.put(SU_WM_TICKET_LINK, "su_wm_ticket_link");
     }
