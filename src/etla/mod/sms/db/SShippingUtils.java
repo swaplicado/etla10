@@ -106,7 +106,7 @@ public abstract class SShippingUtils {
     public static SDbInvoice getInvoice(final SGuiSession session, final int invoiceKey) throws SQLException, Exception {
         SDbInvoice invoice = null;
         
-        String sql = "SELECT id_inv FROM " + SModConsts.TablesMap.get(SModConsts.A_INV) + " WHERE src_inv_id = " + invoiceKey + " ";
+        String sql = "SELECT id_inv FROM " + SModConsts.TablesMap.get(SModConsts.A_INV) + " WHERE src_inv_id = " + invoiceKey + " AND NOT b_del ORDER BY id_inv DESC ";
         ResultSet resultSet = session.getStatement().executeQuery(sql);
         if (resultSet.next()) {
             invoice = (SDbInvoice) session.readRegistry(SModConsts.A_INV, new int[] { resultSet.getInt(1) });
