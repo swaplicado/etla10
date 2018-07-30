@@ -271,8 +271,8 @@ public class SDbShipmentRow extends SDbRegistryUser{
                 "'" + msInvoiceNumber + "', " + 
                 mnOrders + ", " + 
                 mnBales + ", " + 
-                mdMeters2 + ", " + 
-                mdKilograms + ", " + 
+                SLibUtils.DecimalFormatValue4D.format(mdMeters2) + ", " + 
+                SLibUtils.DecimalFormatValue4D.format(mdKilograms) + ", " + 
                 mnFkCustomerId + ", " + 
                 mnFkDestinationId + " " +
                 ")";
@@ -293,8 +293,8 @@ public class SDbShipmentRow extends SDbRegistryUser{
                 "invoice_number = '" + msInvoiceNumber + "', " +
                 "orders = " + mnOrders + ", " +
                 "bales = " + mnBales + ", " +
-                "m2 = " + mdMeters2 + ", " +
-                "kg = " + mdKilograms + ", " +
+                "m2 = " + SLibUtils.DecimalFormatValue4D.format(mdMeters2) + ", " +
+                "kg = " + SLibUtils.DecimalFormatValue4D.format(mdKilograms) + ", " +
                 "fk_customer = " + mnFkCustomerId + ", " +
                 "fk_destin = " + mnFkDestinationId + " " +
                 getSqlWhere();
