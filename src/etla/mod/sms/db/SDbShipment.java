@@ -451,8 +451,8 @@ public class SDbShipment extends SDbRegistryUser{
                 "'" + msDriverPhone + "', " + 
                 "'" + msVehiclePlate + "', " + 
                 "'" + msWebKey + "', " + 
-                mdMeters2 + ", " + 
-                mdKilograms + ", " + 
+                SLibUtils.DecimalFormatValue4D.format(mdMeters2) + ", " + 
+                SLibUtils.DecimalFormatValue4D.format(mdKilograms) + ", " + 
                 "'" + msComments + "', " +
                 mnScaleTicket1 + ", " + 
                 (mtScaleTicket1Datetime_n == null ? "NULL" : "'" + SLibUtils.DbmsDateFormatDatetime.format(mtScaleTicket1Datetime_n) + "'") + ", " +
@@ -497,8 +497,8 @@ public class SDbShipment extends SDbRegistryUser{
                 "driver_phone = '" + msDriverPhone + "', " +
                 "vehic_plate = '" + msVehiclePlate + "', " +
                 "web_key = '" + msWebKey + "', " +
-                "m2 = " + mdMeters2 + ", " +
-                "kg = " + mdKilograms + ", " +   
+                "m2 = " + SLibUtils.DecimalFormatValue4D.format(mdMeters2) + ", " +
+                "kg = " + SLibUtils.DecimalFormatValue4D.format(mdKilograms) + ", " +   
                 "comments = '" + msComments + "', " +
                 "scale_tkt_1 = " + mnScaleTicket1 + ", " +
                 "scale_tkt_1_dt_n = " + (mtScaleTicket1Datetime_n == null ? "NULL" : "'" + SLibUtils.DbmsDateFormatDatetime.format(mtScaleTicket1Datetime_n) + "'") + ", " +
