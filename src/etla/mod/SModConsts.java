@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 /**
  *
- * @author Sergio Flores
+ * @author Sergio Flores, Alfredo Pérez
  */
 public abstract class SModConsts {
 
@@ -63,9 +63,12 @@ public abstract class SModConsts {
     public static final int S_SHIPT_ROW = 223016;
     public static final int S_EVIDENCE = 223021;
     public static final int S_ERP_DOC = 223201;
-    public static final int SU_WM_TICKET = 223211;
-    public static final int SU_WM_TICKET_LINK = 223221;
-
+    public static final int S_ERP_DOC_ETL_LOG = 223206;
+    public static final int S_WM_TICKET = 223211;
+    public static final int S_WM_TICKET_LINK = 223221;
+    
+    public static final int SX_WM_LINK = 224001;
+    
     public static final HashMap<Integer, String> TablesMap = new HashMap<>();
 
     static {
@@ -112,7 +115,8 @@ public abstract class SModConsts {
         TablesMap.put(S_SHIPT_ROW, "s_shipt_row");
         TablesMap.put(S_EVIDENCE, "s_evidence");
         TablesMap.put(S_ERP_DOC, "s_erp_doc");
-        TablesMap.put(SU_WM_TICKET, "su_wm_ticket");
-        TablesMap.put(SU_WM_TICKET_LINK, "su_wm_ticket_link");
+        TablesMap.put(S_ERP_DOC_ETL_LOG, "s_erp_doc_etl_log");
+        TablesMap.put(S_WM_TICKET, "s_wm_ticket");
+        TablesMap.put(S_WM_TICKET_LINK, "s_wm_ticket_link");
     }
 }
