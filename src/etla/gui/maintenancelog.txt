@@ -1,0 +1,8 @@
+================================================================================
+2018-10-30, 1.0 013.04
+Sergio Abraham Flores Gutiérrez
+--------------------------------------------------------------------------------
+Corrección a identificadores de grid en forma de captura SFormShipment puesto que los dos grids de la forma tienen los mismos identificadores.
+================================================================================
+
+#eof
