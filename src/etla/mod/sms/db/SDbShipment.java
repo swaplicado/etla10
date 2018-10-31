@@ -451,15 +451,15 @@ public class SDbShipment extends SDbRegistryUser{
                 "'" + msDriverPhone + "', " + 
                 "'" + msVehiclePlate + "', " + 
                 "'" + msWebKey + "', " + 
-                SLibUtils.DecimalFormatValue4D.format(mdMeters2) + ", " + 
-                SLibUtils.DecimalFormatValue4D.format(mdKilograms) + ", " + 
+                SLibUtils.round(mdMeters2, SLibUtils.getDecimalFormatQuantity().getMaximumFractionDigits()) + ", " + 
+                SLibUtils.round(mdKilograms, SLibUtils.getDecimalFormatQuantity().getMaximumFractionDigits()) + ", " + 
                 "'" + msComments + "', " +
                 mnScaleTicket1 + ", " + 
                 (mtScaleTicket1Datetime_n == null ? "NULL" : "'" + SLibUtils.DbmsDateFormatDatetime.format(mtScaleTicket1Datetime_n) + "'") + ", " +
-                mdScaleTicket1Kilograms + ", " +
+                SLibUtils.round(mdScaleTicket1Kilograms, SLibUtils.getDecimalFormatQuantity().getMaximumFractionDigits()) + ", " +
                 mnScaleTicket2 + ", " +
                 (mtScaleTicket2Datetime_n == null ? "NULL" : "'" + SLibUtils.DbmsDateFormatDatetime.format(mtScaleTicket2Datetime_n) + "'") + ", " +
-                mdScaleTicket2Kilograms + ", " +
+                SLibUtils.round(mdScaleTicket2Kilograms, SLibUtils.getDecimalFormatQuantity().getMaximumFractionDigits()) + ", " +
                 mdTareKilograms + ", " +
                 (mbTared ? 1 : 0) + ", " + 
                 (mbAnnulled ? 1 : 0) + ", " + 
@@ -497,15 +497,15 @@ public class SDbShipment extends SDbRegistryUser{
                 "driver_phone = '" + msDriverPhone + "', " +
                 "vehic_plate = '" + msVehiclePlate + "', " +
                 "web_key = '" + msWebKey + "', " +
-                "m2 = " + SLibUtils.DecimalFormatValue4D.format(mdMeters2) + ", " +
-                "kg = " + SLibUtils.DecimalFormatValue4D.format(mdKilograms) + ", " +   
+                "m2 = " + SLibUtils.round(mdMeters2, SLibUtils.getDecimalFormatQuantity().getMaximumFractionDigits()) + ", " +
+                "kg = " + SLibUtils.round(mdKilograms, SLibUtils.getDecimalFormatQuantity().getMaximumFractionDigits()) + ", " +   
                 "comments = '" + msComments + "', " +
                 "scale_tkt_1 = " + mnScaleTicket1 + ", " +
                 "scale_tkt_1_dt_n = " + (mtScaleTicket1Datetime_n == null ? "NULL" : "'" + SLibUtils.DbmsDateFormatDatetime.format(mtScaleTicket1Datetime_n) + "'") + ", " +
-                "scale_tkt_1_kg = " + mdScaleTicket1Kilograms + ", " +
+                "scale_tkt_1_kg = " + SLibUtils.round(mdScaleTicket1Kilograms, SLibUtils.getDecimalFormatQuantity().getMaximumFractionDigits()) + ", " +
                 "scale_tkt_2 = " + mnScaleTicket2 + ", " +
                 "scale_tkt_2_dt_n = " + (mtScaleTicket2Datetime_n == null ? "NULL" : "'" + SLibUtils.DbmsDateFormatDatetime.format(mtScaleTicket2Datetime_n) + "'") + ", " +
-                "scale_tkt_2_kg = " + mdScaleTicket2Kilograms + ", " +
+                "scale_tkt_2_kg = " + SLibUtils.round(mdScaleTicket2Kilograms, SLibUtils.getDecimalFormatQuantity().getMaximumFractionDigits()) + ", " +
                 "tare_kg = " + mdTareKilograms + ", " +
                 "b_tared = " + (mbTared ? 1 : 0) + ", " +
                 "b_ann = " + (mbAnnulled ? 1 : 0) + ", " +
