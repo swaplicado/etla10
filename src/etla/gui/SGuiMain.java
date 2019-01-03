@@ -10,6 +10,8 @@ import etla.mod.cfg.db.SDbConfig;
 import etla.mod.cfg.db.SDbUser;
 import etla.mod.cfg.db.SDbUserGui;
 import etla.mod.etl.form.SDialogEtl;
+import etla.mod.sms.db.SSmsUtils2;
+import etla.mod.sms.form.SFormWmDocImp;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,6 +21,8 @@ import java.sql.Statement;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -42,6 +46,7 @@ import sa.lib.gui.SGuiClient;
 import sa.lib.gui.SGuiConsts;
 import sa.lib.gui.SGuiDatePicker;
 import sa.lib.gui.SGuiDateRangePicker;
+import sa.lib.gui.SGuiParams;
 import sa.lib.gui.SGuiSession;
 import sa.lib.gui.SGuiSessionCustom;
 import sa.lib.gui.SGuiUserGui;
@@ -64,7 +69,7 @@ import sa.lib.xml.SXmlUtils;
 
 /**
  *
- * @author Sergio Flores
+ * @author Sergio Flores, Alfredo Pérez
  */
 public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
 
@@ -94,7 +99,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
     private ImageIcon moIconCloseBright;
     private ImageIcon moIconCloseDark;
     private ImageIcon moIconCmdStdPrint;
-    
+
     /**
      * Creates new form SMainForm
      */
@@ -151,6 +156,50 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
         jmiSmsShipmentsRel = new javax.swing.JMenuItem();
         jsFile4 = new javax.swing.JPopupMenu.Separator();
         jmiSmsShipper = new javax.swing.JMenuItem();
+        jmWm = new javax.swing.JMenu();
+        jMenuDocsToLink = new javax.swing.JMenu();
+        jmiInvSalToLink = new javax.swing.JMenuItem();
+        jMenuCnSalToLink = new javax.swing.JMenuItem();
+        jMenuInvPurToLink = new javax.swing.JMenuItem();
+        jMenuCnPurToLink = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        jMenuDocsLinkeds = new javax.swing.JMenu();
+        jMenuInvSalLinked = new javax.swing.JMenuItem();
+        jMenuCnSalLinked = new javax.swing.JMenuItem();
+        jMenuInvPurLinked = new javax.swing.JMenuItem();
+        jMenuCnPurLinked = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        jMenuDocsAll = new javax.swing.JMenu();
+        jMenuInvSal = new javax.swing.JMenuItem();
+        jMenuICnSal = new javax.swing.JMenuItem();
+        jMenuInvPur = new javax.swing.JMenuItem();
+        jMenuCnPur = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        jMenuTicToLink = new javax.swing.JMenu();
+        jMenuTicSalToLink = new javax.swing.JMenuItem();
+        jMenuTicPurToLink = new javax.swing.JMenuItem();
+        jSeparator4 = new javax.swing.JPopupMenu.Separator();
+        jMenuTicLinked = new javax.swing.JMenu();
+        jMenuTicSalLinked = new javax.swing.JMenuItem();
+        jMenuTicPurLInked = new javax.swing.JMenuItem();
+        jSeparator5 = new javax.swing.JPopupMenu.Separator();
+        jMenuTicAll = new javax.swing.JMenu();
+        jMenuTicSal = new javax.swing.JMenuItem();
+        jMenuTicPur = new javax.swing.JMenuItem();
+        jSeparator6 = new javax.swing.JPopupMenu.Separator();
+        jMenuToLinkTicToDoc = new javax.swing.JMenu();
+        jMenuTicOutToInvSal = new javax.swing.JMenuItem();
+        jMenuTicOutToCnSal = new javax.swing.JMenuItem();
+        jMenuTicInToInvPur = new javax.swing.JMenuItem();
+        jMenuTicInToCnPur = new javax.swing.JMenuItem();
+        jSeparator7 = new javax.swing.JPopupMenu.Separator();
+        jMenuToLinkDocToTic = new javax.swing.JMenu();
+        jMenuInvSalToTicOut = new javax.swing.JMenuItem();
+        jMenuCnSalToTicOut = new javax.swing.JMenuItem();
+        jMenuInvPurToTicIn = new javax.swing.JMenuItem();
+        jMenuCnPurToTicIn = new javax.swing.JMenuItem();
+        jSeparator8 = new javax.swing.JPopupMenu.Separator();
+        jmiWmItems = new javax.swing.JMenuItem();
         jmHelp = new javax.swing.JMenu();
         jmiHelpHelp = new javax.swing.JMenuItem();
         jsHelp1 = new javax.swing.JPopupMenu.Separator();
@@ -310,6 +359,131 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
 
         jMenuBar.add(jmSmsShipments);
 
+        jmWm.setText("Báscula");
+
+        jMenuDocsToLink.setText("Documentos por vincular");
+
+        jmiInvSalToLink.setText("Facturas ventas");
+        jMenuDocsToLink.add(jmiInvSalToLink);
+
+        jMenuCnSalToLink.setText("Notas de crédito venta");
+        jMenuDocsToLink.add(jMenuCnSalToLink);
+
+        jMenuInvPurToLink.setText("Facturas compras");
+        jMenuDocsToLink.add(jMenuInvPurToLink);
+
+        jMenuCnPurToLink.setText("Notas de crédito compra");
+        jMenuDocsToLink.add(jMenuCnPurToLink);
+
+        jmWm.add(jMenuDocsToLink);
+        jmWm.add(jSeparator1);
+
+        jMenuDocsLinkeds.setText("Documentos vinculados");
+
+        jMenuInvSalLinked.setText("Facturas ventas");
+        jMenuDocsLinkeds.add(jMenuInvSalLinked);
+
+        jMenuCnSalLinked.setText("Notas de crédito ventas");
+        jMenuDocsLinkeds.add(jMenuCnSalLinked);
+
+        jMenuInvPurLinked.setText("Facturas de compras");
+        jMenuDocsLinkeds.add(jMenuInvPurLinked);
+
+        jMenuCnPurLinked.setText("Notas de crédito compras");
+        jMenuDocsLinkeds.add(jMenuCnPurLinked);
+
+        jmWm.add(jMenuDocsLinkeds);
+        jmWm.add(jSeparator2);
+
+        jMenuDocsAll.setText("Documentos (todos)");
+
+        jMenuInvSal.setText("Facturas ventas");
+        jMenuDocsAll.add(jMenuInvSal);
+
+        jMenuICnSal.setText("Notas de crédito ventas");
+        jMenuDocsAll.add(jMenuICnSal);
+
+        jMenuInvPur.setText("Facturas compras");
+        jMenuDocsAll.add(jMenuInvPur);
+
+        jMenuCnPur.setText("Notas de crédito compras");
+        jMenuDocsAll.add(jMenuCnPur);
+
+        jmWm.add(jMenuDocsAll);
+        jmWm.add(jSeparator3);
+
+        jMenuTicToLink.setText("Boletos por vincular");
+
+        jMenuTicSalToLink.setText("Salidas");
+        jMenuTicToLink.add(jMenuTicSalToLink);
+
+        jMenuTicPurToLink.setText("Entradas");
+        jMenuTicToLink.add(jMenuTicPurToLink);
+
+        jmWm.add(jMenuTicToLink);
+        jmWm.add(jSeparator4);
+
+        jMenuTicLinked.setText("Boletos vinculados");
+
+        jMenuTicSalLinked.setText("Salidas");
+        jMenuTicLinked.add(jMenuTicSalLinked);
+
+        jMenuTicPurLInked.setText("Entradas");
+        jMenuTicLinked.add(jMenuTicPurLInked);
+
+        jmWm.add(jMenuTicLinked);
+        jmWm.add(jSeparator5);
+
+        jMenuTicAll.setText("Boletos (todos)");
+
+        jMenuTicSal.setText("Salidas");
+        jMenuTicAll.add(jMenuTicSal);
+
+        jMenuTicPur.setText("Entrada");
+        jMenuTicAll.add(jMenuTicPur);
+
+        jmWm.add(jMenuTicAll);
+        jmWm.add(jSeparator6);
+
+        jMenuToLinkTicToDoc.setText("Vinculos boletos a documentos");
+
+        jMenuTicOutToInvSal.setText("Boletos salida a facturas de ventas");
+        jMenuToLinkTicToDoc.add(jMenuTicOutToInvSal);
+
+        jMenuTicOutToCnSal.setText("Boletos salida a notoas de crédito de compras");
+        jMenuToLinkTicToDoc.add(jMenuTicOutToCnSal);
+
+        jMenuTicInToInvPur.setText("Boletos entrada a facturas de compras");
+        jMenuToLinkTicToDoc.add(jMenuTicInToInvPur);
+
+        jMenuTicInToCnPur.setText("Boletos entrada a notas de crédito de ventas");
+        jMenuToLinkTicToDoc.add(jMenuTicInToCnPur);
+
+        jmWm.add(jMenuToLinkTicToDoc);
+        jmWm.add(jSeparator7);
+
+        jMenuToLinkDocToTic.setText("Vinculos documentos a boletos");
+
+        jMenuInvSalToTicOut.setText("Facturas de ventas a boletos de salida");
+        jMenuToLinkDocToTic.add(jMenuInvSalToTicOut);
+
+        jMenuCnSalToTicOut.setText("Notas de crédito de compras a boletos de salida");
+        jMenuToLinkDocToTic.add(jMenuCnSalToTicOut);
+
+        jMenuInvPurToTicIn.setText("Facturas de compras a boletos de entrada");
+        jMenuToLinkDocToTic.add(jMenuInvPurToTicIn);
+
+        jMenuCnPurToTicIn.setText("Notas de crédito de venta a boletos de entrada");
+        jMenuToLinkDocToTic.add(jMenuCnPurToTicIn);
+
+        jmWm.add(jMenuToLinkDocToTic);
+        jmWm.add(jSeparator8);
+
+        jmiWmItems.setText("Items");
+        jmWm.add(jmiWmItems);
+
+        jMenuBar.add(jmWm);
+
         jmHelp.setText("Ayuda");
 
         jmiHelpHelp.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
@@ -341,7 +515,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
      */
     public static void main(String args[]) {
         boolean lookAndfeelSet = false;
-        
+
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc="Look and feel setting code (optional)">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -352,7 +526,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 System.out.println(info.getName());
             }
-            
+
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 //if ("Metal".equals(info.getName())) {
                 if ("Nimbus".equals(info.getName())) {
@@ -369,21 +543,10 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             }
         }
-        catch (ClassNotFoundException ex) {
+        catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(SGuiMain.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(SGuiMain.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(SGuiMain.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(SGuiMain.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        
+
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
@@ -391,14 +554,54 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
                 new SGuiMain().setVisible(true);
             }
         });
-        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuBar jMenuBar;
+    private javax.swing.JMenuItem jMenuCnPur;
+    private javax.swing.JMenuItem jMenuCnPurLinked;
+    private javax.swing.JMenuItem jMenuCnPurToLink;
+    private javax.swing.JMenuItem jMenuCnPurToTicIn;
+    private javax.swing.JMenuItem jMenuCnSalLinked;
+    private javax.swing.JMenuItem jMenuCnSalToLink;
+    private javax.swing.JMenuItem jMenuCnSalToTicOut;
+    private javax.swing.JMenu jMenuDocsAll;
+    private javax.swing.JMenu jMenuDocsLinkeds;
+    private javax.swing.JMenu jMenuDocsToLink;
+    private javax.swing.JMenuItem jMenuICnSal;
+    private javax.swing.JMenuItem jMenuInvPur;
+    private javax.swing.JMenuItem jMenuInvPurLinked;
+    private javax.swing.JMenuItem jMenuInvPurToLink;
+    private javax.swing.JMenuItem jMenuInvPurToTicIn;
+    private javax.swing.JMenuItem jMenuInvSal;
+    private javax.swing.JMenuItem jMenuInvSalLinked;
+    private javax.swing.JMenuItem jMenuInvSalToTicOut;
+    private javax.swing.JMenu jMenuTicAll;
+    private javax.swing.JMenuItem jMenuTicInToCnPur;
+    private javax.swing.JMenuItem jMenuTicInToInvPur;
+    private javax.swing.JMenu jMenuTicLinked;
+    private javax.swing.JMenuItem jMenuTicOutToCnSal;
+    private javax.swing.JMenuItem jMenuTicOutToInvSal;
+    private javax.swing.JMenuItem jMenuTicPur;
+    private javax.swing.JMenuItem jMenuTicPurLInked;
+    private javax.swing.JMenuItem jMenuTicPurToLink;
+    private javax.swing.JMenuItem jMenuTicSal;
+    private javax.swing.JMenuItem jMenuTicSalLinked;
+    private javax.swing.JMenuItem jMenuTicSalToLink;
+    private javax.swing.JMenu jMenuTicToLink;
+    private javax.swing.JMenu jMenuToLinkDocToTic;
+    private javax.swing.JMenu jMenuToLinkTicToDoc;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanelStatus;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
+    private javax.swing.JPopupMenu.Separator jSeparator4;
+    private javax.swing.JPopupMenu.Separator jSeparator5;
+    private javax.swing.JPopupMenu.Separator jSeparator6;
+    private javax.swing.JPopupMenu.Separator jSeparator7;
+    private javax.swing.JPopupMenu.Separator jSeparator8;
     private javax.swing.JTabbedPane jTabbedPane;
     private javax.swing.JButton jbWorkingDate;
     private javax.swing.JLabel jlAppLogo;
@@ -408,6 +611,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
     private javax.swing.JMenu jmFile;
     private javax.swing.JMenu jmHelp;
     private javax.swing.JMenu jmSmsShipments;
+    private javax.swing.JMenu jmWm;
     private javax.swing.JMenuItem jmiCfgUser;
     private javax.swing.JMenuItem jmiEtlCustomer;
     private javax.swing.JMenuItem jmiEtlEtl;
@@ -423,10 +627,12 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
     private javax.swing.JMenuItem jmiFileWorkingDate;
     private javax.swing.JMenuItem jmiHelpAbout;
     private javax.swing.JMenuItem jmiHelpHelp;
+    private javax.swing.JMenuItem jmiInvSalToLink;
     private javax.swing.JMenuItem jmiSmsShipments;
     private javax.swing.JMenuItem jmiSmsShipmentsRel;
     private javax.swing.JMenuItem jmiSmsShipmentsToRel;
     private javax.swing.JMenuItem jmiSmsShipper;
+    private javax.swing.JMenuItem jmiWmItems;
     private javax.swing.JPopupMenu.Separator jsEtl1;
     private javax.swing.JPopupMenu.Separator jsEtl2;
     private javax.swing.JPopupMenu.Separator jsFile1;
@@ -515,21 +721,65 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
         jmiFileCloseViewsOther.addActionListener(this);
         jmiFileCloseSession.addActionListener(this);
         jmiFileExit.addActionListener(this);
-        
+
         jmiCfgUser.addActionListener(this);
-        
+
         jmiEtlExchangeRate.addActionListener(this);
         jmiEtlEtl.addActionListener(this);
         jmiEtlInvoice.addActionListener(this);
         jmiEtlItem.addActionListener(this);
         jmiEtlCustomer.addActionListener(this);
         jmiEtlSalesAgent.addActionListener(this);
-        
+
         jmiSmsShipments.addActionListener(this);
         jmiSmsShipmentsToRel.addActionListener(this);
         jmiSmsShipmentsRel.addActionListener(this);
         jmiSmsShipper.addActionListener(this);
-        
+
+        jMenuDocsToLink.addActionListener(this);
+        jmiInvSalToLink.addActionListener(this);
+        jMenuCnSalToLink.addActionListener(this);
+        jMenuInvPurToLink.addActionListener(this);
+        jMenuCnPurToLink.addActionListener(this);
+
+        jmiWmItems.addActionListener(this);
+
+        jMenuDocsLinkeds.addActionListener(this);
+        jMenuInvSalLinked.addActionListener(this);
+        jMenuCnSalLinked.addActionListener(this);
+        jMenuInvPurLinked.addActionListener(this);
+        jMenuCnPurLinked.addActionListener(this);
+
+        jMenuDocsAll.addActionListener(this);
+        jMenuInvSal.addActionListener(this);
+        jMenuICnSal.addActionListener(this);
+        jMenuInvPur.addActionListener(this);
+        jMenuCnPur.addActionListener(this);
+
+        jMenuTicToLink.addActionListener(this);
+        jMenuTicSalToLink.addActionListener(this);
+        jMenuTicPurToLink.addActionListener(this);
+
+        jMenuTicLinked.addActionListener(this);
+        jMenuTicSalLinked.addActionListener(this);
+        jMenuTicPurLInked.addActionListener(this);
+
+        jMenuTicAll.addActionListener(this);
+        jMenuTicSal.addActionListener(this);
+        jMenuTicPur.addActionListener(this);
+
+        jMenuToLinkTicToDoc.addActionListener(this);
+        jMenuTicOutToInvSal.addActionListener(this);
+        jMenuTicOutToCnSal.addActionListener(this);
+        jMenuTicInToInvPur.addActionListener(this);
+        jMenuTicInToCnPur.addActionListener(this);
+
+        jMenuToLinkDocToTic.addActionListener(this);
+        jMenuInvSalToTicOut.addActionListener(this);
+        jMenuCnSalToTicOut.addActionListener(this);
+        jMenuInvPurToTicIn.addActionListener(this);
+        jMenuCnPurToTicIn.addActionListener(this);
+
         jmiHelpHelp.addActionListener(this);
         jmiHelpAbout.addActionListener(this);
     }
@@ -541,6 +791,18 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
         }
     }
 
+    /**
+     * Start the import of documents, tickets and items.
+     * 
+     */
+    private void importAll(){
+        try {
+            SSmsUtils2.startImport(moSession);
+        } catch (Exception ex) {
+            Logger.getLogger(SGuiMain.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     private void windowClosing() {
         if (mbLoggedIn) {
             logout();
@@ -548,7 +810,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
     }
 
     private void renderMenues(JMenu[] menues) {
-        
+
     }
 
     private void renderClientSession(SGuiSessionCustom clientSession) {
@@ -614,7 +876,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
                 moSession.setCurrentDate(date);
                 moSession.setUserTs(date);
                 moSession.setDatabase(loginDlg.getDatabase());
-                
+
                 sql = "SET GLOBAL max_allowed_packet = 1024 * 1024 * 16 ";  // 16 MB
                 moSession.getStatement().execute(sql);
 
@@ -754,6 +1016,17 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
         dialog.initForm();
         dialog.setVisible(true);
     }
+    
+    private void actionImportWm() {
+        SFormWmDocImp dialog = new SFormWmDocImp(this, "Importación de documentos.");
+        dialog.initForm();
+        dialog.setVisible(true);
+    }
+
+    private void actionLink(boolean type) {
+//        SFormLink dialog = new SFormLink(this, type ? "Vincular Boleto a Documento." : "Vincular Documento a boleto", type ? 1 : 2,1);
+//        dialog.setVisible(true);
+    }
 
     public void actionHelpHelp() {
 
@@ -762,7 +1035,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
     public void actionHelpAbout() {
         new SDlgHelpAbout(this).setVisible(true);
     }
-    
+
     @Override
     public JFrame getFrame() {
         return this;
@@ -886,7 +1159,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
 
     @Override
     public HashMap<String, Object> createReportParams() {
-        HashMap<String, Object> params = new HashMap<String, Object>();
+        HashMap<String, Object> params = new HashMap<>();
 
         params.put("sAppName", APP_NAME);
         params.put("sAppRelease", APP_RELEASE);
@@ -951,6 +1224,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
     }
 
     @Override
+    @SuppressWarnings("FinalizeDeclaration")
     public void finalize() throws Throwable {
         super.finalize();
 
@@ -963,6 +1237,8 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        SGuiParams typeParam = new SGuiParams();
+        
         if (e.getSource() instanceof JButton) {
             JButton button = (JButton) e.getSource();
 
@@ -972,7 +1248,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
         }
         else if (e.getSource() instanceof JMenuItem) {
             JMenuItem menuItem = (JMenuItem) e.getSource();
-
+            
             if (menuItem == jmiFileWorkingDate) {
                 actionFileWorkingDate();
             }
@@ -1024,6 +1300,182 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
             else if( menuItem == jmiSmsShipper) {
                 moSession.showView(SModConsts.SU_SHIPPER, SLibConsts.UNDEFINED, null);
             }
+            else if( menuItem == jmiWmItems) {
+                moSession.showView(SModConsts.SU_WM_ITEM, SModSysConsts.SU_WM_ITEM_NA, null);
+            }
+
+            /**
+             * Documentos por vincular
+             * 
+             */
+            else if( menuItem == jmiInvSalToLink){
+                importAll();
+                typeParam.setType(SModSysConsts.SX_REG_TO_LINK);
+                moSession.showView(SModConsts.S_ERP_DOC, SModSysConsts.SX_INV_SAL, typeParam);
+            }
+            else if( menuItem == jMenuCnSalToLink){
+                importAll();
+                typeParam.setType(SModSysConsts.SX_REG_TO_LINK);
+                moSession.showView(SModConsts.S_ERP_DOC, SModSysConsts.SX_CN_PUR, typeParam);
+            }
+            else if( menuItem == jMenuInvPurToLink){
+                importAll();
+                typeParam.setType(SModSysConsts.SX_REG_TO_LINK);
+                moSession.showView(SModConsts.S_ERP_DOC, SModSysConsts.SX_INV_PUR, typeParam);
+            }
+            else if( menuItem == jMenuCnPurToLink){
+                importAll();
+                typeParam.setType(SModSysConsts.SX_REG_TO_LINK);
+                moSession.showView(SModConsts.S_ERP_DOC, SModSysConsts.SX_CN_SAL, typeParam);
+            }
+
+            /**
+             * Documentos vinculados
+             * 
+             */
+            else if( menuItem == jMenuInvSalLinked){
+                importAll();
+                typeParam.setType(SModSysConsts.SX_REG_LINKED);
+                moSession.showView(SModConsts.S_ERP_DOC, SModSysConsts.SX_INV_SAL, typeParam);
+            }
+            else if( menuItem == jMenuCnSalLinked){
+                importAll();
+                typeParam.setType(SModSysConsts.SX_REG_LINKED);
+                moSession.showView(SModConsts.S_ERP_DOC, SModSysConsts.SX_CN_PUR, typeParam);
+            }
+            else if( menuItem == jMenuInvPurLinked){
+                importAll();
+                typeParam.setType(SModSysConsts.SX_REG_LINKED);
+                moSession.showView(SModConsts.S_ERP_DOC, SModSysConsts.SX_INV_PUR, typeParam);
+            }
+            else if( menuItem == jMenuCnPurLinked){
+                importAll();
+                typeParam.setType(SModSysConsts.SX_REG_LINKED);
+                moSession.showView(SModConsts.S_ERP_DOC, SModSysConsts.SX_CN_SAL, typeParam);
+            }
+
+            /**
+             * Documentos (todos)
+             * 
+             */
+            else if( menuItem == jMenuInvSal){
+                importAll();
+                typeParam.setType(SModSysConsts.SX_REG_ALL);
+                moSession.showView(SModConsts.S_ERP_DOC, SModSysConsts.SX_INV_SAL, typeParam);
+            }
+            else if( menuItem == jMenuICnSal){
+                importAll();
+                typeParam.setType(SModSysConsts.SX_REG_ALL);
+                moSession.showView(SModConsts.S_ERP_DOC, SModSysConsts.SX_CN_PUR, typeParam);
+            }
+            else if( menuItem == jMenuInvPur){
+                importAll();
+                typeParam.setType(SModSysConsts.SX_REG_ALL);
+                moSession.showView(SModConsts.S_ERP_DOC, SModSysConsts.SX_INV_PUR, typeParam);
+            }
+            else if( menuItem == jMenuCnPur){
+                importAll();
+                typeParam.setType(SModSysConsts.SX_REG_ALL);
+                moSession.showView(SModConsts.S_ERP_DOC, SModSysConsts.SX_CN_SAL, typeParam);
+            }
+
+            /**
+             * Boletos por Vincular
+             * 
+             */
+            else if( menuItem == jMenuTicSalToLink){
+                importAll();
+                typeParam.setType(SModSysConsts.SS_WM_TICKET_TP_OUT);
+                typeParam.setSubtype(SModSysConsts.SX_TIC_OUT);
+                moSession.showView(SModConsts.S_WM_TICKET, SModSysConsts.SX_REG_TO_LINK, typeParam);
+            }
+            else if( menuItem == jMenuTicPurToLink){
+                importAll();
+                typeParam.setType(SModSysConsts.SS_WM_TICKET_TP_IN);
+                typeParam.setSubtype(SModSysConsts.SX_TIC_IN);
+                moSession.showView(SModConsts.S_WM_TICKET, SModSysConsts.SX_REG_TO_LINK, typeParam);
+            }
+
+            /**
+             * Boletos vinculados
+             * 
+             */
+            else if( menuItem == jMenuTicSalLinked){
+                importAll();
+                typeParam.setType(SModSysConsts.SS_WM_TICKET_TP_OUT);
+                moSession.showView(SModConsts.S_WM_TICKET, SModSysConsts.SX_REG_LINKED, typeParam);
+            }
+            else if( menuItem == jMenuTicPurLInked){
+                importAll();
+                typeParam.setType(SModSysConsts.SS_WM_TICKET_TP_IN);
+                moSession.showView(SModConsts.S_WM_TICKET, SModSysConsts.SX_REG_LINKED, typeParam);
+            }
+
+            /**
+             * Boletos (todos)
+             * 
+             */
+            else if( menuItem == jMenuTicSal){
+                importAll();
+                typeParam.setType(SModSysConsts.SS_WM_TICKET_TP_OUT);
+                moSession.showView(SModConsts.S_WM_TICKET, SModSysConsts.SX_REG_ALL, typeParam);
+            }
+            else if( menuItem == jMenuTicPur){
+                importAll();
+                typeParam.setType(SModSysConsts.SS_WM_TICKET_TP_IN);
+                moSession.showView(SModConsts.S_WM_TICKET, SModSysConsts.SX_REG_ALL, typeParam);
+            }
+
+            /**
+             * Vinculos boletos a documentos
+             * 
+             */
+            else if( menuItem == jMenuTicOutToInvSal){
+                importAll();
+                typeParam.setType(SModSysConsts.SX_TIC_TO_DOC_OUT_TO_INV_SAL);
+                moSession.showView(SModConsts.S_WM_TICKET, SModSysConsts.SX_REG_LINKED, typeParam);
+            }
+            else if( menuItem == jMenuTicOutToCnSal){
+                importAll();
+                typeParam.setType(SModSysConsts.SX_TIC_TO_DOC_OUT_TO_CN_PUR);
+                moSession.showView(SModConsts.S_WM_TICKET, SModSysConsts.SX_REG_LINKED, typeParam);
+            }
+            else if( menuItem == jMenuTicInToInvPur){
+                importAll();
+                typeParam.setType(SModSysConsts.SX_TIC_TO_DOC_IN_TO_INV_PUR);
+                moSession.showView(SModConsts.S_WM_TICKET, SModSysConsts.SX_REG_LINKED, typeParam);
+            }
+            else if( menuItem == jMenuTicInToCnPur){
+                importAll();
+                typeParam.setType(SModSysConsts.SX_TIC_TO_DOC_IN_TO_CN_SAL);
+                moSession.showView(SModConsts.S_WM_TICKET, SModSysConsts.SX_REG_LINKED, typeParam);
+            }
+
+            /**
+             * Vinculos documentos a boletos
+             * 
+             */
+            else if( menuItem == jMenuInvSalToTicOut){
+               importAll();
+                typeParam.setType(SModSysConsts.SX_DOC_TO_TIC_INV_SAL_TO_TIC_OUT);
+                moSession.showView(SModConsts.S_ERP_DOC, SModSysConsts.SX_REG_LINKED, typeParam);
+            }
+            else if( menuItem == jMenuCnSalToTicOut){
+                importAll();
+                typeParam.setType(SModSysConsts.SX_DOC_TO_TIC_CN_PUR_TO_TIC_OUT);
+                moSession.showView(SModConsts.S_ERP_DOC, SModSysConsts.SX_REG_LINKED, typeParam);
+            }
+            else if( menuItem == jMenuInvPurToTicIn){
+                importAll();
+                typeParam.setType(SModSysConsts.SX_DOC_TO_TIC_INV_PUR_TO_TIC_IN);
+                moSession.showView(SModConsts.S_ERP_DOC, SModSysConsts.SX_REG_LINKED, typeParam);
+            }
+            else if( menuItem == jMenuCnPurToTicIn){
+                importAll();
+                typeParam.setType(SModSysConsts.SX_DOC_TO_TIC_CN_SAL_TO_TIC_IN);
+                moSession.showView(SModConsts.S_ERP_DOC, SModSysConsts.SX_REG_LINKED, typeParam);
+            }
+
             else if (menuItem == jmiHelpHelp) {
                 actionHelpHelp();
             }

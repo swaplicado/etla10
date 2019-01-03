@@ -132,6 +132,220 @@
             </MenuItem>
           </SubComponents>
         </Menu>
+        <Menu class="javax.swing.JMenu" name="jmWm">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="B&#xe1;scula"/>
+          </Properties>
+          <SubComponents>
+            <Menu class="javax.swing.JMenu" name="jMenuDocsToLink">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Documentos por vincular"/>
+              </Properties>
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="jmiInvSalToLink">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Facturas ventas"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuCnSalToLink">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Notas de cr&#xe9;dito venta"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuInvPurToLink">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Facturas compras"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuCnPurToLink">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Notas de cr&#xe9;dito compra"/>
+                  </Properties>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator1">
+            </MenuItem>
+            <Menu class="javax.swing.JMenu" name="jMenuDocsLinkeds">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Documentos vinculados"/>
+              </Properties>
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuInvSalLinked">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Facturas ventas"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuCnSalLinked">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Notas de cr&#xe9;dito ventas"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuInvPurLinked">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Facturas de compras"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuCnPurLinked">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Notas de cr&#xe9;dito compras"/>
+                  </Properties>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator2">
+            </MenuItem>
+            <Menu class="javax.swing.JMenu" name="jMenuDocsAll">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Documentos (todos)"/>
+              </Properties>
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuInvSal">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Facturas ventas"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuICnSal">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Notas de cr&#xe9;dito ventas"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuInvPur">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Facturas compras"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuCnPur">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Notas de cr&#xe9;dito compras"/>
+                  </Properties>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator3">
+            </MenuItem>
+            <Menu class="javax.swing.JMenu" name="jMenuTicToLink">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Boletos por vincular"/>
+              </Properties>
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuTicSalToLink">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Salidas"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuTicPurToLink">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Entradas"/>
+                  </Properties>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator4">
+            </MenuItem>
+            <Menu class="javax.swing.JMenu" name="jMenuTicLinked">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Boletos vinculados"/>
+              </Properties>
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuTicSalLinked">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Salidas"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuTicPurLInked">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Entradas"/>
+                  </Properties>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator5">
+            </MenuItem>
+            <Menu class="javax.swing.JMenu" name="jMenuTicAll">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Boletos (todos)"/>
+              </Properties>
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuTicSal">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Salidas"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuTicPur">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Entrada"/>
+                  </Properties>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator6">
+            </MenuItem>
+            <Menu class="javax.swing.JMenu" name="jMenuToLinkTicToDoc">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Vinculos boletos a documentos"/>
+              </Properties>
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuTicOutToInvSal">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Boletos salida a facturas de ventas"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuTicOutToCnSal">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Boletos salida a notoas de cr&#xe9;dito de compras"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuTicInToInvPur">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Boletos entrada a facturas de compras"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuTicInToCnPur">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Boletos entrada a notas de cr&#xe9;dito de ventas"/>
+                  </Properties>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator7">
+            </MenuItem>
+            <Menu class="javax.swing.JMenu" name="jMenuToLinkDocToTic">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Vinculos documentos a boletos"/>
+              </Properties>
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuInvSalToTicOut">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Facturas de ventas a boletos de salida"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuCnSalToTicOut">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Notas de cr&#xe9;dito de compras a boletos de salida"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuInvPurToTicIn">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Facturas de compras a boletos de entrada"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuCnPurToTicIn">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Notas de cr&#xe9;dito de venta a boletos de entrada"/>
+                  </Properties>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator8">
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jmiWmItems">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Items"/>
+              </Properties>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
         <Menu class="javax.swing.JMenu" name="jmHelp">
           <Properties>
             <Property name="text" type="java.lang.String" value="Ayuda"/>
