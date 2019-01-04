@@ -610,7 +610,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
     private javax.swing.JMenu jmEtl;
     private javax.swing.JMenu jmFile;
     private javax.swing.JMenu jmHelp;
-    private javax.swing.JMenu jmSmsShipments;
+    private javax.swing.JMenu jmShip;
     private javax.swing.JMenu jmWm;
     private javax.swing.JMenuItem jmiCfgUser;
     private javax.swing.JMenuItem jmiEtlCustomer;
