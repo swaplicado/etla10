@@ -271,8 +271,8 @@ public class SDbShipmentRow extends SDbRegistryUser{
                 "'" + msInvoiceNumber + "', " + 
                 mnOrders + ", " + 
                 mnBales + ", " + 
-                SLibUtils.DecimalFormatValue4D.format(mdMeters2) + ", " + 
-                SLibUtils.DecimalFormatValue4D.format(mdKilograms) + ", " + 
+                SLibUtils.round(mdMeters2, SLibUtils.getDecimalFormatQuantity().getMaximumFractionDigits()) + ", " + 
+                SLibUtils.round(mdKilograms, SLibUtils.getDecimalFormatQuantity().getMaximumFractionDigits()) + ", " + 
                 mnFkCustomerId + ", " + 
                 mnFkDestinationId + " " +
                 ")";
@@ -293,8 +293,8 @@ public class SDbShipmentRow extends SDbRegistryUser{
                 "invoice_number = '" + msInvoiceNumber + "', " +
                 "orders = " + mnOrders + ", " +
                 "bales = " + mnBales + ", " +
-                "m2 = " + SLibUtils.DecimalFormatValue4D.format(mdMeters2) + ", " +
-                "kg = " + SLibUtils.DecimalFormatValue4D.format(mdKilograms) + ", " +
+                "m2 = " + SLibUtils.round(mdMeters2, SLibUtils.getDecimalFormatQuantity().getMaximumFractionDigits()) + ", " +
+                "kg = " + SLibUtils.round(mdKilograms, SLibUtils.getDecimalFormatQuantity().getMaximumFractionDigits()) + ", " +
                 "fk_customer = " + mnFkCustomerId + ", " +
                 "fk_destin = " + mnFkDestinationId + " " +
                 getSqlWhere();

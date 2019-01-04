@@ -45,6 +45,9 @@ import sa.lib.gui.bean.SBeanForm;
  * @author Daniel López, Sergio Flores
  */
 public class SFormShipment extends SBeanForm implements ActionListener, ItemListener {
+    
+    private final static int CONSIGNMENT_AVAILABLE = 1;
+    private final static int CONSIGNMENT_SELECTED = 2;
 
     private SDbShipment moRegistry;
     private SGridPaneForm moGridAvailableRows;
@@ -530,7 +533,7 @@ public class SFormShipment extends SBeanForm implements ActionListener, ItemList
         
         moFields.setFormButton(jbSave);
         
-        moGridAvailableRows = new SGridPaneForm(miClient, SModConsts.S_SHIPT_ROW, SLibConsts.UNDEFINED, "Remisiones disponibles", null) {
+        moGridAvailableRows = new SGridPaneForm(miClient, SModConsts.S_SHIPT_ROW, CONSIGNMENT_AVAILABLE, "Remisiones disponibles", null) {
             @Override
             public void initGrid() {
                 setRowButtonsEnabled(false);
@@ -565,7 +568,7 @@ public class SFormShipment extends SBeanForm implements ActionListener, ItemList
         moGridAvailableRows.setPaneFormOwner(null);
         jpAvailableRows.add(moGridAvailableRows, BorderLayout.CENTER);
         
-        moGridSelectedRows = new SGridPaneForm(miClient, SModConsts.S_SHIPT_ROW, SLibConsts.UNDEFINED, "Remisiones seleccionadas", null) {
+        moGridSelectedRows = new SGridPaneForm(miClient, SModConsts.S_SHIPT_ROW, CONSIGNMENT_SELECTED, "Remisiones seleccionadas", null) {
             @Override
             public void initGrid() {
                 setRowButtonsEnabled(false, false, false);

@@ -74,7 +74,7 @@ import sa.lib.xml.SXmlUtils;
 public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
 
     public static final String APP_NAME = "SIIE ETL Avista 1.0";
-    public static final String APP_RELEASE = "SIIE ETL Avista 1.0 013.01";
+    public static final String APP_RELEASE = "SIIE ETL Avista 1.0 013.04";
     public static final String APP_COPYRIGHT = "© Software Aplicado SA de CV. Todos los derechos reservados.";
     public static final String APP_PROVIDER = "www.swaplicado.com.mx";
 
@@ -150,7 +150,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
         jmiEtlItem = new javax.swing.JMenuItem();
         jmiEtlCustomer = new javax.swing.JMenuItem();
         jmiEtlSalesAgent = new javax.swing.JMenuItem();
-        jmSmsShipments = new javax.swing.JMenu();
+        jmShip = new javax.swing.JMenu();
         jmiSmsShipments = new javax.swing.JMenuItem();
         jmiSmsShipmentsToRel = new javax.swing.JMenuItem();
         jmiSmsShipmentsRel = new javax.swing.JMenuItem();
@@ -342,22 +342,22 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
 
         jMenuBar.add(jmEtl);
 
-        jmSmsShipments.setText("Embarques");
+        jmShip.setText("Embarques");
 
         jmiSmsShipments.setText("Embarques");
-        jmSmsShipments.add(jmiSmsShipments);
+        jmShip.add(jmiSmsShipments);
 
         jmiSmsShipmentsToRel.setText("Embarques por liberar");
-        jmSmsShipments.add(jmiSmsShipmentsToRel);
+        jmShip.add(jmiSmsShipmentsToRel);
 
         jmiSmsShipmentsRel.setText("Embarques liberados");
-        jmSmsShipments.add(jmiSmsShipmentsRel);
-        jmSmsShipments.add(jsFile4);
+        jmShip.add(jmiSmsShipmentsRel);
+        jmShip.add(jsFile4);
 
         jmiSmsShipper.setText("Transportistas");
-        jmSmsShipments.add(jmiSmsShipper);
+        jmShip.add(jmiSmsShipper);
 
-        jMenuBar.add(jmSmsShipments);
+        jMenuBar.add(jmShip);
 
         jmWm.setText("Báscula");
 
@@ -836,6 +836,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
         jmFile.setEnabled(false);
         jmCfg.setEnabled(false);
         jmEtl.setEnabled(false);
+        jmShip.setEnabled(false);
         jmHelp.setEnabled(false);
         jmiCfgUser.setEnabled(false);
         jmiFileWorkingDate.setEnabled(false);
@@ -909,6 +910,7 @@ public class SGuiMain extends JFrame implements SGuiClient, ActionListener {
                 jmFile.setEnabled(true);
                 jmCfg.setEnabled(user.isAdministrator());
                 jmEtl.setEnabled(true);
+                jmShip.setEnabled(true);
                 jmHelp.setEnabled(true);
                 jmiCfgUser.setEnabled(user.isSupervisor());
                 jmiFileWorkingDate.setEnabled(true);
