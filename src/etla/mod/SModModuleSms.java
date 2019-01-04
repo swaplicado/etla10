@@ -217,7 +217,7 @@ public class SModModuleSms extends SGuiModule {
     @Override
     public SGridPaneView getView(int type, int subtype, SGuiParams params) {
         SGridPaneView view = null;
-        int linkType = params.getType();
+        int linkType = params == null ? 0 : params.getType();
         String title = "";
 
         switch (type) {
