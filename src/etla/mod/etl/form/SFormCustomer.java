@@ -428,7 +428,10 @@ public class SFormCustomer extends SBeanForm implements ActionListener {
         moBoolEtlIgnore.setValue(moRegistry.isEtlIgnore());
 
         setFormEditable(true);
-        
+        /**
+         * Habilitar este campo solo para tipo de usuario 3 SUPER/ADMIN
+         */
+        moBoolEtlIgnore.setEnabled(miClient.getSession().getUser().getFkUserTypeId()==3);
         enableEditDesCustomerId(false);
         enableEditDesCustomerBranchId(false);
         
